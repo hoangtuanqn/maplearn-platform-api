@@ -2,15 +2,30 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable  implements JWTSubject
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * Trả về id của user để đưa vào token
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();  // thường là id
+    }
+
+    /**
+     * Các claim (payload) bổ sung (nếu cần)
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +33,22 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'username',
         'password',
+        'full_name',
+        'email',
+        'phone_number',
+        'gender',
+        'avatar',
+        'birth_year',
+        'facebook_link',
+        'school',
+        'city',
+        'current_balance',
+        'total_deposit',
+        'role',
+        'banned',
+        'email_verified_at',
     ];
 
     /**
@@ -34,15 +62,16 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'password' => 'hashed',
+        'email_verified_at' => 'datetime',
+        'current_balance' => 'decimal:2',
+        'total_deposit' => 'decimal:2',
+        'banned' => 'boolean',
+        'birth_year' => 'integer',
+    ];
 }

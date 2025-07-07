@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('password', 255);
             $table->string('full_name');
             $table->string('email')->unique();
-            $table->string('phone_number', 15);
+            $table->string('phone_number', 15)->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->default('other');
             $table->string('avatar')->nullable();
             $table->integer('birth_year')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->decimal('current_balance', 12, 2)->default(0);
             $table->decimal('total_deposit', 12, 2)->default(0);
             $table->enum('role', ['admin', 'teacher', 'student']);
-            $table->boolean('banned')->default(1); // Mặc định là 1 (active)
+            $table->boolean('banned')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
