@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Middleware\AuthenticateJwt;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,7 +18,25 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
+        $middleware->alias([
+            'authJWT' => AuthenticateJwt::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Cấu hình hiển thị lỗi => Thay vì hiện ra view blade, thì hiện ra json để Client bắt
+
+        // Đảm bảo luôn trả về JSON cho các lỗi trong API
+        $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
+
+        // Tùy chỉnh phản hồi cho AccessDeniedHttpException
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Bạn không có quyền thực hiện hành động này.',
+                    'type' => 'AccessDenied',
+                ], Response::HTTP_FORBIDDEN);
+            }
+        });
     })->create();

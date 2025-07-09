@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             AudienceSeeder::class,
             CategorySeeder::class,
             CourseSeeder::class,
+            TagSeeder::class,
+            PostSeeder::class,
         ]);
     }
 }
