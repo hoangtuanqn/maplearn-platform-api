@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-    protected $fileable = [
+    protected $fillable = [
         'title',
         'content',
         'views',

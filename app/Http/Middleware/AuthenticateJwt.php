@@ -28,10 +28,13 @@ class AuthenticateJwt
 
             // Set token & authenticate user
             JWTAuth::setToken($token);
-            // $user = JWTAuth::authenticate();
+            $user = JWTAuth::authenticate();
 
             // Nếu cần gắn user vào request (tuỳ nhu cầu)
-            // $request->merge(['auth_user' => $user]);
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            // hoặc dùng cách này $request->merge(['user' => $user]);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token không hợp lệ hoặc đã hết hạn', 'message' => $e->getMessage()], 401);
         }
