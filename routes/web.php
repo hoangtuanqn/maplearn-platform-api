@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 
 
 // Allow google, facebook
-Route::get('/auth/{provider}', [OAuthController::class, 'redirect']);
-Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback']);
+// Route::get('/auth/{provider}', [OAuthController::class, 'redirect']);
+// Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback']);
