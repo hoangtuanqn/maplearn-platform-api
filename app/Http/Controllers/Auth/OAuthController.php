@@ -51,12 +51,24 @@ class OAuthController extends Controller
                 'avatar' => $socialUser->getAvatar(),
             ]);
         }
-
         $accessToken = JWTAuth::fromUser($user);
-        $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
-        return redirect(env('APP_URL_FRONT_END') . "/authentication-social")
-            ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
-            ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
+        if ($user->google2fa_secret) {
+            return redirect(env('APP_URL_FRONT_END') . "/authentication-social")
+                ->withCookie(cookie(
+                    'token_2fa',
+                    base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
+                    15,
+                    null,
+                    null,
+                    false,
+                    false
+                ));
+        } else {
+            $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
+            return redirect(env('APP_URL_FRONT_END') . "/authentication-social")
+                ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
+                ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
+        }
     }
 
     private function ensureProviderAllowed($provider)

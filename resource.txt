@@ -3,3 +3,4 @@
     php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
     php artisan jwt:secret
 - QueryBuilder: https://querybuilder.js.org/
+- pragmarx/google2fa: https://github.com/antonioribeiro/google2fa

@@ -13,7 +13,7 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     /**
-     *  Trả về dạng boolean: Check quyền admin 
+     *  Trả về dạng boolean: Check quyền admin
      */
     public function isAdmin(): bool
     {
@@ -21,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     *  Trả về dạng boolean: Check quyền teacher 
+     *  Trả về dạng boolean: Check quyền teacher
      */
     public function isTeacher(): bool
     {
@@ -29,7 +29,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     *  Trả về dạng boolean: Check quyền student 
+     *  Trả về dạng boolean: Check quyền student
      */
     public function isStudent(): bool
     {
@@ -76,6 +76,7 @@ class User extends Authenticatable implements JWTSubject
         'google_id',
         'facebook_id',
         'banned',
+        'google2fa_secret',
         'email_verified_at',
     ];
 
@@ -87,6 +88,7 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'google_id',
         'facebook_id',
+        'google2fa_secret',
         'password',
         'remember_token',
     ];

@@ -11,9 +11,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->name('auth.')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/verify-2fa', [AuthController::class, 'verify2fa']);
 
         Route::middleware(['auth.jwt'])->group(function () {
-            // Set Cookie
             // Lấy thông tin người dùng
             Route::post('/me', [AuthController::class, 'me']);
             // Refresh token khi access token hết hạn

@@ -8,8 +8,9 @@ use App\Traits\HandlesCookies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
+  
 class AuthController extends Controller
 {
     use HandlesCookies;
@@ -39,6 +40,15 @@ class AuthController extends Controller
 
         // Lấy user từ token
         $user = JWTAuth::user();
+        if ($user->google2fa_secret) {
+            return response()->json([
+                'message' => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",
+                '2fa_required' => true,
+                'user_id' => $user->id,
+                // Thêm salt vào token
+                'token' => base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
+            ]);
+        }
         // logger("Login user >> " . $user);
 
         // Trả về token + refresh token dưới dạng cookie
@@ -72,7 +82,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh token từ cookie jwt_refresh
+     * Refresh token khi token cũ đã hết hạn
      */
     public function refresh(Request $request)
     {
@@ -111,6 +121,47 @@ class AuthController extends Controller
             'message' => 'Lấy thông tin người dùng thành công!',
             'data' => $request->user(),
         ]);
+    }
+
+
+    /**
+     * Xác thực mã 2Fa của người dùng
+     */
+    public function verify2fa(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+            'otp' => 'required|digits:6',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $token = base64_decode($request->token);
+        // Kiểm tra salt phải nằm trong token
+        if (!str_contains($token, env('T1_SECRET', ""))) {
+            return response()->json(['success' => false, 'message' => 'Token Invalid!'], 401);
+        }
+        // Xóa salt ra khỏi token
+        $token = str_replace(env('T1_SECRET'), "", $token);
+        JWTAuth::setToken($token);
+        $user = JWTAuth::authenticate();
+        if (!$user->google2fa_secret) {
+            return response()->json(['success' => false, 'message' => 'Tài khoản này chưa bật xác thực 2 lớp!'], 401);
+        }
+        $google2fa = new Google2FA();
+        $isValid = $google2fa->verifyKey(
+            $user->google2fa_secret,
+            $request->otp
+        );
+
+        if (!$isValid) {
+            return response()->json(['success' => false, 'message' => 'Mã OTP chính xác hoặc đã hết hạn!'], 401);
+        }
+        return $this->respondWithToken($user, 'Xác thực tài khoản thành công!');
     }
 
 
