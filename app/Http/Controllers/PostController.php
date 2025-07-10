@@ -26,6 +26,15 @@ class PostController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, Post $post)
+    {
+        return response()->json($post, Response::HTTP_OK);
+    }
+
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -38,21 +47,13 @@ class PostController extends Controller
         return response()->json($post, Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request, Post $post)
-    {
-
-        Gate::authorize('view', $post);
-        return response()->json($post, Response::HTTP_OK);
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Post $post)
     {
+        Gate::authorize('update', Post::class);
         $post->update($request->validate([
             'title' => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
@@ -66,6 +67,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        Gate::authorize('delete', Post::class);
         $post->delete();
         return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
     }

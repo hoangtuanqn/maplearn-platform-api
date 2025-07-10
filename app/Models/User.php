@@ -7,9 +7,35 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable  implements JWTSubject
+// Implement JWTSubject để sử dụng các phương thức được cấp
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
+
+    /**
+     *  Trả về dạng boolean: Check quyền admin 
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     *  Trả về dạng boolean: Check quyền teacher 
+     */
+    public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
+    }
+
+    /**
+     *  Trả về dạng boolean: Check quyền student 
+     */
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
 
     /**
      * Trả về id của user để đưa vào token
@@ -47,6 +73,8 @@ class User extends Authenticatable  implements JWTSubject
         'current_balance',
         'total_deposit',
         'role',
+        'google_id',
+        'facebook_id',
         'banned',
         'email_verified_at',
     ];
@@ -57,6 +85,8 @@ class User extends Authenticatable  implements JWTSubject
      * @var list<string>
      */
     protected $hidden = [
+        'google_id',
+        'facebook_id',
         'password',
         'remember_token',
     ];

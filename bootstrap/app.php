@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AuthenticateJwt;
+use App\Http\Middleware\CheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         //
         $middleware->alias([
-            'authJWT' => AuthenticateJwt::class
+            'auth.jwt' => AuthenticateJwt::class,
+            'check.role' => CheckRole::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -34,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
-                    'message' => 'Bạn không có quyền thực hiện hành động này.',
+                    'message' => $e->getMessage() ?? 'Bạn không có quyền thực hiện hành động này.',
                     'type' => 'AccessDenied',
                 ], Response::HTTP_FORBIDDEN);
             }
