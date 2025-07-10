@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\HandlesCookies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    use HandlesCookies;
 
     /**
      * Xử lý đăng nhập
@@ -125,29 +127,5 @@ class AuthController extends Controller
         ], $status)
             ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
             ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
-    }
-
-    /**
-     * Tạo cookie httpOnly
-     */
-    private function buildCookie(string $name, string $value, int $minutes)
-    {
-        return cookie(
-            $name,
-            $value,
-            $minutes,
-            '/',
-            null,
-            true,
-            true
-        );
-    }
-
-    /**
-     * Tạo cookie xóa (thời gian sống -1 phút)
-     */
-    private function clearCookie(string $name)
-    {
-        return cookie($name, '', -1, '/', null, true, true);
     }
 }
