@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
-use function Psy\debug;
-
+  
 class AuthController extends Controller
 {
     use HandlesCookies;
