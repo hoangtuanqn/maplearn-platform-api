@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\OAuthController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 Route::prefix('v1')->group(function () {
 
@@ -12,6 +15,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/verify-2fa', [AuthController::class, 'verify2fa']);
+        Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+        // ->middleware('throttle:5,1')
+        Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
 
         Route::middleware(['auth.jwt'])->group(function () {
             // Lấy thông tin người dùng
@@ -38,4 +44,14 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth.jwt', 'check.role'])->group(function () {});
     Route::get('/auth/{provider}', [OAuthController::class, 'redirect']);
     Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback']);
+});
+
+
+Route::get('/test-email', function () {
+    Mail::raw('Test email from Laravel', function ($message) {
+        $message->to('anhquat644@gmail.com')
+            ->subject('Test Email');
+    });
+
+    return 'Email sent!';
 });
