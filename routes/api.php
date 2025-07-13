@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -44,14 +45,18 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth.jwt', 'check.role'])->group(function () {});
     Route::get('/auth/{provider}', [OAuthController::class, 'redirect']);
     Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback']);
+
+    // Chat Bot AI
+    Route::post('/chat-bot-ai', [ChatController::class, 'chat']);
 });
 
 
-Route::get('/test-email', function () {
-    Mail::raw('Test email from Laravel', function ($message) {
-        $message->to('anhquat644@gmail.com')
-            ->subject('Test Email');
-    });
+// Test Send Email
+// Route::get('/test-email', function () {
+//     Mail::raw('Test email from Laravel', function ($message) {
+//         $message->to('anhquat644@gmail.com')
+//             ->subject('Test Email');
+//     });
 
-    return 'Email sent!';
-});
+//     return 'Email sent!';
+// });
