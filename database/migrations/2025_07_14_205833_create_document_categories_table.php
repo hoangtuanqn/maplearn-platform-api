@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('audiences', function (Blueprint $table) {
+        Schema::create('document_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->boolean('status')->default(true);
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('audiences');
+        Schema::dropIfExists('document_categories');
     }
 };

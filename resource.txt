@@ -4,3 +4,13 @@
     php artisan jwt:secret
 - QueryBuilder: https://querybuilder.js.org/
 - pragmarx/google2fa: https://github.com/antonioribeiro/google2fa
+
+
+
+- Tạo model để API: php artisan make:model DocumentCategory -mcrfs --api
+- Tạo policy theo model: php artisan make:policy DocumentPolicy --model=Document
+
+
+- Dọn dẹp cache và tái tạo autoload:
+    php artisan optimize:clear
+    composer dump-autoload

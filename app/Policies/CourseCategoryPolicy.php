@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\Post;
+use App\Models\CourseCategory;
 use App\Models\User;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Auth\Access\Response;
 
-class PostPolicy
+class CourseCategoryPolicy
 {
     use AuthorizesOwnerOrAdmin;
     /**
@@ -21,7 +21,7 @@ class PostPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(?User $user, Post $post): bool
+    public function view(?User $user, CourseCategory $courseCategory): bool
     {
         return true;
     }
@@ -33,39 +33,38 @@ class PostPolicy
     {
         return in_array($user->role, ['admin', 'teacher'])
             ? Response::allow()
-            : Response::deny('Bạn không có quyền đăng bài.');
+            : Response::deny('Bạn không có quyền tạo danh mục khóa học.');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Post $post): Response
+    public function update(User $user, CourseCategory $courseCategory): Response
     {
-        // Admin toàn quyền hoặc nếu là teacher thì ai đăng người dó được phép sửa
-        return $this->canManage($user, $post, 'cập nhật');
+        return $this->canManage($user, $courseCategory, 'cập nhật');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Post $post): Response
+    public function delete(User $user, CourseCategory $courseCategory): Response
     {
-        return $this->canManage($user, $post, 'xóa');
+        return $this->canManage($user, $courseCategory, 'xóa');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Post $post): Response
+    public function restore(User $user, CourseCategory $courseCategory): Response
     {
-        return $this->canManage($user, $post, 'khôi phục');
+        return $this->canManage($user, $courseCategory, 'khôi phục');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Post $post): Response
+    public function forceDelete(User $user, CourseCategory $courseCategory): Response
     {
-        return $this->canManage($user, $post, 'xóa vĩnh viễn');
+        return $this->canManage($user, $courseCategory, 'xóa vĩnh viễn');
     }
 }

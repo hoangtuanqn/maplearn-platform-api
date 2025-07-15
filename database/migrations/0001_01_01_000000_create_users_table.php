@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('facebook_link')->nullable();
             $table->string('school')->nullable();
             $table->string('city')->nullable();
-            $table->decimal('current_balance', 12, 2)->default(0);
-            $table->decimal('total_deposit', 12, 2)->default(0);
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
             $table->boolean('banned')->default(0);
             $table->string('google2fa_secret')->nullable();

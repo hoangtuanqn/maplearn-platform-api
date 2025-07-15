@@ -13,9 +13,9 @@ class ChatController extends Controller
         $apiKey = env('GEMINI_API_KEY');
 
         // Kiểm tra đầu vào hợp lệ (tuỳ bạn có validate không)
-        // if (!$request->has(['systemInstruction', 'contents'])) {
-        //     return response()->json(['error' => 'Thiếu dữ liệu'], 422);
-        // }
+        if (!$request->has(['systemInstruction', 'contents'])) {
+            return response()->json(['error' => 'Thiếu dữ liệu'], 422);
+        }
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',

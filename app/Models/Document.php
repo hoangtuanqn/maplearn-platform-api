@@ -2,28 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
-class Post extends Model
+class Document extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'title',
-        'thumbnail',
-        'content',
         'views',
+        'source',
         'tags_id',
         'created_by',
-        'status'
+        'category_id',
+        'status',
     ];
 
+    // Dùng Document::find(1)->makeVisible('tags_id'); để hiển thị lại ở 1 số chỗ nếu cần
+    // Nó chỉ ẩn khi output, k ảnh hướng khi dùng code trong PHP
     protected $appends = ['tags', 'creator']; // tự động thêm vào JSON
 
-    // Không hiển thị các cột này khi in ra danh sách
     protected $hidden = [
+        'category_id',
         'created_by',
         'tags_id',
         'deleted_at'
@@ -35,10 +33,16 @@ class Post extends Model
         'status' => 'boolean'
     ];
 
+    public function category()
+    {
+        return $this->belongsTo(DocumentCategory::class, 'category_id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
     public function getTagsAttribute()
     {
         return Tag::whereIn('id', $this->tags_id ?? [])->select('id', 'name', 'created_at')->get();
@@ -47,19 +51,5 @@ class Post extends Model
     public function getCreatorAttribute()
     {
         return $this->creator()->select('id', 'full_name')->get();
-    }
-
-    // event: tạo slug tự động từ title mỗi khi add
-    protected static function booted()
-    {
-        static::creating(function ($post) {
-            if (empty($post->slug)) {
-                $slugBase = Str::slug($post->title);
-                // Thêm mã ngẫu nhiên 6 ký tự
-                $randomSuffix = Str::random(12);
-                // Gán slug
-                $post->slug = $slugBase . '-' . strtolower($randomSuffix);
-            }
-        });
     }
 }

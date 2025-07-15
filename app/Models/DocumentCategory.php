@@ -2,19 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Tag extends Model
+class DocumentCategory extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'name',
+        'title',
+        'status',
     ];
 
     // Không hiển thị các cột này khi in ra danh sách
     protected $hidden = [
         'deleted_at'
+    ];
+
+    protected $casts = [
+        'title' => 'string',
+        'status' => 'boolean'
     ];
 }

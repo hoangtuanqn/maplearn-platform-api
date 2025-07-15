@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->string("slug")->unique();
-            $table->string("title");
-            $table->string("thumbnail");
-            $table->longText("content");
+            $table->string('title');
             $table->integer('views')->default(0);
+            $table->string('source')->nullable();
             $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
-            $table->boolean('status')->default(true);
+            $table->integer('category_id')->unsigned();
             $table->integer('created_by')->unsigned();
-
+            $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('document_categories')->onDelete('cascade');
         });
     }
 
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('documents');
     }
 };
