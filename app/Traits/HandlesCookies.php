@@ -37,7 +37,7 @@ trait HandlesCookies
             '/',
             null,
             true,
-            true
+            true // http only
         );
     }
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
-  
+
 class AuthController extends Controller
 {
     use HandlesCookies;
@@ -40,6 +40,7 @@ class AuthController extends Controller
 
         // Lấy user từ token
         $user = JWTAuth::user();
+        // Xử lý nếu bật 2FA
         if ($user->google2fa_secret) {
             return response()->json([
                 'message' => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",

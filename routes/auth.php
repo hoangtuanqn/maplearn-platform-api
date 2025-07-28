@@ -12,6 +12,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/verify-2fa', [AuthController::class, 'verify2fa']);
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
     Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
+    Route::post('/check-token-reset-password', [ResetPasswordController::class, 'checkToken']);
 
     // OAuth
     Route::get('/{provider}', [OAuthController::class, 'redirect']);

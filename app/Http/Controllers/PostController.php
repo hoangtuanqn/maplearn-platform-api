@@ -16,11 +16,12 @@ class PostController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = (int)($request->limit ?? 10);
-        // dd($limit);
+        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+
         $posts = QueryBuilder::for(Post::class)
-            ->select(['id', 'slug', 'title', 'views', 'created_by', 'tags_id', 'created_at'])
+            ->select(['id', 'slug', 'thumbnail', 'title', 'views', 'created_by', 'tags_id', 'created_at'])
             ->where('status', true)
+            ->with(['creator:id,full_name']) // Eager loading để tránh N+1 query
             ->orderByDesc('id')
             ->paginate($limit);
 
