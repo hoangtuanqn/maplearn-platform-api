@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -34,6 +35,10 @@ class Post extends Model
         'tags_id' => 'array',
         'status' => 'boolean'
     ];
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function creator()
     {
@@ -43,6 +48,11 @@ class Post extends Model
     {
         return Tag::whereIn('id', $this->tags_id ?? [])->select('id', 'name', 'created_at')->get();
     }
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('H:i - d/m/Y');
+    }
+
 
     public function getCreatorAttribute()
     {

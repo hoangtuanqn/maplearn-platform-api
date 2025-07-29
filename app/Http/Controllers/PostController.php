@@ -40,6 +40,7 @@ class PostController extends BaseApiController
         ];
         return $this->successResponse($data, 'Lấy chi tiết bài viết thành công!');
     }
+    
 
 
     /**
