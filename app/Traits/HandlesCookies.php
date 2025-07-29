@@ -13,7 +13,12 @@ trait HandlesCookies
      */
     private function respondWithToken(User $user, string $message, int $status = 200)
     {
+        // Access Token sống 15 phút
+        JWTAuth::factory()->setTTL(15);
         $accessToken = JWTAuth::fromUser($user);
+
+        // Refresh Token sống 7 ngày (60 * 24 * 7 = 10080 phút)
+        JWTAuth::factory()->setTTL(60 * 24 * 7);
         $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
 
         return response()->json([

@@ -13,7 +13,7 @@ class ProfileController extends Controller
             'full_name' => 'required|string|max:255',
             'phone_number' => 'sometimes|string|max:20',
             'gender' => 'sometimes|string|in:male,female,other',
-            'birth_year' => 'sometimes|integer',
+            'birth_year' => 'sometimes|nullable',
             'school' => 'sometimes|string|max:255',
             'city' => 'sometimes|string|max:255',
             'facebook_link' => 'sometimes|string|max:255',
