@@ -21,7 +21,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
     // Authenticated
     Route::middleware('auth.jwt')->group(function () {
         Route::post('/me', [AuthController::class, 'me']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 });

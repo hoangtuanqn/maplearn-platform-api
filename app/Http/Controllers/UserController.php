@@ -26,7 +26,6 @@ class UserController extends Controller
                     } else {
                         $query->where('role', 'teacher');
                     }
-
                     // Nếu không phải 'teacher', thì không lọc gì cả
                 }),
             ])
