@@ -71,8 +71,6 @@ class User extends Authenticatable implements JWTSubject
         'facebook_link',
         'school',
         'city',
-        'current_balance',
-        'total_deposit',
         'role',
         'google_id',
         'facebook_id',
@@ -112,5 +110,18 @@ class User extends Authenticatable implements JWTSubject
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+
+    // Lấy danh sách documents người này đã upload
+    public function createdDocuments()
+    {
+        return $this->hasMany(Document::class, 'created_by');
+    }
+
+    // Lấy danh sách documents người này đã upload
+    public function createdPosts()
+    {
+        return $this->hasMany(Post::class, 'created_by');
     }
 }

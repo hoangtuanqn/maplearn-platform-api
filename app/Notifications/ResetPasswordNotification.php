@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Helpers\Base64Url;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -35,12 +36,12 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $frontendUrl = env('APP_URL_FRONT_END', 'http://localhost:5173'); // frontend URL
-        $encryptToken = base64_encode(json_encode([
+        $frontendUrl = env('APP_URL_FRONT_END', 'http://localhost:3000'); // frontend URL
+        $encryptToken = Base64Url::encode(json_encode([
             'email' => $notifiable->getEmailForPasswordReset(),
             'token' => $this->token,
         ]));
-        $resetUrl = "{$frontendUrl}/reset-password?token=" . $encryptToken;
+        $resetUrl = "{$frontendUrl}/auth/reset-password/" . $encryptToken;
 
         return (new MailMessage)
             ->subject('Đặt lại mật khẩu')

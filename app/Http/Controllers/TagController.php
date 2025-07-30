@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class TagController extends Controller
+class TagController extends BaseApiController
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        // Cách sử dụng: http://localhost:8000/api/v1/tags?filter[name]=tuan
         $tags = QueryBuilder::for(Tag::class)
             ->allowedFilters(['name'])
             ->allowedSorts(['created_at'])->get();
-
-        return response()->json($tags, Response::HTTP_OK);
+        return $this->successResponse($tags, 'Lấy danh sách nhãn thành công!');
     }
 
     /**
@@ -27,7 +28,7 @@ class TagController extends Controller
      */
     public function show(Request $request, Tag $tag)
     {
-        return response()->json($tag, Response::HTTP_OK);
+        return $this->successResponse($tag, 'Xem chi tiết nhãn thành công!');
     }
 
     /**
@@ -39,7 +40,7 @@ class TagController extends Controller
         $tag = Tag::create($request->validate([
             'name' => 'required|string|max:255',
         ]));
-        return response()->json($tag, Response::HTTP_CREATED);
+        return $this->successResponse($tag, 'Tạo nhãn mới thành công', Response::HTTP_CREATED);
     }
 
     /**
@@ -51,8 +52,7 @@ class TagController extends Controller
         $tag->update($request->validate([
             'name' => 'sometimes|required|string|max:255',
         ]));
-
-        return response()->json($tag, Response::HTTP_OK);
+        return $this->successResponse($tag, 'Cập nhật nhãn thành công');
     }
 
     /**
@@ -62,6 +62,6 @@ class TagController extends Controller
     {
         Gate::authorize('delete', $tag);
         $tag->delete();
-        return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
+        return $this->noContentResponse();
     }
 }

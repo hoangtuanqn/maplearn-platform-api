@@ -12,14 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('posts', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
+            $table->string("slug")->unique();
             $table->string("title");
-            $table->text("content");
+            $table->string("thumbnail");
+            $table->longText("content");
             $table->integer('views')->default(0);
             $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
             $table->boolean('status')->default(true);
+            $table->integer('created_by')->unsigned();
+
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

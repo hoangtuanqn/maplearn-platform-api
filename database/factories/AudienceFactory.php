@@ -20,6 +20,7 @@ class AudienceFactory extends Factory
         return [
             'name' => $this->faker->word(),
             'status' => 'active',
+            'created_by' => 1
         ];
     }
 }

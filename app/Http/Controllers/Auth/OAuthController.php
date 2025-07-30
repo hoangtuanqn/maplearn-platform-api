@@ -53,19 +53,20 @@ class OAuthController extends Controller
         }
         $accessToken = JWTAuth::fromUser($user);
         if ($user->google2fa_secret) {
-            return redirect(env('APP_URL_FRONT_END') . "/authentication-social")
-                ->withCookie(cookie(
-                    'token_2fa',
-                    base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
-                    15,
-                    null,
-                    null,
-                    false,
-                    false
-                ));
+            $token = base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', ""));
+            return redirect(env('APP_URL_FRONT_END') . "/auth/login-social?token=" . $token);
+            // ->withCookie(cookie(
+            //     'token_2fa',
+            //     base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
+            //     15,
+            //     null,
+            //     null,
+            //     false,
+            //     false
+            // ));
         } else {
             $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
-            return redirect(env('APP_URL_FRONT_END') . "/authentication-social")
+            return redirect(env('APP_URL_FRONT_END') . "/auth/login-social")
                 ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
                 ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
         }

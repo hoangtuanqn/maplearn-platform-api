@@ -12,4 +12,9 @@ class Tag extends Model
     protected $fillable = [
         'name',
     ];
+
+    // Không hiển thị các cột này khi in ra danh sách
+    protected $hidden = [
+        'deleted_at'
+    ];
 }

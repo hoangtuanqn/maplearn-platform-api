@@ -4,12 +4,12 @@ namespace App\Policies;
 
 use App\Models\Post;
 use App\Models\User;
-use App\Policies\Traits\HandlesAuthorizations;
+use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Auth\Access\Response;
 
 class PostPolicy
 {
-    use HandlesAuthorizations;
+    use AuthorizesOwnerOrAdmin;
     /**
      * Determine whether the user can view any models.
      */

@@ -21,7 +21,7 @@ class CourseFactory extends Factory
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
             'thumbnail' => $this->faker->imageUrl(640, 480, 'education', true),
-            'user_id' => 1, // Bạn có thể sửa lại random user
+            'created_by' => 1, // Bạn có thể sửa lại random user
             'banner' => $this->faker->imageUrl(800, 200, 'banner', true),
             'subject_id' => 1,
             'audience_id' => 1,

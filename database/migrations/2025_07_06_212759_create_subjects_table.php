@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->integer('order')->default(0);
+            $table->string('slug')->unique();
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
