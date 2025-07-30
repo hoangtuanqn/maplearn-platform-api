@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Observers\PostObserver;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+#[ObservedBy([PostObserver::class])]
 class Post extends Model
 {
     use HasFactory;
@@ -60,16 +63,16 @@ class Post extends Model
     }
 
     // event: tạo slug tự động từ title mỗi khi add
-    protected static function booted()
-    {
-        static::creating(function ($post) {
-            if (empty($post->slug)) {
-                $slugBase = Str::slug($post->title);
-                // Thêm mã ngẫu nhiên 6 ký tự
-                $randomSuffix = Str::random(12);
-                // Gán slug
-                $post->slug = $slugBase . '-' . strtolower($randomSuffix);
-            }
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::creating(function ($post) {
+    //         if (empty($post->slug)) {
+    //             $slugBase = Str::slug($post->title);
+    //             // Thêm mã ngẫu nhiên 6 ký tự
+    //             $randomSuffix = Str::random(12);
+    //             // Gán slug
+    //             $post->slug = $slugBase . '-' . strtolower($randomSuffix);
+    //         }
+    //     });
+    // }
 }

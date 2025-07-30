@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('grade_levels', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->boolean('status')->default(true);
+            $table->string('name');            // "Lớp 10"
+            $table->string('slug')->unique();  // "lop-10"
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('grade_levels');
     }
 };

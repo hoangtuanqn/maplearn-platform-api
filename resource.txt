@@ -14,3 +14,5 @@
 - Dọn dẹp cache và tái tạo autoload:
     php artisan optimize:clear
     composer dump-autoload
+
+- Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer PostObserver --model=Post

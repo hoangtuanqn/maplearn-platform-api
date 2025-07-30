@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Subject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class SubjectSeeder extends Seeder
 {
@@ -19,6 +20,7 @@ class SubjectSeeder extends Seeder
         foreach ($subjects as $subject) {
             Subject::create([
                 'name' => $subject,
+                'slug' => Str::slug($subject),
                 'status' => 1
             ]);
         }

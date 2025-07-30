@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Filters\GradeLevelSlugFilter;
+use App\Filters\SubjectSlugFilter;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class DocumentController extends BaseApiController
 {
@@ -19,8 +22,25 @@ class DocumentController extends BaseApiController
         $limit = (int)($request->limit ?? 10);
         // dd($limit);
         $documents = QueryBuilder::for(Document::class)
-            ->allowedFilters(['title', 'category_id'])
-            ->select(['id', 'title', 'source', 'download_count', 'tags_id', 'category_id', 'created_at', 'created_by'])
+            ->allowedFilters([
+                'title',
+                'category_id',
+                AllowedFilter
+                    ::custom('grade_level', new GradeLevelSlugFilter),
+                AllowedFilter::custom('subject', new SubjectSlugFilter),
+            ])
+            ->select([
+                'id',
+                'title',
+                'source',
+                'download_count',
+                'tags_id',
+                'grade_level_id',
+                'subject_id',
+                'category_id',
+                'created_at',
+                'created_by'
+            ])
             ->allowedSorts(['created_at', 'download_count'])
             ->where('status', true)
             ->orderByDesc('id')

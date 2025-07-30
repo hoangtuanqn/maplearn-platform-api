@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\SubjectObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy([SubjectObserver::class])]
 class Subject extends Model
 {
     /** @use HasFactory<\Database\Factories\SubjectFactory> */
@@ -12,6 +15,7 @@ class Subject extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'status',
     ];
 

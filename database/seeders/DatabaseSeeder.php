@@ -22,9 +22,10 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
             PostSeeder::class,
             DocumentCatogorySeeder::class,
-            DocumentSeeder::class,
             SettingSeeder::class,
             CommentSeeder::class,
+            GradeLevelSeeder::class,
+            DocumentSeeder::class,
         ]);
     }
 }

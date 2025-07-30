@@ -13,6 +13,8 @@ class Document extends Model
         'tags_id',
         'created_by',
         'category_id',
+        'subject_id',
+        'grade_level_id',
         'status',
     ];
 
@@ -20,10 +22,12 @@ class Document extends Model
     // Nó chỉ ẩn khi output, k ảnh hưởng khi dùng code trong PHP
 
     // 'category' => khi cần thi thêm vô appends
-    protected $appends = ['tags', 'creator']; // tự động thêm vào JSON
+    protected $appends = ['tags', 'creator',  'subject', 'grade_level']; // tự động thêm vào JSON
 
     protected $hidden = [
         // 'category_id',
+        'grade_level_id',
+        'subject_id',
         'created_by',
         'tags_id',
         'deleted_at',
@@ -40,10 +44,18 @@ class Document extends Model
     {
         return $this->belongsTo(DocumentCategory::class, 'category_id');
     }
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function gradeLevel()
+    {
+        return $this->belongsTo(GradeLevel::class, 'grade_level_id');
     }
 
     // Lấy danh sách tag theo id
@@ -62,6 +74,16 @@ class Document extends Model
     public function getCategoryAttribute()
     {
         return $this->category()->select('id', 'name')->first();
+    }
+    // Lấy thông tin subject
+    public function getSubjectAttribute()
+    {
+        return $this->subject()->select('slug')->first()->slug;
+    }
+    // Lấy thông tin grade level
+    public function getGradeLevelAttribute()
+    {
+        return $this->gradeLevel()->select('slug')->first()->slug;
     }
 
     // Scope lấy document active

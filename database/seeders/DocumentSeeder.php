@@ -138,6 +138,7 @@ class DocumentSeeder extends Seeder
                 'tags_id' => [1, 2, 3, 4],
                 'download_count' => rand(10000, 20000),
                 'category_id' => 1,
+
             ];
         }
 
@@ -150,6 +151,8 @@ class DocumentSeeder extends Seeder
                 'category_id' => $document['category_id'],
                 'created_by' => 1,
                 'status' => 1,
+                'grade_level_id' => rand(1, 5), // Giả sử có 6 khối lớp
+                'subject_id' => rand(1, 6), // Giả sử có 5 môn học
             ]);
         }
     }
