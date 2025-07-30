@@ -8,18 +8,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DocumentCategory extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'title',
+        'name', // <-- sửa lại nếu DB dùng name
         'status',
     ];
 
-    // Không hiển thị các cột này khi in ra danh sách
-    protected $hidden = [
-        'deleted_at'
-    ];
+    protected $appends = ['total_downloads', 'total_documents']; // tự động thêm vào JSON
+
+    protected $hidden = ['deleted_at'];
 
     protected $casts = [
-        'title' => 'string',
+        'name' => 'string',
         'status' => 'boolean'
     ];
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'category_id'); // sửa lại cho đúng với DB
+    }
+
+    public function getTotalDownloadsAttribute()
+    {
+        return (int)$this->documents()->sum('download_count');
+    }
+
+    public function getTotalDocumentsAttribute()
+    {
+        return (int)$this->documents()->count();
+    }
 }

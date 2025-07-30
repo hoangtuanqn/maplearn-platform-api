@@ -19,7 +19,8 @@ class DocumentController extends BaseApiController
         $limit = (int)($request->limit ?? 10);
         // dd($limit);
         $documents = QueryBuilder::for(Document::class)
-            ->select(['id', 'title', 'views', 'tags_id', 'created_at', 'created_by'])
+            ->allowedFilters(['title', 'category_id'])
+            ->select(['id', 'title', 'source', 'download_count', 'tags_id', 'category_id', 'created_at', 'created_by'])
             ->allowedSorts(['title', 'created_at'])
             ->where('status', true)
             ->orderByDesc('id')
@@ -103,11 +104,11 @@ class DocumentController extends BaseApiController
     }
 
     /**
-     * Tăng lượt xem tài liệu
+     * Tăng lượt tải tài liệu
      */
-    public function increaseView(Document $document)
+    public function increaseDownload(Document $document)
     {
-        $document->increment('views');
-        return $this->successResponse('Tăng lượt xem tài liệu thành công!');
+        $document->increment('download_count');
+        return $this->successResponse('Cập nhật lượt tải xuống thành công!');
     }
 }

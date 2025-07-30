@@ -7,6 +7,7 @@ Route::prefix('v1')->group(function () {
     require __DIR__ . '/profile.php';
     require __DIR__ . '/documents.php';
     require __DIR__ . '/posts.php';
+    require __DIR__ . '/comments.php';
     require __DIR__ . '/tags.php';
     require __DIR__ . '/users.php';
     require __DIR__ . '/chat.php';

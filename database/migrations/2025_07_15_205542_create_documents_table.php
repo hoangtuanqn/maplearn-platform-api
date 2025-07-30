@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
-            $table->integer('views')->default(0);
+            $table->integer('download_count')->default(0);
             $table->string('source')->nullable();
             $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
             $table->integer('category_id')->unsigned();

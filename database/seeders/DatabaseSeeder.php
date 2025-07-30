@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             DocumentCatogorySeeder::class,
             DocumentSeeder::class,
             SettingSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }
