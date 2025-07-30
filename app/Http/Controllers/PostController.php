@@ -21,6 +21,7 @@ class PostController extends BaseApiController
         $posts = QueryBuilder::for(Post::class)
             ->allowedFilters(['title'])
             ->select(['id', 'slug', 'thumbnail', 'title', 'views', 'created_by', 'tags_id', 'created_at'])
+            ->allowedSorts(['created_at', 'views'])
             ->where('status', true)
             ->with(['creator:id,full_name']) // đảm bảo quan hệ creator đã được định nghĩa
             ->orderByDesc('id')
@@ -40,7 +41,7 @@ class PostController extends BaseApiController
         ];
         return $this->successResponse($data, 'Lấy chi tiết bài viết thành công!');
     }
-    
+
 
 
     /**

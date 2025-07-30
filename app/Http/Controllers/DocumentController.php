@@ -21,7 +21,7 @@ class DocumentController extends BaseApiController
         $documents = QueryBuilder::for(Document::class)
             ->allowedFilters(['title', 'category_id'])
             ->select(['id', 'title', 'source', 'download_count', 'tags_id', 'category_id', 'created_at', 'created_by'])
-            ->allowedSorts(['title', 'created_at'])
+            ->allowedSorts(['created_at', 'download_count'])
             ->where('status', true)
             ->orderByDesc('id')
             ->paginate($limit);
