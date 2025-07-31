@@ -18,6 +18,7 @@ class DocumentCatogorySeeder extends Seeder
         foreach ($categories as $category) {
             DocumentCategory::create([
                 'name' => $category,
+                'description' => 'Bộ tài liệu ôn tập đầu năm dành cho học sinh lớp 12, được biên soạn kỹ lưỡng bởi đội ngũ giáo viên giàu kinh nghiệm tại MapLearn, giúp bạn tự tin chinh phục mọi kỳ thi.',
                 'status' => 1
             ]);
         }

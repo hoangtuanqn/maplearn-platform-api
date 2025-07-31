@@ -12,5 +12,6 @@ class GradeLevelSlugFilter implements Filter
         $query->whereHas('gradeLevel', function ($q) use ($value) {
             $q->where('slug', $value);
         });
+
     }
 }

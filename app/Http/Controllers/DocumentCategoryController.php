@@ -18,8 +18,8 @@ class DocumentCategoryController extends BaseApiController
         $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
 
         $categories = QueryBuilder::for(DocumentCategory::class)
-            ->select(['id', 'name', 'status', 'created_at', 'updated_at'])
-            ->whereHas('documents') // * 👈 Chỉ lấy category có ít nhất 1 document
+            ->select(['id', 'name', 'description', 'status', 'created_at', 'updated_at'])
+            // ->whereHas('documents') // * 👈 Chỉ lấy category có ít nhất 1 document
             ->allowedFilters([
                 AllowedFilter::partial('name'),      // tìm kiếm theo tên danh mục
                 AllowedFilter::exact('status'),      // lọc theo trạng thái (true/false)

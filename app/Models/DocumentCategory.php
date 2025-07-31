@@ -10,7 +10,8 @@ class DocumentCategory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', // <-- sửa lại nếu DB dùng name
+        'name',
+        'description',
         'status',
     ];
 
