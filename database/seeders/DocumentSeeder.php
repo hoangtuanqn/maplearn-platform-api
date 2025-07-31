@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Document;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DocumentSeeder extends Seeder
 {
@@ -13,65 +14,6 @@ class DocumentSeeder extends Seeder
      */
     public function run(): void
     {
-        $documentsData = [
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN LẦN 2 2025 - THÁI BÌNH',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - BÌNH PHƯỚC (LỜI GIẢI)',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - BÌNH PHƯỚC (ĐỀ BÀI)',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'download_count' => rand(10000, 20000),
-                'tags_id' => [1, 2, 3, 4],
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - KHÁNH HOÀ',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - QUẢNG NAM',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - YÊN BÁI',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN LẦN 2 2025 - BẮC GIANG',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-            [
-                'title' => 'THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - HÀ TĨNH',
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
-                'tags_id' => [1, 2, 3, 4],
-                'download_count' => rand(10000, 20000),
-                'category_id' => 1,
-            ],
-        ];
-
         // Thêm ngẫu nhiên 50 đề thi thử
         $provinces = [
             'HÀ NỘI',
@@ -134,7 +76,7 @@ class DocumentSeeder extends Seeder
             $title = "THI THỬ TỐT NGHIỆP THPT TOÁN " . ($lan > 1 ? "LẦN $lan " : "") . "2025 - $province";
             $documentsData[] = [
                 'title' => $title,
-                'source' => 'https://drive.google.com/drive/u/6/folders/1PQ2jd7mN5ZBsUd0La4zEODKk4S62mGBb',
+                'source' => '/doc.pdf',
                 'tags_id' => [1, 2, 3, 4],
                 'download_count' => rand(10000, 20000),
                 'category_id' => 1,

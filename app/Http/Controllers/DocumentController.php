@@ -32,6 +32,7 @@ class DocumentController extends BaseApiController
             ->select([
                 'id',
                 'title',
+                'slug',
                 'source',
                 'download_count',
                 'tags_id',
@@ -92,7 +93,7 @@ class DocumentController extends BaseApiController
      */
     public function show(Document $document)
     {
-        $document->load(['category']);
+        // $document->load(['category']);
         return $this->successResponse($document, 'Lấy chi tiết tài liệu thành công!');
     }
 

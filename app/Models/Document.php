@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Observers\DocumentObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy([DocumentObserver::class])]
 class Document extends Model
 {
     protected $fillable = [
         'title',
+        'slug',
         'download_count',
         'source',
         'tags_id',
@@ -39,6 +43,14 @@ class Document extends Model
         'tags_id' => 'array',
         'status' => 'boolean',
     ];
+
+    // getRouteKeyName là phương thức để xác định trường nào sẽ được sử dụng làm khóa định tuyến
+    // Mặc định Laravel sẽ dùng 'id', nhưng nếu bạn muốn dùng 'slug'
+    // thì bạn cần định nghĩa lại phương thức này trong model của bạn.
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function category()
     {
