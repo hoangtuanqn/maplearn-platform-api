@@ -106,4 +106,22 @@ class PostController extends BaseApiController
         $post->increment('views');
         return $this->successResponse('Tăng lượt xem bài viết thành công!');
     }
+
+    public function showDataAI(Request $request)
+    {
+        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $page = (int)($request->page ?? 1); // Giới hạn offset
+        $data = Post::query()
+            ->select(['id', 'title', 'slug'])
+            ->where('status', true)
+            ->orderByDesc('id')
+            ->offset(($page - 1) * $limit)
+            ->limit($limit)
+            ->get()
+            ->each(function ($post) {
+                $post->makeHidden(['tags', 'creator']);
+            });
+
+        return $this->successResponse($data, 'Lấy dữ liệu AI thành công!');
+    }
 }
