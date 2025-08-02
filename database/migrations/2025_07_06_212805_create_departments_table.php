@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Danh sách các cấp lớp học (Lớp 10, lớp 11, lớp 12, DGNL, DGTD, ...)
-        Schema::create('grade_levels', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');            // "Lớp 10"
-            $table->string('slug')->unique();  // "lop-10"
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grade_levels');
+        Schema::dropIfExists('departments');
     }
 };

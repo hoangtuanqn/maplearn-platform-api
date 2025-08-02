@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\CourseCategoryObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
+#[ObservedBy([CourseCategoryObserver::class])]
 
 class CourseCategory extends Model
 {
@@ -18,8 +22,8 @@ class CourseCategory extends Model
     ];
 
     // Dùng Document::find(1)->makeVisible('tags_id'); để hiển thị lại ở 1 số chỗ nếu cần
-    // Nó chỉ ẩn khi output, k ảnh hướng khi dùng code trong PHP
-    protected $appends = ['creator']; // tự động thêm vào JSON
+    // Nó chỉ ẩn khi output, k ảnh hưởng khi dùng code trong PHP
+    protected $appends = ['count_courses']; // tự động thêm vào JSON
 
     protected $hidden = [
         'created_by',
@@ -40,9 +44,8 @@ class CourseCategory extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-
-    public function getCreatorAttribute()
+    public function getCountCoursesAttribute()
     {
-        return $this->creator()->select('id', 'full_name')->get();
+        return $this->courses()->count();
     }
 }

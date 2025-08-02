@@ -20,6 +20,7 @@ class CourseCategorySeeder extends Seeder
             '2K10 - Xuất phát sớm lớp 10',
             'Học tốt sách giáo khoa',
             'Khóa học Trung học cơ sở',
+
         ];
 
         foreach ($categories as $category) {

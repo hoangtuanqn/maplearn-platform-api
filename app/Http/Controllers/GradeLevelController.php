@@ -48,4 +48,23 @@ class GradeLevelController extends BaseApiController
     {
         //
     }
+
+    // Lấy danh sách môn trong từng level học (VD: Lớp 12 thì có khóa học nào, lớp 11 thì có khóa học nào)
+    // Mỗi danh mục 8 khóa học
+    public function getCoursesByGradeLevel()
+    {
+        $gradeLevels = GradeLevel::with(['courses' => function ($query) {
+            $query->select([
+                'id',
+                'name',
+                'slug',
+                'thumbnail',
+                'price',
+                'department_id',
+                'grade_level_id',
+            ])->orderBy('id', 'desc')->take(8); // Giới hạn 8 khóa học mỗi khối lớp
+        }])->get();
+
+        return $this->successResponse($gradeLevels, 'Lấy danh sách khóa học theo khối lớp thành công!');
+    }
 }

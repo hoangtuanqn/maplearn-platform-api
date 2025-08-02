@@ -21,7 +21,6 @@ return new class extends Migration
             $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
             $table->boolean('status')->default(true);
             $table->integer('created_by')->unsigned();
-
             $table->timestamps();
             $table->softDeletes();
 

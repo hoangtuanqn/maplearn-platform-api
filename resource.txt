@@ -15,4 +15,4 @@
     php artisan optimize:clear
     composer dump-autoload
 
-- Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer PostObserver --model=Post
+- Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer DocumentCategoryObserver --model=DocumentCategory

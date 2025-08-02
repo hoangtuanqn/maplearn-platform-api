@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('course_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('slug')->unique();
             $table->boolean('status')->default(true);
             $table->integer('created_by')->unsigned();
             $table->timestamps();

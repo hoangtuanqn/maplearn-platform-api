@@ -19,7 +19,7 @@ class DocumentController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = (int)($request->limit ?? 10);
+        $limit = min((int)($request->limit ?? 10), 100);
         // dd($limit);
         $documents = QueryBuilder::for(Document::class)
             ->allowedFilters([
@@ -131,5 +131,17 @@ class DocumentController extends BaseApiController
     {
         $document->increment('download_count');
         return $this->successResponse('Cập nhật lượt tải xuống thành công!');
+    }
+
+    public function getSameCategoryDocuments($slug)
+    {
+        $limit = 10; // Giới hạn số lượng tài liệu cùng danh mục trả về
+        $document = Document::where('slug', $slug)->firstOrFail();
+        $documents = Document::where('category_id', $document->category_id)
+            ->where('id', '!=', $document->id)
+            ->limit($limit)
+            ->get();
+
+        return $this->successResponse($documents, 'Lấy danh sách tài liệu cùng danh mục thành công!');
     }
 }

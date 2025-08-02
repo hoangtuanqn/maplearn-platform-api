@@ -64,18 +64,4 @@ class Post extends Model
     {
         return $this->creator()->select('id', 'full_name')->get();
     }
-
-    // event: tạo slug tự động từ title mỗi khi add
-    // protected static function booted()
-    // {
-    //     static::creating(function ($post) {
-    //         if (empty($post->slug)) {
-    //             $slugBase = Str::slug($post->title);
-    //             // Thêm mã ngẫu nhiên 6 ký tự
-    //             $randomSuffix = Str::random(12);
-    //             // Gán slug
-    //             $post->slug = $slugBase . '-' . strtolower($randomSuffix);
-    //         }
-    //     });
-    // }
 }

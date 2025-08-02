@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SubjectSeeder::class,
             AudienceSeeder::class,
+            DepartmentSeeder::class,
             CourseCategorySeeder::class,
-            CourseSeeder::class,
             TagSeeder::class,
             PostSeeder::class,
             DocumentCatogorySeeder::class,
@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
             CommentSeeder::class,
             GradeLevelSeeder::class,
             DocumentSeeder::class,
+            TeacherSeeder::class,
+            DepartmentTeacherSeeder::class,
+            CourseSeeder::class,
         ]);
     }
 }
