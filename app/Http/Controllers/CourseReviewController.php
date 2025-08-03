@@ -16,8 +16,8 @@ class CourseReviewController extends BaseApiController
     {
         $user =  $request->user(); // đảm bảo đã login
         $isLike = $request->input('is_like'); // true / false
+        $isLike2 = $isLike;
 
-        $review = CourseReview::findOrFail($id);
 
         $existingVote = CourseReviewVote::where('user_id', $user->id)
             ->where('course_review_id', $id)
@@ -25,24 +25,30 @@ class CourseReviewController extends BaseApiController
 
         if ($existingVote) {
             if ($existingVote->is_like == $isLike) {
+                $isLike2 = null;
+
                 // Nếu bấm lại cùng lựa chọn => xóa vote
                 $existingVote->delete();
-                return response()->json(['message' => 'Vote đã được gỡ']);
+                // return $this->successResponse(null, 'Đã gỡ bỏ vote thành công!');
             } else {
                 // Nếu thay đổi like ↔ dislike
                 $existingVote->update(['is_like' => $isLike]);
-                return response()->json(['message' => 'Vote đã được cập nhật']);
+                // return $this->successResponse(null, 'Đã cập nhật vote thành công!');
             }
+        } else {
+
+            // Chưa từng vote → tạo mới
+            CourseReviewVote::create([
+                'user_id' => $user->id,
+                'course_review_id' => $id,
+                'is_like' => $isLike,
+            ]);
         }
+        $courseReview = CourseReview::with(['user:id,full_name,avatar'])
+            ->findOrFail($id)
+            ->loadCount(['likes', 'dislikes']);
 
-        // Chưa từng vote → tạo mới
-        CourseReviewVote::create([
-            'user_id' => $user->id,
-            'course_review_id' => $id,
-            'is_like' => $isLike,
-        ]);
-
-        return response()->json(['message' => 'Đã vote thành công']);
+        return $this->successResponse([...$courseReview->toArray(), 'is_liked' => $isLike2], 'Đã thao tác thành công!');
     }
 
     /**
@@ -51,6 +57,8 @@ class CourseReviewController extends BaseApiController
     public function show(Request $request, string $slug)
     {
         $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $userId = $request->user()->id ?? null;
+        // $userId = 8;
         // Tìm khóa học theo slug
         $course = Course::where('slug', $slug)->first();
 
@@ -64,7 +72,7 @@ class CourseReviewController extends BaseApiController
         $courseReviews = QueryBuilder::for(CourseReview::class)
             ->where('course_id', $course->id)
             ->with(['user:id,full_name,avatar'])
-            ->allowedSorts(['id', 'rating']) // Cho phép sắp xếp theo created_at hoặc rating
+            ->allowedSorts(['id', 'rating']) // Cho phép sắp xếp theo id or rating
             ->allowedFilters([
                 AllowedFilter::exact('user_id'),
                 AllowedFilter::exact('rating'),
@@ -72,6 +80,21 @@ class CourseReviewController extends BaseApiController
             ->select(['id', 'course_id', 'user_id', 'rating', 'comment', 'created_at'])
             ->withCount(['likes', 'dislikes'])
             ->paginate($limit);
+
+        // Viết thêm thuộc tính user_vote: like => true, false => false, chưa vote => null
+        // Lấy ra danh sách các review_id đã paginate
+        $reviewIds = $courseReviews->pluck('id');
+
+        // Lấy vote của user hiện tại cho các review đó
+        $votes = CourseReviewVote::where('user_id', $userId)
+            ->whereIn('course_review_id', $reviewIds)
+            ->pluck('is_like', 'course_review_id'); // key = review_id, value = is_like
+
+        // Gắn thủ công vào từng review
+        $courseReviews->getCollection()->transform(function ($review) use ($votes) {
+            $review->is_liked = $votes[$review->id] ?? null; // null nếu chưa vote
+            return $review;
+        });
         return $this->successResponse($courseReviews, 'Lấy đánh giá thành công!');
     }
     public function getRatingDistribution(Request $request, $slug)
@@ -89,7 +112,8 @@ class CourseReviewController extends BaseApiController
             return [
                 'star' => $star,
                 'count' => $count,
-                'percentage' => $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0
+                'percentage' => $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0,
+
             ];
         });
 

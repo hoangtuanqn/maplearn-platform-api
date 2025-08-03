@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id'); // Sửa lại từ unsignedBigInteger => unsignedInteger
             $table->unsignedInteger('course_review_id'); // Cũng nên check kiểu ở course_reviews
-            $table->boolean('is_like'); // true: like, false: dislike
+            $table->boolean('is_like')->default(true); // true: like, false: dislike
             $table->timestamps();
 
             $table->unique(['user_id', 'course_review_id']);

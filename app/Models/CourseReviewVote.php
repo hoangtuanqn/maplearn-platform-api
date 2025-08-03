@@ -9,10 +9,14 @@ class CourseReviewVote extends Model
 {
     /** @use HasFactory<\Database\Factories\CourseReviewVoteFactory> */
     use HasFactory;
+    protected $table = 'course_review_votes'; // Specify the table name if different from the default
     protected $fillable = [
         'course_review_id',
         'user_id',
-        'vote_type', // 'upvote' or 'downvote'
+        'is_like', // 'upvote' or 'downvote'
+    ];
+    protected $casts = [
+        'is_like' => 'boolean', // true for upvote, false for downvote
     ];
 
     public function user()

@@ -12,8 +12,8 @@ Route::apiResource('grade-levels', GradeLevelController::class);
 Route::apiResource('reports', ReportController::class)->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 
 // Lấy đánh giá khóa học
-Route::get('/course-reviews/{slug}', [CourseReviewController::class, 'show']);
+Route::get('/course-reviews/{slug}', [CourseReviewController::class, 'show'])->middleware('auth.optional.jwt');
 
 // Lấy danh sách đánh giá
-Route::post('/course-reviews/{id}/vote', [CourseReviewController::class, 'vote']);
+Route::post('/course-reviews/{id}/vote', [CourseReviewController::class, 'vote'])->middleware('auth.jwt');
 Route::get('/course-reviews/{slug}/ratings/distribution', [CourseReviewController::class, 'getRatingDistribution']);

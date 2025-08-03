@@ -23,13 +23,8 @@ class CourseReview extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function course()
-    {
-        return $this->belongsTo(Course::class);
-    }
-
     // Course
-    public function courses()
+    public function course()
     {
         return $this->belongsTo(Course::class);
     }
@@ -47,4 +42,6 @@ class CourseReview extends Model
     {
         return $this->votes()->where('is_like', false);
     }
+
+
 }
