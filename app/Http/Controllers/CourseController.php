@@ -69,10 +69,15 @@ class CourseController extends BaseApiController
      */
     public function show(Course $course)
     {
+        // Dùng withCount trước
+        $course->loadCount('enrollments');
+
+        // Sau đó load các quan hệ khác
         $course->load([
             'teachers',
             'teachers.user:id,full_name,avatar',
         ]);
+
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
     }
 

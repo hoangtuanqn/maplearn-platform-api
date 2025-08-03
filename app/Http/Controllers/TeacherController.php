@@ -31,7 +31,9 @@ class TeacherController extends BaseApiController
      */
     public function show(Teacher $teacher)
     {
-        //
+        $teacher->load(['user', 'departments', 'courses']);
+
+        return $this->successResponse($teacher, 'Lấy thông tin giáo viên thành công.');
     }
 
     /**

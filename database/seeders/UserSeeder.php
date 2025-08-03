@@ -92,6 +92,7 @@ class UserSeeder extends Seeder
                 'username'     => $username,
                 'email'        => $username . '@example.com',
                 'password'     => bcrypt('password'),
+                'facebook_link' => 'https://www.facebook.com/thayhintavungocanh',
                 'full_name'    => $fullName,
                 'gender'       => $gender,
                 'role'         => 'teacher',

@@ -31,7 +31,7 @@ class Course extends Model
         'updated_at',
         'deleted_at'
     ];
-    protected $appends = ['department', 'subject', 'category', 'grade_level']; // tự động thêm vào JSON
+    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'decimal:2',
         'status' => 'boolean',
@@ -95,5 +95,35 @@ class Course extends Model
     public function teachers()
     {
         return $this->belongsToMany(Teacher::class, 'course_teacher');
+    }
+
+    // Reviews
+    public function reviews()
+    {
+        return $this->hasMany(CourseReview::class, 'course_id');
+    }
+    // Tính điểm đánh giá trung bình
+    public function getRatingAttribute()
+    {
+        return [
+            'average_rating' => round($this->reviews()->avg('rating'), 1),
+            'total_reviews' => $this->reviews()->count(),
+        ]; // Làm tròn 1 chữ số sau dấu phẩy
+    }
+
+    // Tính số lượng học viên đã đăng ký khóa học
+    public function enrollments()
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
+    // Lấy danh sách học viên đã đăng ký khóa học
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'course_enrollments', 'course_id', 'user_id');
+    }
+
+    public function getStudentCountAttribute()
+    {
+        return $this->enrollments()->count();
     }
 }

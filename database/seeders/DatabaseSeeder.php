@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             CourseReviewSeeder::class,
             CourseTeacherSeeder::class,
+            CourseEnrollmentSeeder::class,
+            CourseReviewVoteSeeder::class,
         ]);
     }
 }

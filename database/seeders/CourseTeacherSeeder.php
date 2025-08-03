@@ -15,7 +15,7 @@ class CourseTeacherSeeder extends Seeder
     {
 
 
-        for ($i = 0; $i < 200; $i++) {
+        for ($i = 0; $i < 250; $i++) {
             DB::table('course_teacher')->insertOrIgnore([
                 'course_id' => rand(1, 80),
                 'teacher_id' => rand(1, 12),

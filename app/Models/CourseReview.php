@@ -18,8 +18,33 @@ class CourseReview extends Model
     protected $casts = [
         'rating' => 'integer',
     ];
+    // user
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    // Course
+    public function courses()
+    {
+        return $this->belongsTo(Course::class);
+    }
+    public function votes()
+    {
+        return $this->hasMany(CourseReviewVote::class);
+    }
+
+    public function likes()
+    {
+        return $this->votes()->where('is_like', true);
+    }
+
+    public function dislikes()
+    {
+        return $this->votes()->where('is_like', false);
     }
 }
