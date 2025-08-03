@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Api\BaseApiController;
-use App\Models\Teacher;
+use App\Models\CourseTeacher;
 use Illuminate\Http\Request;
 
-class TeacherController extends BaseApiController
+class CourseTeacherController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $teachers = Teacher::with(['user', 'departments'])->get();
-
-        return $this->successResponse($teachers, 'Lấy danh sách giáo viên thành công.');
+        //
     }
 
     /**
@@ -29,7 +26,7 @@ class TeacherController extends BaseApiController
     /**
      * Display the specified resource.
      */
-    public function show(Teacher $teacher)
+    public function show(CourseTeacher $courseTeacher)
     {
         //
     }
@@ -37,7 +34,7 @@ class TeacherController extends BaseApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Teacher $teacher)
+    public function update(Request $request, CourseTeacher $courseTeacher)
     {
         //
     }
@@ -45,7 +42,7 @@ class TeacherController extends BaseApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Teacher $teacher)
+    public function destroy(CourseTeacher $courseTeacher)
     {
         //
     }

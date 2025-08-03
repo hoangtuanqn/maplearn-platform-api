@@ -36,6 +36,11 @@ class Course extends Model
         'price' => 'decimal:2',
         'status' => 'boolean',
     ];
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function courseCategory()
     {
         return $this->belongsTo(CourseCategory::class, 'category_id');
@@ -84,5 +89,11 @@ class Course extends Model
     public function getGradeLevelAttribute()
     {
         return $this->gradeLevel()->select('slug')->first()->slug;
+    }
+
+    // Lấy danh sách giáo viên đang dạy
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'course_teacher');
     }
 }

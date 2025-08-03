@@ -28,4 +28,10 @@ class Teacher extends Model
     {
         return $this->belongsToMany(Department::class);
     }
+
+    // Danh sách khóa học mà giáo viên này dạy
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_teacher');
+    }
 }

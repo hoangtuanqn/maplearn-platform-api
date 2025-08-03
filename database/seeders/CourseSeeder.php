@@ -402,7 +402,7 @@ class CourseSeeder extends Seeder
             ],
 
             // Toán | Lớp 11 | 2K9
-             [
+            [
                 'name' => 'LẬP TRÌNH TƯ DUY TOÁN HỌC 11 - TẬP 2 - 2025',
                 'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/course/sx39bn00095s/lap-trinh-tu-duy-toan-hoc-11---tap-2---2025-1719151727149.jpg',
                 'grade_level_id' => 4,
@@ -511,7 +511,7 @@ class CourseSeeder extends Seeder
             ],
 
             // Toán | Lớp 10 | 2K10
-              [
+            [
                 'name' => 'LẬP TRÌNH TƯ DUY TOÁN HỌC 10 - HÌNH HỌC - 2025',
                 'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/course/sx33ew6008w9/lap-trinh-tu-duy-toan-hoc-10---hinh-hoc---2025-1719151451430.png',
                 'grade_level_id' => 5,
@@ -561,7 +561,7 @@ class CourseSeeder extends Seeder
             ],
 
             // Lý | Lớp 10 | 2K10
-              [
+            [
                 'name' => 'PHONG TOẢ VẬT LÝ LỚP 10 - TẬP 2',
                 'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/course/ypcofc200npk/phong-toa-vat-ly-lop-10---tap-2-1731744512930.jpg',
                 'grade_level_id' => 5,
@@ -577,7 +577,7 @@ class CourseSeeder extends Seeder
                 'category_id' => 3,
                 'department_id' => 3,
             ],
-             [
+            [
                 'name' => 'LẬP TRÌNH TƯ DUY VẬT LÝ 10 - TẬP 2 - 2025',
                 'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/course/sx0zpy80053i/lap-trinh-tu-duy-vat-ly-10---tap-2---2025-1719147919904.png',
                 'grade_level_id' => 5,
@@ -750,8 +750,8 @@ class CourseSeeder extends Seeder
                 'category_id' => $item['category_id'],
                 'department_id' => $item['department_id'],
                 'price' => $faker->numberBetween(100000, 1000000),
-                'description' => $faker->paragraph(),
-                'intro_video' => $faker->imageUrl(800, 200, 'intro_video', true),
+                'description' => 'Khóa học được thiết kế nhằm cung cấp cho học sinh nền tảng kiến thức vững chắc, hệ thống hóa toàn bộ nội dung trọng tâm theo chương trình chuẩn, kết hợp với phương pháp học hiệu quả giúp rèn luyện tư duy, nâng cao kỹ năng làm bài và tự tin chinh phục các kỳ thi quan trọng như thi học kỳ, thi chuyển cấp hay kỳ thi THPT Quốc gia.',
+                'intro_video' => '/video.mp4',
                 'start_date' => $faker->dateTimeBetween('-1 month', '+1 month'),
                 'end_date' => $faker->dateTimeBetween('+2 months', '+6 months'),
                 'status' => 1,

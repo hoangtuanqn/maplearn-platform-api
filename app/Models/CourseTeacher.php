@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CourseReview extends Model
+class CourseTeacher extends Model
 {
-    /** @use HasFactory<\Database\Factories\CourseReviewFactory> */
+    /** @use HasFactory<\Database\Factories\CourseTeacherFactory> */
     use HasFactory;
+    protected $table = 'course_teacher';
     protected $fillable = [
-        'course_id',
-        'user_id',
-        'rating',
-        'comment',
-    ];
-    protected $casts = [
-        'rating' => 'integer',
+    'course_id',
+        'teacher_id',
     ];
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 }
