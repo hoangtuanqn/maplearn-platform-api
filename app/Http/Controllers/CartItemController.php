@@ -299,4 +299,51 @@ class CartItemController extends BaseApiController
             return $this->errorResponse('Có lỗi xảy ra khi cập nhật tất cả item', 500);
         }
     }
+
+    // Hiển thị thông tin tóm tắt giỏ hàng như: Tổng số bài học, Tổng thời lượng, Tổng đánh giá TB, thành tiền
+    // Người dùng sẽ gửi lên dạng id cart [1,2,3] để lấy summary
+    public function summary(Request $request)
+    {
+        try {
+            $request->validate([
+                'cart_id' => 'array',
+                'cart_id.*' => 'integer|exists:cart_items,id', // từng phần tử phải là số nguyên và tồn tại trong bảng cart_items
+            ]);
+            $cartItems = CartItem::where('user_id', Auth::id())
+                ->whereIn('id', $request->cart_id)
+                ->with('course.reviews', 'course.chapters.lessons') // load hết liên quan
+                ->get();
+
+            $totalLessons = 0;
+            $totalDuration = 0;
+            $totalRating = 0;
+            $totalRatingCount = 0;
+            $totalPrice = 0;
+
+            foreach ($cartItems as $item) {
+                $course = $item->course;
+
+                $totalLessons += $course->lesson_count ?? 0;
+                $totalDuration += $course->duration ?? 0;
+
+                $ratingData = $course->rating;
+                $totalRating += ($ratingData['average_rating'] ?? 0) * ($ratingData['total_reviews'] ?? 0);
+                $totalRatingCount += $ratingData['total_reviews'] ?? 0;
+
+                $totalPrice += $item->price_snapshot ?? $course->price ?? 0;
+            }
+
+            $averageRating = $totalRatingCount > 0 ? round($totalRating / $totalRatingCount, 1) : 0;
+
+
+            return $this->successResponse([
+                'total_lessons' => $totalLessons,
+                'total_duration' => $totalDuration,
+                'average_rating' => $averageRating,
+                'total_price' => $totalPrice,
+            ], 'Lấy thông tin tóm tắt giỏ hàng thành công!');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi lấy thông tin tóm tắt giỏ hàng', 500);
+        }
+    }
 }

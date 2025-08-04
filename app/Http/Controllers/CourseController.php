@@ -20,10 +20,12 @@ class CourseController extends BaseApiController
     {
         $limit = min((int)($request->limit ?? 20), 100);
         // dd($limit);
+        // loại bỏ key lesson_count, duration
         $courses = QueryBuilder::for(Course::class)
             ->allowedFilters([
                 'title',
                 'name',
+                'category_id',
                 AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
                 AllowedFilter::custom('category', new CategoryCourseSlugFilter),
                 AllowedFilter::custom('subject', new SubjectSlugFilter),
@@ -43,7 +45,9 @@ class CourseController extends BaseApiController
             ->where('status', true)
             ->orderByDesc('id')
             ->paginate($limit);
-
+        $courses->getCollection()->transform(function ($course) {
+            return $course->makeHidden(['lesson_count', 'duration']);
+        });
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
 

@@ -34,7 +34,7 @@ class Course extends Model
         'deleted_at'
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled']; // tự động thêm vào JSON
+    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'double',
 
@@ -127,16 +127,32 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'course_enrollments', 'course_id', 'user_id');
     }
 
-    public function getStudentCountAttribute()
-    {
-        return $this->enrollments()->count();
-    }
 
     // Danh sách chương học, sort theo vị trí
     public function chapters()
     {
         return $this->hasMany(CourseChapter::class, 'course_id')->orderBy('position');
     }
+
+
+    public function getLessonCountAttribute()
+    {
+        // Lấy tất cả chương có khóa học này
+        $chapters = $this->chapters()->with('lessons')->get();
+
+        // Duyệt tất cả chương, gộp lại toàn bộ lesson, rồi tính tổng thời lượng
+        return $chapters->flatMap->lessons->count();
+    }
+    public function getDurationAttribute()
+    {
+        // Lấy tất cả chương có khóa học này
+        $chapters = $this->chapters()->with('lessons')->get();
+
+        // Duyệt tất cả chương, gộp lại toàn bộ lesson, rồi tính tổng thời lượng
+        return $chapters->flatMap->lessons->sum('duration');
+    }
+
+
 
     // Check khóa học có dc yêu thích bởi người dùng đang gửi request lấy data hay k ?
     public function getIsFavoriteAttribute()

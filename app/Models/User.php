@@ -105,6 +105,12 @@ class User extends Authenticatable implements JWTSubject
         'banned' => 'boolean',
         'birth_year' => 'integer',
     ];
+    protected $appends = ['cart_item_count'];
+
+    public function getCartItemCountAttribute()
+    {
+        return $this->cartItems()->count();
+    }
 
     // Cấu hình gửi Email
     public function sendPasswordResetNotification($token)
