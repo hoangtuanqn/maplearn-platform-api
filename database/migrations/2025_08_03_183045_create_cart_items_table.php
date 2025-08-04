@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedInteger('course_id'); // Phải trùng kiểu với courses.id
 
             $table->decimal('price_snapshot', 10, 2); // Giá tại thời điểm thêm vào giỏ
+            // is active hay không
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
             // Một người chỉ được thêm 1 khóa học vào giỏ 1 lần

@@ -26,7 +26,7 @@ class CartItemController extends BaseApiController
                 $query
                     ->where('status', true); // Chỉ lấy course đang active
             }])
-                ->where('user_id', $user->id)
+                ->where('user_id', $user->id)->orderBy('id', 'desc')
                 // 	Lọc model cha dựa vào điều kiện trong model con => là đảm bảo có ít nhất 1 course đang active
                 ->whereHas('course', function ($query) {
                     $query->where('status', true); // Đảm bảo course vẫn còn active
@@ -213,35 +213,90 @@ class CartItemController extends BaseApiController
     /**
      * Kiểm tra và làm sạch giỏ hàng (xóa các course không còn khả dụng)
      */
-    public function cleanup()
+    public function cleanup(Request $request)
     {
         try {
+            // Xác thực: yêu cầu cart_id là một mảng
+            $validated = $request->validate([
+                'cart_id' => 'required|array',
+                'cart_id.*' => 'integer', // từng phần tử phải là số nguyên
+            ]);
+
             $user = Auth::user();
 
-            $invalidItems = CartItem::where('user_id', $user->id)
-                ->whereDoesntHave('course', function ($query) {
-                    $query->where('status', true);
-                })
-                ->get();
-
-            $deletedCount = $invalidItems->count();
-
-            if ($deletedCount > 0) {
-                CartItem::where('user_id', $user->id)
-                    ->whereDoesntHave('course', function ($query) {
-                        $query->where('status', true);
-                    })
-                    ->delete();
-            }
+            // Chỉ xóa cart thuộc về user hiện tại
+            $deletedCount = CartItem::whereIn('id', $validated['cart_id'])
+                ->where('user_id', $user->id)
+                ->delete();
 
             return $this->successResponse(
-                ['deleted_count' => $deletedCount],
-                $deletedCount > 0
-                    ? "Đã xóa {$deletedCount} khóa học không còn khả dụng khỏi giỏ hàng"
-                    : "Giỏ hàng đã sạch"
+                null,
+                "Đã xóa thành công {$deletedCount} mục khỏi giỏ hàng."
             );
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi làm sạch giỏ hàng', 500);
+            return $this->errorResponse('Có lỗi xảy ra khi xóa giỏ hàng', 500);
+        }
+    }
+
+    // Toggle một item (chuyển đổi trạng thái)
+    public function toggleActive(Request $request, CartItem $cart)
+    {
+        try {
+            $request->validate([
+                'is_active' => 'required|boolean',
+            ]);
+
+            $user = Auth::user();
+
+
+            // Kiểm tra quyền sở hữu
+            if ($cart->user_id !== $user->id) {
+                return $this->errorResponse('Bạn không có quyền cập nhật item này', 403);
+            }
+
+            // Kiểm tra trạng thái khóa học
+            if (!$cart->course || !$cart->course->status) {
+                return $this->errorResponse('Khóa học không còn khả dụng', 404);
+            }
+
+            // Toggle trạng thái
+            $cart->is_active = $request->is_active;
+            $cart->save();
+
+            return $this->successResponse($cart, 'Đã cập nhật trạng thái hoạt động của item');
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi cập nhật trạng thái hoạt động', 500);
+        }
+    }
+
+    // Kích hoạt tất cả item có thể
+    public function toggleAll(Request $request)
+    {
+        try {
+            $request->validate([
+                'is_active' => 'required|boolean',
+            ]);
+
+            $user = Auth::user();
+            $targetStatus = $request->is_active;
+
+            // Cập nhật những cart item:
+            // - Thuộc về user
+            // - Khác với trạng thái mong muốn
+            // - Khóa học còn hoạt động
+            $updatedCount = CartItem::where('user_id', $user->id)
+                ->where('is_active', '!=', $targetStatus)
+                ->whereHas('course', function ($query) {
+                    $query->where('status', true);
+                })
+                ->update(['is_active' => $targetStatus]);
+
+            return $this->successResponse(
+                ['updated_count' => $updatedCount],
+                "Đã cập nhật {$updatedCount} item trong giỏ hàng thành trạng thái " . ($targetStatus ? 'active' : 'inactive')
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi cập nhật tất cả item', 500);
         }
     }
 }

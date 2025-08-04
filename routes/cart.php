@@ -4,10 +4,15 @@ use App\Http\Controllers\CartItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth.jwt')->group(function () {
-    Route::apiResource('carts', CartItemController::class);
+    Route::delete('/carts/cleanup', [CartItemController::class, 'cleanup']); // Làm sạch giỏ hàng
+    
     // Standard CRUD routes
+    Route::apiResource('carts', CartItemController::class);
 
-    // Additional cart management routes
-    Route::delete('carts', [CartItemController::class, 'clear']); // Xóa toàn bộ giỏ hàng
-    Route::post('carts/cleanup', [CartItemController::class, 'cleanup']); // Làm sạch giỏ hàng
+
+    // Bật/tắt từng item
+    Route::patch('/cart-items/{cart}/toggle', [CartItemController::class, 'toggleActive']);
+
+    // Bật/tắt toàn bộ
+    Route::patch('/cart-items/toggle-all', [CartItemController::class, 'toggleAll']);
 });
