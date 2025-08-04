@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('created_by')->unsigned();
             $table->timestamps();
             $table->softDeletes();
-
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }

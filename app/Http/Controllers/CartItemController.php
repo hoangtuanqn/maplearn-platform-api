@@ -1,0 +1,247 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Api\BaseApiController;
+use App\Models\CartItem;
+use App\Models\Course;
+use App\Models\CourseEnrollment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
+class CartItemController extends BaseApiController
+{
+    /**
+     * Display a listing of the resource.
+     * Lấy danh sách giỏ hàng của user hiện tại
+     */
+    public function index()
+    {
+        try {
+            $user = Auth::user();
+
+            $carts = CartItem::with(['course' => function ($query) {
+                $query
+                    ->where('status', true); // Chỉ lấy course đang active
+            }])
+                ->where('user_id', $user->id)
+                // 	Lọc model cha dựa vào điều kiện trong model con => là đảm bảo có ít nhất 1 course đang active
+                ->whereHas('course', function ($query) {
+                    $query->where('status', true); // Đảm bảo course vẫn còn active
+                }) // Ẩn user_id nếu không cần thiết
+                ->get();
+            $carts->each(function ($item) {
+                $item->course?->makeHidden(['description', 'intro_video', 'created_at', 'updated_at', 'is_favorite']);
+            });
+            // Tính tổng tiền
+            $totalAmount = $carts->sum('price_snapshot');
+            $totalItems = $carts->count();
+
+            return $this->successResponse([
+                'items' => $carts,
+                'summary' => [
+                    'total_items' => $totalItems,
+                    'total_amount' => $totalAmount
+                ]
+            ], 'Lấy giỏ hàng thành công');
+        } catch (\Exception $e) {
+
+            return $this->errorResponse($e, 500);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     * Thêm khóa học vào giỏ hàng
+     */
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'course_id' => 'required|exists:courses,id'
+            ]);
+
+            $user = Auth::user();
+            $courseId = $request->course_id;
+
+            // Kiểm tra course có tồn tại và đang active không
+            $course = Course::where('id', $courseId)
+                ->where('status', true)
+                ->first();
+
+            if (!$course) {
+                return $this->errorResponse('Khóa học không tồn tại hoặc đã ngừng hoạt động', 404);
+            }
+
+            // Kiểm tra user đã đăng ký khóa học này chưa
+            $isEnrolled = CourseEnrollment::where('user_id', $user->id)
+                ->where('course_id', $courseId)
+                ->exists();
+
+            if ($isEnrolled) {
+                return $this->errorResponse('Bạn đã đăng ký khóa học này rồi');
+            }
+
+            // Kiểm tra khóa học đã có trong giỏ hàng chưa
+            $existingCartItem = CartItem::where('user_id', $user->id)
+                ->where('course_id', $courseId)
+                ->first();
+
+            if ($existingCartItem) {
+                return $this->errorResponse('Khóa học đã có trong giỏ hàng');
+            }
+
+            // Thêm vào giỏ hàng
+            $cart = CartItem::create([
+                'user_id' => $user->id,
+                'course_id' => $courseId,
+                'price_snapshot' => $course->price
+            ]);
+
+            $cart->load('course');
+
+            return $this->successResponse($cart, 'Đã thêm khóa học vào giỏ hàng', 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi thêm vào giỏ hàng', 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     * Xem chi tiết một item trong giỏ hàng
+     */
+    public function show(CartItem $cart)
+    {
+        // return $this->errorResponse('Bạn không có quyền xem item này', 403);
+
+        try {
+            $user = Auth::user();
+
+            // Kiểm tra quyền sở hữu
+            if ($cart->user_id !== $user->id) {
+                return $this->errorResponse('Bạn không có quyền xem item này', 403);
+            }
+
+            $cart->load('course');
+
+            return $this->successResponse($cart, 'Lấy thông tin item thành công');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi lấy thông tin item', 500);
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * Cập nhật giá snapshot (trong trường hợp giá khóa học thay đổi)
+     */
+    public function update(Request $request, CartItem $cart)
+    {
+        try {
+            $user = Auth::user();
+
+            // Kiểm tra quyền sở hữu
+            if ($cart->user_id !== $user->id) {
+                return $this->errorResponse('Bạn không có quyền cập nhật item này', 403);
+            }
+
+            // Cập nhật giá theo giá hiện tại của khóa học
+            $course = Course::find($cart->course_id);
+
+            if (!$course || !$course->status) {
+                return $this->errorResponse('Khóa học không còn khả dụng');
+            }
+
+            $cart->update([
+                'price_snapshot' => $course->price
+            ]);
+
+            $cart->load('course');
+
+            return $this->successResponse($cart, 'Đã cập nhật giá khóa học');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi cập nhật item', 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * Xóa khóa học khỏi giỏ hàng
+     */
+    public function destroy(CartItem $cart)
+    {
+        try {
+            $user = Auth::user();
+
+            // Kiểm tra quyền sở hữu
+            if ($cart->user_id !== $user->id) {
+                return $this->errorResponse('Bạn không có quyền xóa item này' . $user->id . " " . $cart->user_id, 403);
+            }
+
+            $courseName = $cart->course->name ?? 'Khóa học';
+            $cart->delete();
+
+            return $this->successResponse(null, "Đã xóa '{$courseName}' khỏi giỏ hàng");
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi xóa item', 500);
+        }
+    }
+
+    /**
+     * Xóa toàn bộ giỏ hàng
+     */
+    public function clear()
+    {
+        try {
+            $user = Auth::user();
+
+            $deletedCount = CartItem::where('user_id', $user->id)->delete();
+
+            return $this->successResponse(null, "Đã xóa {$deletedCount} item khỏi giỏ hàng");
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi xóa giỏ hàng', 500);
+        }
+    }
+
+    /**
+     * Kiểm tra và làm sạch giỏ hàng (xóa các course không còn khả dụng)
+     */
+    public function cleanup()
+    {
+        try {
+            $user = Auth::user();
+
+            $invalidItems = CartItem::where('user_id', $user->id)
+                ->whereDoesntHave('course', function ($query) {
+                    $query->where('status', true);
+                })
+                ->get();
+
+            $deletedCount = $invalidItems->count();
+
+            if ($deletedCount > 0) {
+                CartItem::where('user_id', $user->id)
+                    ->whereDoesntHave('course', function ($query) {
+                        $query->where('status', true);
+                    })
+                    ->delete();
+            }
+
+            return $this->successResponse(
+                ['deleted_count' => $deletedCount],
+                $deletedCount > 0
+                    ? "Đã xóa {$deletedCount} khóa học không còn khả dụng khỏi giỏ hàng"
+                    : "Giỏ hàng đã sạch"
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse('Có lỗi xảy ra khi làm sạch giỏ hàng', 500);
+        }
+    }
+}

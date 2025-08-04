@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -33,6 +34,9 @@ class OptionalAuthenticateJwt
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
+            if ($user) {
+                Auth::setUser($user);
+            }
             // hoặc dùng cách này $request->merge(['user' => $user]);
         } catch (JWTException $e) {
             // return response()->json(['error' => 'Token không hợp lệ hoặc đã hết hạn', 'message' => $e->getMessage()], 401);

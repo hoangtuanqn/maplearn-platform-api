@@ -17,6 +17,7 @@ class CourseCategory extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'created_by',
         'status',
     ];

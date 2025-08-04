@@ -53,6 +53,8 @@ class GradeLevelController extends BaseApiController
     // Mỗi danh mục 8 khóa học
     public function getCoursesByGradeLevel()
     {
+
+        // Chỉ lấy các khóa học đang active
         $gradeLevels = GradeLevel::with(['courses' => function ($query) {
             $query->select([
                 'id',
@@ -62,7 +64,7 @@ class GradeLevelController extends BaseApiController
                 'price',
                 'department_id',
                 'grade_level_id',
-            ])->orderBy('id', 'desc')->take(8); // Giới hạn 8 khóa học mỗi khối lớp
+            ])->where('status', true)->orderBy('id', 'desc')->take(8); // Giới hạn 8 khóa học mỗi khối lớp
         }])->get();
 
         return $this->successResponse($gradeLevels, 'Lấy danh sách khóa học theo khối lớp thành công!');

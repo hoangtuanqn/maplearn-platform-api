@@ -6,6 +6,7 @@ use App\Observers\CourseObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 #[ObservedBy([CourseObserver::class])]
 class Course extends Model
@@ -13,6 +14,7 @@ class Course extends Model
     /** @use HasFactory<\Database\Factories\CourseFactory> */
     use HasFactory;
     protected $fillable = [
+        'id',
         'name',
         'slug',
         'description',
@@ -31,9 +33,11 @@ class Course extends Model
         'updated_at',
         'deleted_at'
     ];
-    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating']; // tự động thêm vào JSON
+    // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
+    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled']; // tự động thêm vào JSON
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => 'double',
+
         'status' => 'boolean',
     ];
     public function getRouteKeyName()
@@ -88,7 +92,8 @@ class Course extends Model
     // Lấy thông tin grade level
     public function getGradeLevelAttribute()
     {
-        return $this->gradeLevel()->select('slug')->first()->slug;
+        return $this->gradeLevel()->select('slug')->first()?->slug;
+        // return null;
     }
 
     // Lấy danh sách giáo viên đang dạy
@@ -125,5 +130,43 @@ class Course extends Model
     public function getStudentCountAttribute()
     {
         return $this->enrollments()->count();
+    }
+
+    // Danh sách chương học, sort theo vị trí
+    public function chapters()
+    {
+        return $this->hasMany(CourseChapter::class, 'course_id')->orderBy('position');
+    }
+
+    // Check khóa học có dc yêu thích bởi người dùng đang gửi request lấy data hay k ?
+    public function getIsFavoriteAttribute()
+    {
+        $user = Auth::user();
+        // Nếu chưa đăng nhập, trả về false
+        if (!$user) {
+            return false;
+        }
+        return $user->favoriteCourses->contains($this->id);
+    }
+
+    // Check khóa học có dc thêm vô giỏ hàng bởi người dùng đang gửi request lấy data hay k ?
+    public function getIsCartAttribute()
+    {
+        $user = Auth::user();
+        // Nếu chưa đăng nhập, trả về false
+        if (!$user) {
+            return false;
+        }
+        return $user->cartItems->contains('course_id', $this->id);
+    }
+    // Check khóa học có dc mua bởi người dùng đang gửi request lấy data hay k ?
+    public function getIsEnrolledAttribute()
+    {
+        $user = Auth::user();
+        // Nếu chưa đăng nhập, trả về false
+        if (!$user) {
+            return false;
+        }
+        return $user->purchasedCourses->contains($this->id);
     }
 }

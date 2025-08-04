@@ -20,11 +20,16 @@ class CourseReviewVoteSeeder extends Seeder
 
         foreach ($reviews as $review) {
             foreach ($users->random(13) as $user) {
-                CourseReviewVote::create([
-                    'course_review_id' => $review->id,
-                    'user_id' => $user->id,
-                    'is_like' => (bool) rand(0, 1), // Ngẫu nhiên true hoặc false
-                ]);
+
+                try {
+                    CourseReviewVote::create([
+                        'course_review_id' => $review->id,
+                        'user_id' => $user->id,
+                        'is_like' => (bool) rand(0, 1), // Ngẫu nhiên true hoặc false
+                    ]);
+                } catch (\Exception $e) {
+                    // Bỏ qua nếu không thêm được, không báo lỗi
+                }
             }
         }
     }

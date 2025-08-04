@@ -124,4 +124,30 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Post::class, 'created_by');
     }
+
+    // Lấy danh sách giỏ hàng
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+    // Lấy danh sách khóa học đã mua
+    public function purchasedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
+            // ->withPivot('id', 'created_at', 'updated_at')
+            ->withTimestamps();
+    }
+
+    // Lấy các khóa học của người dùng
+    public function favoriteCourses()
+    {
+        /*
+        Cách dùng: $user->favoriteCourses()->attach($courseId);
+        * Thêm vào danh sách yêu thích: $user->favoriteCourses()->attach($courseId);
+        * Bỏ yêu thích: $user->favoriteCourses()->detach($courseId);
+        * Kiểm tra đã yêu thích hay chưa: $user->favoriteCourses->contains($courseId);
+        * withTimestamps(); Nó bảo Laravel tự động cập nhật hai cột created_at và updated_at trong bảng trung gian khi:
+        */
+        return $this->belongsToMany(Course::class, 'course_user_favorites')->withTimestamps();
+    }
 }

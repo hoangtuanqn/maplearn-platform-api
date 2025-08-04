@@ -27,7 +27,6 @@ class CourseController extends BaseApiController
                 AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
                 AllowedFilter::custom('category', new CategoryCourseSlugFilter),
                 AllowedFilter::custom('subject', new SubjectSlugFilter),
-
             ])
             ->select([
                 'id',
