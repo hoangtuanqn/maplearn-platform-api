@@ -7,7 +7,9 @@ use App\Filters\GradeLevelSlugFilter;
 use App\Filters\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
+use App\Models\CourseUserFavorite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -23,6 +25,7 @@ class CourseController extends BaseApiController
         // loại bỏ key lesson_count, duration
         $courses = QueryBuilder::for(Course::class)
             ->allowedFilters([
+                'id',
                 'title',
                 'name',
                 'category_id',
@@ -106,5 +109,100 @@ class CourseController extends BaseApiController
     public function destroy(Course $course)
     {
         //
+    }
+
+    // Lấy 8 khóa học
+    public function recommended()
+    {
+        $userId = Auth::id();
+        $favCourseIds = CourseUserFavorite::where('user_id', $userId)
+            ->pluck('course_id');
+
+        if ($favCourseIds->isNotEmpty()) {
+            $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
+
+
+            // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
+            $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
+            $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
+            $categoryIds = $favoriteCourses->pluck('category_id')->unique();
+
+            // Đề xuất các khóa học tương tự nhưng chưa yêu thích
+            $recommendCourses = Course::whereNotIn('id', $favCourseIds)
+                ->where('status', true)
+                ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
+                    $query->whereIn('subject_id', $subjectIds)
+                        ->orWhereIn('grade_level_id', $gradeLevels)
+                        ->orWhereIn('category_id', $categoryIds);
+                })
+                ->inRandomOrder()
+                ->limit(8)
+                ->get();
+        } else {
+            // Nếu chưa có khóa yêu thích → đề xuất ngẫu nhiên
+            $recommendCourses = Course::where('status', true)
+                ->inRandomOrder()
+                ->limit(8)
+                ->get();
+        }
+        return $this->successResponse($recommendCourses, 'Lấy danh sách khóa học đề xuất thành công!');
+    }
+
+    // Data được cắt gọn để gửi cho AI
+    public function aiData()
+    {
+        $courses = QueryBuilder::for(Course::class)
+
+            ->select([
+                'id',
+                'name',
+                'description',
+                'price',
+                'created_at',
+            ])
+            ->where('status', true)
+            ->orderByDesc('id')
+            ->get();
+        $courses->transform(function ($course) {
+            /*
+            "department": [],
+            "subject": [],
+            "category": [],
+            "grade_level": null,
+            "is_favorite": false,
+            "is_cart": false,
+            "is_enrolled": false,
+            department
+            */
+            return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department']);
+        });
+
+        return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
+    }
+
+    // Trả về dữ liệu khóa học với dữ liệu gửi lên [1,2, ...]
+    public function aiDataByIds(Request $request)
+    {
+        $courseIds = $request->input('ids', []);
+        if (empty($courseIds)) {
+            return $this->errorResponse('Không có khóa học nào được chọn!', 400);
+        }
+
+        $courses = QueryBuilder::for(Course::class)
+            ->whereIn('id', $courseIds)
+            ->select([
+                'name',
+                'slug',
+                'thumbnail',
+                'price',
+            ])
+            ->where('status', true)
+            ->get();
+
+        $courses->transform(function ($course) {
+            return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department', 'lesson_count', 'duration']);
+        });
+
+        return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
     }
 }
