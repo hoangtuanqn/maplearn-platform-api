@@ -29,7 +29,8 @@ return new class extends Migration
             $table->string('google2fa_secret')->nullable();
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable(); // Thời gian xác thực email
+            $table->string('verification_token')->nullable()->unique(); // Mã token xác thực email
             $table->rememberToken();
             $table->timestamps();
         });

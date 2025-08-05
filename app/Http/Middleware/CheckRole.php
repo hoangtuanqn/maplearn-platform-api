@@ -19,12 +19,14 @@ class CheckRole
 
         // Nếu chưa đăng nhập
         if (!$user) {
-            return response()->json(['message' => 'Bạn chưa đăng nhập!'], 401);
+            // return response()->json(['message' => 'Bạn chưa đăng nhập!'], 401);
+            return response()->json(['success' => false, 'message' => 'Bạn chưa đăng nhập!'], 401);
         }
 
         // Nếu không phải admin hoặc teacher
         if (!in_array($user->role, ['admin', 'teacher'])) {
-            return response()->json(['message' => 'Bạn không có quyền để truy cập vào trang này!'], 403);
+            // return response()->json(['message' => 'Bạn không có quyền để truy cập vào trang này!'], 403);
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền để truy cập vào trang này!'], 403);
         }
 
         return $next($request);

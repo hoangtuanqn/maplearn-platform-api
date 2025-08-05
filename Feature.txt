@@ -1,0 +1,8 @@
+- Auth:
++ Đăng ký
++ Đăng Nhập
++ Xác minh email (lúc đăng ký sẽ có gửi, muốn gửi lại vô phần profile)
++ Khi login cần mã 2fa (Nếu bật)
++ Quên mật khẩu
+
+

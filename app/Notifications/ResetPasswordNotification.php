@@ -37,11 +37,7 @@ class ResetPasswordNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $frontendUrl = env('APP_URL_FRONT_END', 'http://localhost:3000'); // frontend URL
-        $encryptToken = Base64Url::encode(json_encode([
-            'email' => $notifiable->getEmailForPasswordReset(),
-            'token' => $this->token,
-        ]));
-        $resetUrl = "{$frontendUrl}/auth/reset-password/" . $encryptToken;
+        $resetUrl = "{$frontendUrl}/auth/reset-password/" . $this->token;
 
         return (new MailMessage)
             ->subject('Đặt lại mật khẩu')

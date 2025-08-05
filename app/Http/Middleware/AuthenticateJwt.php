@@ -24,7 +24,8 @@ class AuthenticateJwt
             $token = $request->cookie('jwt_token');
 
             if (!$token) {
-                return response()->json(['error' => 'Bạn chưa đăng nhập! Vui lòng đăng nhập để tiếp tục!'], 401);
+                // return response()->json(['message' => 'Bạn chưa đăng nhập! Vui lòng đăng nhập để tiếp tục!'], 401);
+                return response()->json(['success' => false, 'message' => 'Bạn chưa đăng nhập! Vui lòng đăng nhập để tiếp tục!'], 401);
             }
 
             // Set token & authenticate user
@@ -38,7 +39,7 @@ class AuthenticateJwt
             Auth::setUser($user);
             // hoặc dùng cách này $request->merge(['user' => $user]);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Token không hợp lệ hoặc đã hết hạn', 'message' => $e->getMessage()], 401);
+            return response()->json(['success' => false, 'message' => 'Token không hợp lệ hoặc đã hết hạn', 'message' => $e->getMessage()], 401);
         }
         return $next($request);
     }

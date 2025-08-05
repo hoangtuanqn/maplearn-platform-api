@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::prefix('auth')->name('auth.')->group(function () {
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail']); // Xác minh email
+    Route::post('/resend-verify-email', [AuthController::class, 'resendVerification'])->middleware('throttle:1,10'); // Gửi lại email xác minh
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/verify-2fa', [AuthController::class, 'verify2fa']);

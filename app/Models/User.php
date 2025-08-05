@@ -77,6 +77,7 @@ class User extends Authenticatable implements JWTSubject
         'banned',
         'google2fa_secret',
         'email_verified_at',
+        'verification_token',
     ];
 
     /**

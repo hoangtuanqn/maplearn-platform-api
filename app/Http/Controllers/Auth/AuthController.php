@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\HandlesCookies;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyEmail;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Support\Facades\Validator;
 use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class AuthController extends Controller
+class AuthController extends BaseApiController
 {
     use HandlesCookies;
 
@@ -25,17 +28,11 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         $credentials = $validator->safe()->only('username', 'password');
 
         if (!JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Thông tin đăng nhập chưa chính xác!'], 401);
+            // return response()->json(['error' => 'Thông tin đăng nhập chưa chính xác!'], 401);
+            return $this->errorResponse('Thông tin đăng nhập chưa chính xác!', 401);
         }
 
         // Lấy user từ token
@@ -43,6 +40,7 @@ class AuthController extends Controller
         // Xử lý nếu bật 2FA
         if ($user->google2fa_secret) {
             return response()->json([
+                'success' => true,
                 'message' => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",
                 '2fa_required' => true,
                 'user_id' => $user->id,
@@ -68,18 +66,55 @@ class AuthController extends Controller
             'password' => 'required|min:6|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
 
         $data = $validator->safe()->toArray();
+        $data['verification_token'] = bin2hex(random_bytes(50));
         $user = User::create($data);
+        $user->notify(new VerifyEmailNotification($user->verification_token));
+
 
         // Tạo cookie token và trả về response
         return $this->respondWithToken($user, 'Đã đăng ký tài khoản thành công!', 201);
+    }
+
+    // Xác minh email sau khi đăng ký
+    public function verifyEmail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+        $user = User::where('verification_token', $validator->safe()->only('token'))->first();
+        if (!$user) {
+            return $this->errorResponse('Token xác minh không hợp lệ!', 404);
+        }
+        // Cập nhật trạng thái đã xác minh
+        $user->email_verified_at = now();
+        $user->verification_token = null; // Xóa token sau khi xác minh
+        $user->save();
+        // Trả về thông báo thành công
+        return $this->successResponse(null, 'Xác minh email thành công!', 200);
+    }
+
+    // Gửi lại email xác minh
+    public function resendVerification(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+        $email = $validator->safe()->only('email');
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return $this->errorResponse('Email không tồn tại trong hệ thống!', 404);
+        }
+        if ($user->email_verified_at) {
+            return $this->errorResponse('Email đã được xác minh trước đó!', 400);
+        }
+        // Tạo token mới và gửi email xác minh
+        $user->verification_token = bin2hex(random_bytes(50));
+        $user->save();
+        // $user->notify(new VerifyEmailNotification($user->verification_token));
+        // Trả về thông báo thành công
+        return $this->successResponse(null, 'Đã gửi lại email xác minh!', 200);
     }
 
     /**
@@ -90,14 +125,14 @@ class AuthController extends Controller
         try {
             $refreshToken = $request->cookie('jwt_refresh');
             if (!$refreshToken) {
-                return response()->json(['error' => 'Mã refresh token không tồn tại!'], 401);
+                return $this->errorResponse('Mã refresh token không tồn tại!', 401);
             }
 
             JWTAuth::setToken($refreshToken);
             $payload = JWTAuth::getPayload();
 
             if (!$payload->get('jwt_refresh')) {
-                return response()->json(['error' => 'Refresh token không hợp lệ!'], 401);
+                return $this->errorResponse('Refresh token không hợp lệ!', 401);
             }
 
             $user = JWTAuth::authenticate();
@@ -105,10 +140,9 @@ class AuthController extends Controller
             // Cấp lại token mới
             return $this->respondWithToken($user, 'Làm mới token thành công!');
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Không thể làm mới token! Vui lòng thử lại!',
-                'message' => $e->getMessage()
-            ], 401);
+            return $this->errorResponse('Không thể làm mới token! Vui lòng thử lại! ' . $e->getMessage(), 401);
+            // logger("Refresh token error >> " . $e->getMessage());
+
         }
     }
 
@@ -117,11 +151,7 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Lấy thông tin người dùng thành công!',
-            'data' => $request->user(),
-        ]);
+        return $this->successResponse($request->user(), 'Lấy thông tin người dùng thành công!');
     }
 
 
@@ -134,24 +164,19 @@ class AuthController extends Controller
             'token' => 'required|string',
             'otp' => 'required|digits:6',
         ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+
 
         $token = base64_decode($request->token);
         // Kiểm tra salt phải nằm trong token
         if (!str_contains($token, env('T1_SECRET', ""))) {
-            return response()->json(['success' => false, 'message' => 'Token Invalid!'], 401);
+            return $this->errorResponse('Token không hợp lệ!', 401);
         }
         // Xóa salt ra khỏi token
         $token = str_replace(env('T1_SECRET'), "", $token);
         JWTAuth::setToken($token);
         $user = JWTAuth::authenticate();
         if (!$user->google2fa_secret) {
-            return response()->json(['success' => false, 'message' => 'Tài khoản này chưa bật xác thực 2 lớp!'], 401);
+            return $this->errorResponse('Tài khoản này chưa bật xác thực 2 lớp!', 401);
         }
         $google2fa = new Google2FA();
         $isValid = $google2fa->verifyKey(
@@ -160,7 +185,7 @@ class AuthController extends Controller
         );
 
         if (!$isValid) {
-            return response()->json(['success' => false, 'message' => 'Mã OTP chính xác hoặc đã hết hạn!'], 401);
+            return $this->errorResponse('Mã OTP không chính xác hoặc đã hết hạn!', 401);
         }
         return $this->respondWithToken($user, 'Xác thực tài khoản thành công!');
     }
