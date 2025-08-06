@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Filters\CategoryCourseSlugFilter;
+use App\Filters\Course\CategoryCourseSlugFilter;
+use App\Filters\Course\CustomRatingFilter;
+use App\Filters\Course\IsDiscountedFilter;
+use App\Filters\Course\PriceFilter;
+use App\Filters\Course\TeacherFilter;
 use App\Filters\GradeLevelSlugFilter;
 use App\Filters\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\CourseUserFavorite;
+use App\Sorts\Course\EnrollmentCountSort;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CourseController extends BaseApiController
@@ -26,12 +32,19 @@ class CourseController extends BaseApiController
         $courses = QueryBuilder::for(Course::class)
             ->allowedFilters([
                 'id',
-                'title',
+                'name',
                 'name',
                 'category_id',
+                'reviews_count',
                 AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
                 AllowedFilter::custom('category', new CategoryCourseSlugFilter),
                 AllowedFilter::custom('subject', new SubjectSlugFilter),
+                AllowedFilter::custom('rating', new CustomRatingFilter),
+                AllowedFilter::custom('price_range', new PriceFilter),
+                AllowedFilter::custom('teachers', new TeacherFilter),
+                AllowedFilter::custom('is_discounted', new IsDiscountedFilter),
+
+
             ])
             ->select([
                 'id',
@@ -43,13 +56,14 @@ class CourseController extends BaseApiController
                 'subject_id',
                 'category_id',
                 'department_id',
+
             ])
-            ->allowedSorts(['created_at', 'download_count'])
+            ->allowedSorts(['created_at', 'download_count', 'reviews_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->where('status', true)
-            ->orderByDesc('id')
+            // ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
-            return $course->makeHidden(['lesson_count', 'duration']);
+            return $course->makeHidden(['lesson_count', 'duration', 'reviews_count']);
         });
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }

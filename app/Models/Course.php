@@ -34,7 +34,7 @@ class Course extends Model
         'deleted_at'
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration']; // tự động thêm vào JSON
+    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration', 'final_price', 'is_best_seller']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'double',
 
@@ -134,6 +134,10 @@ class Course extends Model
         return $this->hasMany(CourseChapter::class, 'course_id')->orderBy('position');
     }
 
+    public function courseDiscounts()
+    {
+        return $this->hasMany(CourseDiscount::class, 'course_id');
+    }
 
     public function getLessonCountAttribute()
     {
@@ -150,6 +154,86 @@ class Course extends Model
 
         // Duyệt tất cả chương, gộp lại toàn bộ lesson, rồi tính tổng thời lượng
         return $chapters->flatMap->lessons->sum('duration');
+    }
+
+
+    // Get số tiền sau khi áp dụng giảm giá (truyền số tiền gốc vào)
+    public function getDiscountedPrice(float $originalPrice): float
+    {
+        // Lấy tất cả giảm giá đang hoạt động và còn hiệu lực
+        $activeDiscounts = $this->courseDiscounts()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('start_date')
+                    ->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('end_date')
+                    ->orWhere('end_date', '>=', now());
+            })
+            ->get();
+
+        if ($activeDiscounts->isEmpty()) {
+            return $originalPrice;
+        }
+
+        $minPrice = $originalPrice;
+
+        foreach ($activeDiscounts as $discount) {
+            $priceAfterDiscount = $discount->type === 'percentage'
+                ? $originalPrice * (1 - $discount->value / 100)
+                : max(0, $originalPrice - $discount->value);
+
+            $minPrice = min($minPrice, $priceAfterDiscount);
+        }
+
+        return round($minPrice, 2);
+    }
+
+    // Lấy giá tiền sau khi áp dụng giảm giá (mã giảm giá cao nhất)
+    public function getFinalPriceAttribute(): float
+    {
+        $originalPrice = $this->price;
+
+        $activeDiscounts = $this->courseDiscounts()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('start_date')->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->where(function ($query) {
+                $query->where('usage_count', '<', 'usage_limit')
+                    ->orWhere('usage_limit', '=', 0); // Nếu không giới hạn lượt dùng
+            })
+            ->get();
+
+        if ($activeDiscounts->isEmpty()) {
+            return round($originalPrice, 2);
+        }
+
+        $minPrice = $originalPrice;
+
+        foreach ($activeDiscounts as $discount) {
+            $priceAfterDiscount = $discount->type === 'percentage'
+                ? $originalPrice * (1 - $discount->value / 100)
+                : max(0, $originalPrice - $discount->value);
+
+            $minPrice = min($minPrice, $priceAfterDiscount);
+        }
+
+        return round($minPrice, 2);
+    }
+
+    // Liên kết v
+
+    // Đánh dấu sản phẩm có bán chạy hay không (trong vòng 7 ngày mà bàn được > 100 sản phẩm thì bán chạy)
+    public function getIsBestSellerAttribute(): bool
+    {
+        return $this->enrollments()
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count() > 100;
     }
 
 
