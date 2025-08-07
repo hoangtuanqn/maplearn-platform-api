@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 
 class VnpayController extends BaseApiController
@@ -15,7 +16,7 @@ class VnpayController extends BaseApiController
         $vnp_TmnCode = env('VNPAY_TMN_CODE');
         $vnp_HashSecret = env('VNPAY_HASH_SECRET');
         $vnp_Url = env('VNPAY_URL');
-        $vnp_ReturnUrl = env('VNPAY_RETURN_URL');
+        $vnp_ReturnUrl = env('APP_URL_FRONT_END') . "/invoices/return";
 
         $vnp_TxnRef = $invoice->transaction_code; //Mã giao dịch thanh toán tham chiếu của merchant
         $vnp_Amount = $invoice->total_price; // Số tiền thanh toán
@@ -70,37 +71,63 @@ class VnpayController extends BaseApiController
 
     public function paymentReturn(Request $request)
     {
-        $inputData = $request->all();
         $vnp_HashSecret = env('VNPAY_HASH_SECRET');
+        $inputData = array();
+        $vnp_SecureHash = $request->vnp_SecureHash;
+        foreach ($request->all() as $key => $value) {
+            if (substr($key, 0, 4) == "vnp_") {
+                $inputData[$key] = $value;
+            }
+        }
 
-        $vnp_SecureHash = $inputData['vnp_SecureHash'];
+
         unset($inputData['vnp_SecureHash']);
-        unset($inputData['vnp_SecureHashType']);
-
         ksort($inputData);
-        $hashData = '';
         $i = 0;
+        $hashData = "";
         foreach ($inputData as $key => $value) {
             if ($i == 1) {
-                $hashData .= '&' . $key . "=" . $value;
+                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
             } else {
-                $hashData .= $key . "=" . $value;
+                $hashData = $hashData . urlencode($key) . "=" . urlencode($value);
                 $i = 1;
             }
         }
 
+        $transaction_code = $inputData['vnp_TxnRef'] ?? null;
+        if (!$transaction_code) {
+            return $this->errorResponse('Mã giao dịch không hợp lệ', 400);
+        }
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 
+        $status = $inputData['vnp_ResponseCode'] ?? null;
+        // dd($secureHash == $vnp_SecureHash);
         if ($secureHash == $vnp_SecureHash) {
-            if ($inputData['vnp_ResponseCode'] == '00') {
-                // Thành công
+
+            if ($status == '00') {
+                // Xử lý thành công
+                Invoice::where('transaction_code', $transaction_code)
+                    ->update([
+                        'status' => 'paid',
+                        'payment_method' => 'vnpay',
+                    ]);
                 return $this->successResponse($inputData, 'Thanh toán thành công');
             } else {
-                return $this->errorResponse('Thanh toán thất bại', 400);
+                // Xử lý thất bại
+                Invoice::where('transaction_code', $transaction_code)
+                    ->update([
+                        'status' => 'failed',
+                        'payment_method' => 'vnpay',
+                    ]);
+                return $this->errorResponse('Thanh toán thất bại: ' . $status, 400);
             }
         } else {
-            // return response()->json(['message' => 'Sai chữ ký', 'data' => $inputData]);
-            return $this->errorResponse('Sai chữ ký', 400);
+            Invoice::where('transaction_code', $transaction_code)
+                ->update([
+                    'status' => 'failed',
+                    'payment_method' => 'vnpay',
+                ]);
+            return $this->errorResponse('Mã bảo mật không hợp lệ', 400);
         }
     }
 }

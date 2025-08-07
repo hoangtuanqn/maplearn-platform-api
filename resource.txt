@@ -16,3 +16,11 @@
     composer dump-autoload
 
 - Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer DocumentCategoryObserver --model=DocumentCategory
+
+
+- VNPay test
+Ngân hàng	NCB
+Số thẻ	9704198526191432198
+Tên chủ thẻ	NGUYEN VAN A
+Ngày phát hành	07/15
+Mật khẩu OTP	123456
