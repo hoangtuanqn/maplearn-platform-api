@@ -34,7 +34,7 @@ class Course extends Model
         'deleted_at'
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration', 'final_price', 'is_best_seller']; // tự động thêm vào JSON
+    protected $appends = ['final_price', 'department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration',  'is_best_seller']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'double',
 
@@ -204,8 +204,8 @@ class Course extends Model
                 $query->whereNull('end_date')->orWhere('end_date', '>=', now());
             })
             ->where(function ($query) {
-                $query->where('usage_count', '<', 'usage_limit')
-                    ->orWhere('usage_limit', '=', 0); // Nếu không giới hạn lượt dùng
+                $query->whereColumn('usage_count', '<', 'usage_limit') // ✅ fix đúng
+                    ->orWhere('usage_limit', '=', 0);
             })
             ->get();
 

@@ -17,7 +17,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/check-token-reset-password', [ResetPasswordController::class, 'checkToken']);
 
     // OAuth
-    Route::get('/{provider}', [OAuthController::class, 'redirect']);
+    Route::get('/{provider}', [OAuthController::class, 'redirect'])->middleware('web');
     Route::get('/{provider}/callback', [OAuthController::class, 'callback']);
 
     // Authenticated

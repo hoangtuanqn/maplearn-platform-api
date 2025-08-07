@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     require __DIR__ . '/auth.php';
+    require __DIR__ . '/invoices.php';
     require __DIR__ . '/profile.php';
     require __DIR__ . '/teacher.php';
     require __DIR__ . '/course.php';
@@ -13,6 +14,7 @@ Route::prefix('v1')->group(function () {
     require __DIR__ . '/comments.php';
     require __DIR__ . '/tags.php';
     require __DIR__ . '/users.php';
+    require __DIR__ . '/discounts.php';
     require __DIR__ . '/chat.php';
     require __DIR__ . '/course_categories.php';
     require __DIR__ . '/audiences.php';

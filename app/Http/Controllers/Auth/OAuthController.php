@@ -13,11 +13,15 @@ class OAuthController extends Controller
 {
     use HandlesCookies;
 
-    private array $allowedProviders = ['google', 'facebook'];
+    private array $allowedProviders = ['google', 'facebook', 'twitter'];
 
     public function redirect($provider)
     {
         $this->ensureProviderAllowed($provider);
+
+        if ($provider === 'twitter') {
+            return Socialite::driver($provider)->redirect();
+        }
         return Socialite::driver($provider)->stateless()->redirect();
     }
 
@@ -26,7 +30,13 @@ class OAuthController extends Controller
         $this->ensureProviderAllowed($provider);
 
         try {
-            $socialUser = Socialite::driver($provider)->stateless()->user();
+
+            if ($provider === 'twitter') {
+                $socialUser = Socialite::driver($provider)->user();
+            } else {
+                // For other providers, use stateless to avoid session issues
+                $socialUser = Socialite::driver($provider)->stateless()->user();
+            }
         } catch (\Exception $e) {
             return redirect(env('APP_URL_FRONT_END'));
         }
@@ -55,15 +65,6 @@ class OAuthController extends Controller
         if ($user->google2fa_secret) {
             $token = base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', ""));
             return redirect(env('APP_URL_FRONT_END') . "/auth/login-social?token=" . $token);
-            // ->withCookie(cookie(
-            //     'token_2fa',
-            //     base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
-            //     15,
-            //     null,
-            //     null,
-            //     false,
-            //     false
-            // ));
         } else {
             $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
             return redirect(env('APP_URL_FRONT_END') . "/auth/login-social")

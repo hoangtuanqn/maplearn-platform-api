@@ -112,7 +112,7 @@ class AuthController extends BaseApiController
         // Tạo token mới và gửi email xác minh
         $user->verification_token = bin2hex(random_bytes(50));
         $user->save();
-        // $user->notify(new VerifyEmailNotification($user->verification_token));
+        $user->notify(new VerifyEmailNotification($user->verification_token));
         // Trả về thông báo thành công
         return $this->successResponse(null, 'Đã gửi lại email xác minh!', 200);
     }

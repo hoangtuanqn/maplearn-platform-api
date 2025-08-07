@@ -30,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
         App::setLocale('vi'); // nếu bạn đang dùng `trans()` hay đa ngôn ngữ Laravel
 
         Post::observe(PostObserver::class); // Đăng ký observer cho model Post
+
+
     }
 }

@@ -6,10 +6,13 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\CartItem;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class CartItemController extends BaseApiController
 {
@@ -97,7 +100,7 @@ class CartItemController extends BaseApiController
             $cart = CartItem::create([
                 'user_id' => $user->id,
                 'course_id' => $courseId,
-                'price_snapshot' => $course->price
+                'price_snapshot' => $course->final_price
             ]);
 
             $cart->load('course');
@@ -344,6 +347,67 @@ class CartItemController extends BaseApiController
             ], 'Lấy thông tin tóm tắt giỏ hàng thành công!');
         } catch (\Exception $e) {
             return $this->errorResponse('Có lỗi xảy ra khi lấy thông tin tóm tắt giỏ hàng', 500);
+        }
+    }
+
+    // Checkout
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'payment_method' => 'required|string|in:transfer,paypal,vnpay'
+        ]);
+
+        $user = Auth::user();
+        // 1. Lấy các khóa học trong giỏ còn active
+        $cartItems = CartItem::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return $this->errorResponse('Giỏ hàng trống hoặc không có khóa học nào còn hoạt động.', 400);
+        }
+
+        // 2. Tính tổng tiền
+        $total = $cartItems->sum('price_snapshot');
+
+        DB::beginTransaction();
+
+
+
+        try {
+            // 2. Tính tổng tiền
+            $total = $cartItems->sum('price_snapshot');
+
+
+            // 3. Tạo hóa đơn
+            $invoice = Invoice::create([
+                'user_id' => $user->id,
+                'transaction_code' => strtoupper(Str::random(10)), // Tạo mã giao dịch duy nhất
+                'payment_method' => $request->payment_method,
+                'total_price' => $total,
+                'status' => 'pending',
+            ]);
+
+            // 4. Tạo invoice_items
+            foreach ($cartItems as $item) {
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'course_id' => $item->course_id,
+                    'price_snapshot' => $item->price_snapshot,
+                ]);
+            }
+
+            // 5. Xóa cart_items sau khi checkout
+            CartItem::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->delete();
+
+            DB::commit();
+
+            return $this->successResponse($invoice, 'Đã tạo hóa đơn thành công. Vui lòng thnanh toán');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Đã xảy ra lỗi khi tạo hóa đơn ' . $e->getMessage(), 500);
         }
     }
 }

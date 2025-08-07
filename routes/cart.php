@@ -11,5 +11,8 @@ Route::middleware('auth.jwt')->group(function () {
     Route::patch('/cart-items/toggle-all', [CartItemController::class, 'toggleAll']);
     // Lấy thông tin chung trong giỏ hàng
     Route::post('/cart-items/summary', [CartItemController::class, 'summary']);
+
+    // Checkout
+    Route::post('/carts/checkout', [CartItemController::class, 'checkout']);
     Route::apiResource('carts', CartItemController::class);
 });

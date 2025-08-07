@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\CourseDiscount;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -36,7 +38,9 @@ class DatabaseSeeder extends Seeder
             CourseChapterSeeder::class,
             CourseLessonSeeder::class,
             CartItemSeeder::class,
+            CourseDiscountSeeder::class,
             DiscountSeeder::class,
+            InvoiceSeeder::class,
         ]);
     }
 }

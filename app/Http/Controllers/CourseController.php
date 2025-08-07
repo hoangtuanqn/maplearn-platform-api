@@ -49,6 +49,7 @@ class CourseController extends BaseApiController
             ->select([
                 'id',
                 'name',
+                'description',
                 'slug',
                 'grade_level_id',
                 'thumbnail',

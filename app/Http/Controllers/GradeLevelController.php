@@ -59,6 +59,7 @@ class GradeLevelController extends BaseApiController
             $query->select([
                 'id',
                 'name',
+                'description',
                 'slug',
                 'thumbnail',
                 'price',
