@@ -42,9 +42,11 @@
     38 => 'Carbon\\Laravel\\ServiceProvider',
     39 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     40 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    41 => 'Spatie\\QueryBuilder\\QueryBuilderServiceProvider',
-    42 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
-    43 => 'App\\Providers\\AppServiceProvider',
+    41 => 'SocialiteProviders\\Manager\\ServiceProvider',
+    42 => 'Spatie\\QueryBuilder\\QueryBuilderServiceProvider',
+    43 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
+    44 => 'App\\Providers\\AppServiceProvider',
+    45 => 'SocialiteProviders\\Manager\\ServiceProvider',
   ),
   'eager' => 
   array (
@@ -231,7 +233,7 @@
     'Illuminate\\Contracts\\Validation\\UncompromisedVerifier' => 'Illuminate\\Validation\\ValidationServiceProvider',
     'Laravel\\Sail\\Console\\InstallCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'Laravel\\Sail\\Console\\PublishCommand' => 'Laravel\\Sail\\SailServiceProvider',
-    'Laravel\\Socialite\\Contracts\\Factory' => 'Laravel\\Socialite\\SocialiteServiceProvider',
+    'Laravel\\Socialite\\Contracts\\Factory' => 'SocialiteProviders\\Manager\\ServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
   ),
   'when' => 
@@ -282,6 +284,9 @@
     array (
     ),
     'Laravel\\Tinker\\TinkerServiceProvider' => 
+    array (
+    ),
+    'SocialiteProviders\\Manager\\ServiceProvider' => 
     array (
     ),
   ),

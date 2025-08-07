@@ -13,15 +13,11 @@ class OAuthController extends Controller
 {
     use HandlesCookies;
 
-    private array $allowedProviders = ['google', 'facebook', 'twitter'];
+    private array $allowedProviders = ['google', 'facebook', 'discord'];
 
     public function redirect($provider)
     {
         $this->ensureProviderAllowed($provider);
-
-        if ($provider === 'twitter') {
-            return Socialite::driver($provider)->redirect();
-        }
         return Socialite::driver($provider)->stateless()->redirect();
     }
 
@@ -31,13 +27,10 @@ class OAuthController extends Controller
 
         try {
 
-            if ($provider === 'twitter') {
-                $socialUser = Socialite::driver($provider)->user();
-            } else {
-                // For other providers, use stateless to avoid session issues
-                $socialUser = Socialite::driver($provider)->stateless()->user();
-            }
+
+            $socialUser = Socialite::driver($provider)->stateless()->user();
         } catch (\Exception $e) {
+            return $e->getMessage();
             return redirect(env('APP_URL_FRONT_END'));
         }
 
@@ -51,15 +44,19 @@ class OAuthController extends Controller
                 'avatar' => $socialUser->getAvatar(),
             ]);
         } else {
-            // Create new user
-            $user = User::create([
-                'full_name' => $socialUser->getName(),
-                'username' => $socialUser->getNickname() ?: 'user_' . time(),
-                'email' => $socialUser->getEmail(),
+            $data = [
+                'full_name' => $socialUser->getName() ?? "",
+                'username' => $socialUser->getNickname() . rand(1, 1000) ?: 'user_' . time(),
+                'email' => $socialUser->getEmail() ?? "",
                 'password' => $socialUser->getId() . rand(2000, time()),
-                "{$provider}_id" => $socialUser->getId(),
-                'avatar' => $socialUser->getAvatar(),
-            ]);
+                "{$provider}_id" => $socialUser->getId() ?? "",
+                'avatar' => $socialUser->getAvatar() ?? "",
+            ];
+            if ($provider === 'google') {
+                $data['email_verified_at'] = now();
+            }
+            // Create new user
+            $user = User::create($data);
         }
         $accessToken = JWTAuth::fromUser($user);
         if ($user->google2fa_secret) {

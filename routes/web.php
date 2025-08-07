@@ -11,8 +11,3 @@ use Illuminate\Support\Facades\Route;
 //     Route::get('/facebook', [FacebookController::class, 'redirectToFacebook']);
 //     Route::get('/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 // });
-
-
-// Allow google, facebook
-// Route::get('/auth/{provider}', [OAuthController::class, 'redirect']);
-// Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback']);

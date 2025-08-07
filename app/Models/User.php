@@ -74,6 +74,7 @@ class User extends Authenticatable implements JWTSubject
         'role',
         'google_id',
         'facebook_id',
+        'discord_id',
         'banned',
         'google2fa_secret',
         'email_verified_at',
@@ -88,6 +89,7 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'google_id',
         'facebook_id',
+        'discord_id',
         'google2fa_secret',
         'password',
         'remember_token',
