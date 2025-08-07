@@ -382,10 +382,8 @@ class CartItemController extends BaseApiController
             // 3. Tạo hóa đơn
             $invoice = Invoice::create([
                 'user_id' => $user->id,
-                'transaction_code' => strtoupper(Str::random(10)), // Tạo mã giao dịch duy nhất
                 'payment_method' => $request->payment_method,
                 'total_price' => $total,
-                'status' => 'pending',
             ]);
 
             // 4. Tạo invoice_items
@@ -403,8 +401,12 @@ class CartItemController extends BaseApiController
                 ->delete();
 
             DB::commit();
+            if ($request->payment_method === 'vnpay') {
+                // Tạo liên kết thanh toán VNPAY
+                return app(VnpayController::class)->createPayment($request, $invoice);
+            }
 
-            return $this->successResponse($invoice, 'Đã tạo hóa đơn thành công. Vui lòng thnanh toán');
+            return $this->successResponse($invoice, 'Đã tạo hóa đơn thành công. Vui lòng thanh toán');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse('Đã xảy ra lỗi khi tạo hóa đơn ' . $e->getMessage(), 500);

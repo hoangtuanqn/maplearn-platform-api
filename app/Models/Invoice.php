@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\InvoiceObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
+#[ObservedBy([InvoiceObserver::class])]
 
 class Invoice extends Model
 {
@@ -19,12 +23,14 @@ class Invoice extends Model
         'transaction_code',
         'payment_method',
         'total_price',
+        'due_date',
         'status',
     ];
     protected $appends = [
         'course_count',
     ];
     protected $casts = [
+        'due_date' => 'datetime',
         'total_price' => 'double',
 
     ];

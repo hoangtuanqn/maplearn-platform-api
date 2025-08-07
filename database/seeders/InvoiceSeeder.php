@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Invoice;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class InvoiceSeeder extends Seeder
 {
@@ -22,7 +23,7 @@ class InvoiceSeeder extends Seeder
                 'transaction_code' => strtoupper(Str::random(10)), // Tạo mã giao dịch duy nhất
                 'payment_method' => 'transfer',
                 'total_price' => rand(1000, 10000) * 100, // Giá trị ngẫu nhiên từ 10.00 đến 100.00
-                'status' => 'pending',
+                'status' => Arr::random(['pending', 'paid', 'failed', 'expired']),
             ]);
         }
     }

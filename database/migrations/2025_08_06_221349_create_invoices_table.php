@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('transaction_code')->unique(); // Mã giao dịch
             $table->string('payment_method')->default('transfer'); // hình thức thanh toán (transfer, paypal, vnpay, ...)
             $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('pending'); // pending | paid | failed
+            $table->enum('status', ['pending', 'paid', 'failed', 'expired'])->default('pending'); // pending | paid | failed | expired (Chờ xử lý | Đã thanh toán | Thất bại | Hết hạn thanh toán)
+
+            $table->timestamp('due_date');
             $table->timestamps();
 
             $table->foreign('user_id')

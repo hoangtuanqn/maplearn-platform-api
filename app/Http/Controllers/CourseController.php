@@ -142,8 +142,12 @@ class CourseController extends BaseApiController
             $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
             $categoryIds = $favoriteCourses->pluck('category_id')->unique();
 
-            // Đề xuất các khóa học tương tự nhưng chưa yêu thích
-            $recommendCourses = Course::whereNotIn('id', $favCourseIds)
+
+            // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
+            $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');
+
+            // Đề xuất các khóa học tương tự nhưng chưa yêu thích (và người dùng chưa mua khóa học đó)
+            $recommendCourses = Course::whereNotIn('id', $favCourseIds)->whereNotIn('id', $purchasedCourseIds)
                 ->where('status', true)
                 ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
                     $query->whereIn('subject_id', $subjectIds)
