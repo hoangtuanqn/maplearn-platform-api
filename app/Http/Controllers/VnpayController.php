@@ -11,13 +11,13 @@ class VnpayController extends BaseApiController
     public function createPayment(Request $request, $transaction_code)
     {
         $invoice = Invoice::where('transaction_code', $transaction_code)->where('status', 'pending')->where('due_date', '>', now())->first();
-        if (!$invoice) {
-            return $this->errorResponse('Hóa đơn không tồn tại', 404);
+        if (!$invoice || !$invoice->isValid()) {
+            return $this->errorResponse(null, 'Hóa đơn không tồn tại hoặc đã được xử lý', 404);
         }
         $vnp_TmnCode = env('VNPAY_TMN_CODE');
         $vnp_HashSecret = env('VNPAY_HASH_SECRET');
         $vnp_Url = env('VNPAY_URL');
-        $vnp_ReturnUrl = env('APP_URL_FRONT_END') . "/invoices/return";
+        $vnp_ReturnUrl = env("APP_URL_FRONT_END") . "/invoices/return/vnpay";
 
         $vnp_TxnRef = $invoice->transaction_code; //Mã giao dịch thanh toán tham chiếu của merchant
         $vnp_Amount = $invoice->total_price; // Số tiền thanh toán
@@ -65,8 +65,10 @@ class VnpayController extends BaseApiController
             $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret); //
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
-        $invoice['url_vnpay'] = $vnp_Url;
-
+        $invoice->update([
+            'payment_method' => 'vnpay'
+        ]);
+        $invoice['url_payment'] = $vnp_Url;
         return $this->successResponse($invoice, 'Tạo liên kết thanh toán thành công');
     }
 
@@ -97,7 +99,7 @@ class VnpayController extends BaseApiController
 
         $transaction_code = $inputData['vnp_TxnRef'] ?? null;
         if (!$transaction_code) {
-            return $this->errorResponse('Mã giao dịch không hợp lệ', 400);
+            return $this->errorResponse(null, 'Mã giao dịch không hợp lệ', 400);
         }
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 
@@ -107,12 +109,15 @@ class VnpayController extends BaseApiController
 
             if ($status == '00') {
                 // Xử lý thành công
-                Invoice::where('transaction_code', $transaction_code)
-                    ->update([
-                        'status' => 'paid',
-                        'payment_method' => 'vnpay',
-                    ]);
-                return $this->successResponse($inputData, 'Thanh toán thành công');
+                $invoice = Invoice::where('transaction_code', $transaction_code)->first();
+                if (!$invoice || !$invoice->isValid()) {
+                    return $this->errorResponse(null, 'Hóa đơn không tồn tại', 404);
+                }
+                $invoice->update([
+                    'status' => 'paid',
+                    'payment_method' => 'vnpay',
+                ]);
+                return $this->successResponse($invoice, 'Thanh toán thành công');
             } else {
                 // Xử lý thất bại
                 Invoice::where('transaction_code', $transaction_code)
@@ -120,7 +125,7 @@ class VnpayController extends BaseApiController
                         'status' => 'failed',
                         'payment_method' => 'vnpay',
                     ]);
-                return $this->errorResponse('Thanh toán thất bại: ' . $status, 400);
+                return $this->errorResponse(null, 'Thanh toán thất bại: ' . $status, 400);
             }
         } else {
             Invoice::where('transaction_code', $transaction_code)
@@ -128,7 +133,7 @@ class VnpayController extends BaseApiController
                     'status' => 'failed',
                     'payment_method' => 'vnpay',
                 ]);
-            return $this->errorResponse('Mã bảo mật không hợp lệ', 400);
+            return $this->errorResponse(null, 'Mã bảo mật không hợp lệ', 400);
         }
     }
 }

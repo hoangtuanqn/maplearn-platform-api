@@ -36,7 +36,7 @@ class ResetPasswordController extends BaseApiController
         }
 
         if (!$record) {
-            return $this->errorResponse('Token không hợp lệ.', 401);
+            return $this->errorResponse(null, 'Token không hợp lệ.', 401);
         }
 
         // Kiểm tra thời gian hết hạn
@@ -44,7 +44,7 @@ class ResetPasswordController extends BaseApiController
         $createdAt = Carbon::parse($record->created_at);
 
         if ($createdAt->addMinutes($expireMinutes)->isPast()) {
-            return $this->errorResponse('Token đã hết hạn.', 410);
+            return $this->errorResponse(null, 'Token đã hết hạn.', 410);
         }
 
         return $this->successResponse([
@@ -73,6 +73,6 @@ class ResetPasswordController extends BaseApiController
             return $this->respondWithToken($intanceUser, 'Đăng nhập thành công!', 200);
         }
 
-        return $this->errorResponse(__($status), 400);
+        return $this->errorResponse(null, __($status), 400);
     }
 }

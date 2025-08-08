@@ -23,11 +23,12 @@ class BaseApiController extends Controller
     /**
      * Response lỗi.
      */
-    protected function errorResponse(string $message = 'Lỗi xảy ra', int $code = 400): JsonResponse
+    protected function errorResponse($data = null, string $message = 'Lỗi xảy ra', int $code = 400): JsonResponse
     {
         return response()->json([
             'success' => false,
             'message' => $message,
+            'data'    => $data,
         ], $code);
     }
 

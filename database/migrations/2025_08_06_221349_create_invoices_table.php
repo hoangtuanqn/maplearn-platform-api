@@ -17,11 +17,13 @@ return new class extends Migration
             $table->unsignedInteger('payment_id')->nullable();
             $table->unsignedInteger('user_id');
             $table->string('transaction_code')->unique(); // Mã giao dịch
-            $table->enum('payment_method', ['transfer', 'vnpay'])->default('transfer'); // hình thức thanh toán (transfer, paypal, vnpay, ...)
+            $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay'])->default('transfer'); // hình thức thanh toán (transfer, paypal, vnpay, ...)
             $table->decimal('total_price', 10, 2);
             $table->enum('status', ['pending', 'paid', 'failed', 'expired'])->default('pending'); // pending | paid | failed | expired (Chờ xử lý | Đã thanh toán | Thất bại | Hết hạn thanh toán)
 
             $table->text('note')->nullable(); // Ghi chú thêm (nếu có)
+            // Id đối tác thanh toán, zalopay, momo, vnpay, ...
+            // $table->string('partner_id')->nullable();
             $table->timestamp('due_date');
             $table->timestamp('paid_at')->nullable(); // Thời điểm thanh toán thành công
             $table->timestamps();

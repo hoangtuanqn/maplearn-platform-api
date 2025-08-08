@@ -36,7 +36,7 @@ class PaymentController extends BaseApiController
         foreach ($invoiceIds as $invoiceId) {
             $invoice = Invoice::findOrFail($invoiceId);
             if ($invoice->user_id !== $user->id) {
-                return $this->errorResponse('Phát hiện có hóa đơn không phải của bạn', 403);
+                return $this->errorResponse(null, 'Phát hiện có hóa đơn không phải của bạn', 403);
             }
         }
         // Nếu người dùng này đã có payment từ trước thì xóa nó đi

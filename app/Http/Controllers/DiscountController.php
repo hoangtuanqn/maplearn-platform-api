@@ -34,7 +34,7 @@ class DiscountController extends BaseApiController
             ->first();
 
         if (!$discount) {
-            return $this->errorResponse('Mã giảm giá không hợp lệ hoặc đã hết hạn.', 400);
+            return $this->errorResponse(null, 'Mã giảm giá không hợp lệ hoặc đã hết hạn.', 400);
         }
 
         // Lấy giỏ hàng
@@ -44,7 +44,7 @@ class DiscountController extends BaseApiController
             ->get();
 
         if ($cartItems->isEmpty()) {
-            return $this->errorResponse('Giỏ hàng trống.', 400);
+            return $this->errorResponse(null, 'Giỏ hàng trống.', 400);
         }
 
         $totalPrice = $cartItems->sum('price_snapshot');
@@ -52,7 +52,7 @@ class DiscountController extends BaseApiController
 
         // Kiểm tra điều kiện
         if (isset($conditions['grade']) && !in_array($user->grade ?? null, $conditions['grade'])) {
-            return $this->errorResponse('Mã này chỉ áp dụng cho một số khối lớp.', 400);
+            return $this->errorResponse(null, 'Mã này chỉ áp dụng cho một số khối lớp.', 400);
         }
 
         if (!empty($conditions['first_order'])) {

@@ -204,7 +204,7 @@ class CourseController extends BaseApiController
     {
         $courseIds = $request->input('ids', []);
         if (empty($courseIds)) {
-            return $this->errorResponse('Không có khóa học nào được chọn!', 400);
+            return $this->errorResponse(null, 'Không có khóa học nào được chọn!', 400);
         }
 
         $courses = QueryBuilder::for(Course::class)

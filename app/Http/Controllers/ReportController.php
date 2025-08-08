@@ -48,21 +48,21 @@ class ReportController extends BaseApiController
             ->exists();
 
         if ($exists) {
-            return $this->errorResponse('Bạn đã báo cáo mục này hôm nay rồi.', 429);
+            return $this->errorResponse(null, 'Bạn đã báo cáo mục này hôm nay rồi.', 429);
         }
 
 
 
         if (!$modelClass) {
-            return $this->errorResponse('Loại báo cáo không hợp lệ', 422);
+            return $this->errorResponse(null, 'Loại báo cáo không hợp lệ', 422);
         }
 
         $reportable = $modelClass::find($data['reportable_id']);
         if (!$reportable) {
-            return $this->errorResponse('Không tìm thấy nội dung cần báo cáo', 404);
+            return $this->errorResponse(null, 'Không tìm thấy nội dung cần báo cáo', 404);
         }
         if ($request->user()->id === $reportable->created_by) {
-            return $this->errorResponse('Bạn không thể báo cáo nội dung do chính mình tạo', 403);
+            return $this->errorResponse(null, 'Bạn không thể báo cáo nội dung do chính mình tạo', 403);
         }
 
 

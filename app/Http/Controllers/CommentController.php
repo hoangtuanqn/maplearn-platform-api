@@ -21,11 +21,11 @@ class CommentController extends BaseApiController
 
         // Validate
         if (!in_array($type, ['post', 'course'])) {
-            return $this->errorResponse('Loại nội dung không hợp lệ', 400);
+            return $this->errorResponse(null, 'Loại nội dung không hợp lệ', 400);
         }
 
         if (!$slug) {
-            return $this->errorResponse('Thiếu slug nội dung', 400);
+            return $this->errorResponse(null, 'Thiếu slug nội dung', 400);
         }
 
         // Lấy model theo type
@@ -37,7 +37,7 @@ class CommentController extends BaseApiController
         $record = $modelClass::where('slug', $slug)->select('id')->first();
 
         if (!$record) {
-            return $this->errorResponse('Nội dung không tồn tại', 404);
+            return $this->errorResponse(null, 'Nội dung không tồn tại', 404);
         }
 
         // Lấy danh sách bình luận
@@ -81,7 +81,7 @@ class CommentController extends BaseApiController
         $record = $modelClass::where('slug', $request->slug)->first();
 
         if (!$record) {
-            return $this->errorResponse('Nội dung không tồn tại', 404);
+            return $this->errorResponse(null, 'Nội dung không tồn tại', 404);
         }
 
         $comment = Comment::create([
@@ -111,7 +111,7 @@ class CommentController extends BaseApiController
     public function update(Request $request, Comment $comment)
     {
         if ($comment->user_id !== Auth::id()) {
-            return $this->errorResponse('Không có quyền chỉnh sửa bình luận này', 403);
+            return $this->errorResponse(null, 'Không có quyền chỉnh sửa bình luận này', 403);
         }
 
         $request->validate([
@@ -131,7 +131,7 @@ class CommentController extends BaseApiController
     public function destroy(Comment $comment)
     {
         if ($comment->user_id !== Auth::id()) {
-            return $this->errorResponse('Không có quyền xóa bình luận này', 403);
+            return $this->errorResponse(null, 'Không có quyền xóa bình luận này', 403);
         }
 
         $comment->delete();

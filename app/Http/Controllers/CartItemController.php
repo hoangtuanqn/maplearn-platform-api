@@ -51,7 +51,7 @@ class CartItemController extends BaseApiController
             ], 'Lấy giỏ hàng thành công');
         } catch (\Exception $e) {
 
-            return $this->errorResponse($e, 500);
+            return $this->errorResponse(null, $e, 500);
         }
     }
 
@@ -75,7 +75,7 @@ class CartItemController extends BaseApiController
                 ->first();
 
             if (!$course) {
-                return $this->errorResponse('Khóa học không tồn tại hoặc đã ngừng hoạt động', 404);
+                return $this->errorResponse(null, 'Khóa học không tồn tại hoặc đã ngừng hoạt động', 404);
             }
 
             // Kiểm tra user đã đăng ký khóa học này chưa
@@ -84,7 +84,7 @@ class CartItemController extends BaseApiController
                 ->exists();
 
             if ($isEnrolled) {
-                return $this->errorResponse('Bạn đã đăng ký khóa học này rồi');
+                return $this->errorResponse(null, 'Bạn đã đăng ký khóa học này rồi');
             }
 
             // Kiểm tra khóa học đã có trong giỏ hàng chưa
@@ -93,7 +93,7 @@ class CartItemController extends BaseApiController
                 ->first();
 
             if ($existingCartItem) {
-                return $this->errorResponse('Khóa học đã có trong giỏ hàng');
+                return $this->errorResponse(null, 'Khóa học đã có trong giỏ hàng');
             }
             // Kiểm tra xem đã có trong hóa đơn nào (trạng thái pending)  -> Không cho thêm nữa
             $hasPendingInvoice = Invoice::where('user_id', $user->id)
@@ -104,7 +104,7 @@ class CartItemController extends BaseApiController
                 ->exists();
 
             if ($hasPendingInvoice) {
-                return $this->errorResponse('Khóa học này đã có trong hóa đơn đang chờ thanh toán!');
+                return $this->errorResponse(null, 'Khóa học này đã có trong hóa đơn đang chờ thanh toán!');
             }
 
             // Thêm vào giỏ hàng
@@ -124,7 +124,7 @@ class CartItemController extends BaseApiController
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi thêm vào giỏ hàng', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi thêm vào giỏ hàng', 500);
         }
     }
 
@@ -134,21 +134,21 @@ class CartItemController extends BaseApiController
      */
     public function show(CartItem $cart)
     {
-        // return $this->errorResponse('Bạn không có quyền xem item này', 403);
+        // return $this->errorResponse(null, 'Bạn không có quyền xem item này', 403);
 
         try {
             $user = Auth::user();
 
             // Kiểm tra quyền sở hữu
             if ($cart->user_id !== $user->id) {
-                return $this->errorResponse('Bạn không có quyền xem item này', 403);
+                return $this->errorResponse(null, 'Bạn không có quyền xem item này', 403);
             }
 
             $cart->load('course');
 
             return $this->successResponse($cart, 'Lấy thông tin item thành công');
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi lấy thông tin item', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi lấy thông tin item', 500);
         }
     }
 
@@ -163,14 +163,14 @@ class CartItemController extends BaseApiController
 
             // Kiểm tra quyền sở hữu
             if ($cart->user_id !== $user->id) {
-                return $this->errorResponse('Bạn không có quyền cập nhật item này', 403);
+                return $this->errorResponse(null, 'Bạn không có quyền cập nhật item này', 403);
             }
 
             // Cập nhật giá theo giá hiện tại của khóa học
             $course = Course::find($cart->course_id);
 
             if (!$course || !$course->status) {
-                return $this->errorResponse('Khóa học không còn khả dụng');
+                return $this->errorResponse(null, 'Khóa học không còn khả dụng');
             }
 
             $cart->update([
@@ -181,7 +181,7 @@ class CartItemController extends BaseApiController
 
             return $this->successResponse($cart, 'Đã cập nhật giá khóa học');
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi cập nhật item', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi cập nhật item', 500);
         }
     }
 
@@ -196,7 +196,7 @@ class CartItemController extends BaseApiController
 
             // Kiểm tra quyền sở hữu
             if ($cart->user_id !== $user->id) {
-                return $this->errorResponse('Bạn không có quyền xóa item này' . $user->id . " " . $cart->user_id, 403);
+                return $this->errorResponse(null, 'Bạn không có quyền xóa item này' . $user->id . " " . $cart->user_id, 403);
             }
 
             $courseName = $cart->course->name ?? 'Khóa học';
@@ -204,7 +204,7 @@ class CartItemController extends BaseApiController
 
             return $this->successResponse(null, "Đã xóa '{$courseName}' khỏi giỏ hàng");
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi xóa item', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi xóa item', 500);
         }
     }
 
@@ -220,7 +220,7 @@ class CartItemController extends BaseApiController
 
             return $this->successResponse(null, "Đã xóa {$deletedCount} item khỏi giỏ hàng");
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi xóa giỏ hàng', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi xóa giỏ hàng', 500);
         }
     }
 
@@ -248,7 +248,7 @@ class CartItemController extends BaseApiController
                 "Đã xóa thành công {$deletedCount} mục khỏi giỏ hàng."
             );
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi xóa giỏ hàng', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi xóa giỏ hàng', 500);
         }
     }
 
@@ -265,12 +265,12 @@ class CartItemController extends BaseApiController
 
             // Kiểm tra quyền sở hữu
             if ($cart->user_id !== $user->id) {
-                return $this->errorResponse('Bạn không có quyền cập nhật item này', 403);
+                return $this->errorResponse(null, 'Bạn không có quyền cập nhật item này', 403);
             }
 
             // Kiểm tra trạng thái khóa học
             if (!$cart->course || !$cart->course->status) {
-                return $this->errorResponse('Khóa học không còn khả dụng', 404);
+                return $this->errorResponse(null, 'Khóa học không còn khả dụng', 404);
             }
 
             // Toggle trạng thái
@@ -279,7 +279,7 @@ class CartItemController extends BaseApiController
 
             return $this->successResponse($cart, 'Đã cập nhật trạng thái hoạt động của item');
         } catch (\Throwable $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi cập nhật trạng thái hoạt động', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi cập nhật trạng thái hoạt động', 500);
         }
     }
 
@@ -310,7 +310,7 @@ class CartItemController extends BaseApiController
                 "Đã cập nhật {$updatedCount} item trong giỏ hàng thành trạng thái " . ($targetStatus ? 'active' : 'inactive')
             );
         } catch (\Throwable $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi cập nhật tất cả item', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi cập nhật tất cả item', 500);
         }
     }
 
@@ -357,7 +357,7 @@ class CartItemController extends BaseApiController
                 'total_price' => $totalPrice,
             ], 'Lấy thông tin tóm tắt giỏ hàng thành công!');
         } catch (\Exception $e) {
-            return $this->errorResponse('Có lỗi xảy ra khi lấy thông tin tóm tắt giỏ hàng', 500);
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi lấy thông tin tóm tắt giỏ hàng', 500);
         }
     }
 
@@ -365,7 +365,7 @@ class CartItemController extends BaseApiController
     public function checkout(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|string|in:transfer,paypal,vnpay'
+            'payment_method' => 'required|string|in:transfer,vnpay,momo,zalopay'
         ]);
 
         $user = Auth::user();
@@ -375,7 +375,7 @@ class CartItemController extends BaseApiController
             ->get();
 
         if ($cartItems->isEmpty()) {
-            return $this->errorResponse('Giỏ hàng trống hoặc không có khóa học nào còn hoạt động.', 400);
+            return $this->errorResponse(null, 'Giỏ hàng trống hoặc không có khóa học nào còn hoạt động.', 400);
         }
 
         // 2. Tính tổng tiền
@@ -411,14 +411,19 @@ class CartItemController extends BaseApiController
 
             DB::commit();
             if ($request->payment_method === 'vnpay') {
-                // Tạo liên kết thanh toán VNPAY
                 return app(VnpayController::class)->createPayment($request, $invoice->transaction_code);
+            } else if ($request->payment_method === 'momo') {
+                // Tạo liên kết thanh toán MoMo
+                return app(MomoController::class)->createPayment($request, $invoice->transaction_code);
+            } else if ($request->payment_method === 'zalopay') {
+                // Tạo liên kết thanh toán ZaloPay
+                return app(ZaloPayController::class)->createPayment($request, $invoice->transaction_code);
             }
 
             return $this->successResponse($invoice, 'Đã tạo hóa đơn thành công. Vui lòng thanh toán');
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->errorResponse('Đã xảy ra lỗi khi tạo hóa đơn ' . $e->getMessage(), 500);
+            return $this->errorResponse(null, 'Đã xảy ra lỗi khi tạo hóa đơn ' . $e->getMessage(), 500);
         }
     }
 }

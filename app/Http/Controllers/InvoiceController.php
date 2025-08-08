@@ -74,7 +74,7 @@ class InvoiceController extends BaseApiController
         $this->authorize('cancel', $invoice);
 
         if ($invoice->status !== 'pending') {
-            return $this->errorResponse('Chỉ có thể hủy hóa đơn đang chờ xử lý.', 400);
+            return $this->errorResponse(null, 'Chỉ có thể hủy hóa đơn đang chờ xử lý.', 400);
         }
 
         $invoice->status = 'failed';
@@ -82,5 +82,22 @@ class InvoiceController extends BaseApiController
         $invoice->save();
 
         return $this->successResponse($invoice, 'Hóa đơn đã được hủy thành công!');
+    }
+
+    // Kiểm tra hóa đơn
+    public function checkInvoice(Request $request, Invoice $invoice)
+    {
+        switch ($invoice->payment_method) {
+            case 'momo':
+                return app(MomoController::class)->createPayment($request, $invoice->transaction_code);
+            case 'vnpay':
+                return app(VnpayController::class)->createPayment($request, $invoice->transaction_code);
+            case 'zalopay':
+                return app(ZalopayController::class)->createPayment($request, $invoice->transaction_code);
+            default:
+                return $this->errorResponse(null, 'Trạng thái hóa đơn không hợp lệ.', 400);
+        }
+
+        return $this->successResponse($invoice, 'Kiểm tra hóa đơn thành công!');
     }
 }

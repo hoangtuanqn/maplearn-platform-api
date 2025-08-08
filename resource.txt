@@ -16,6 +16,7 @@
     composer dump-autoload
 
 - Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer DocumentCategoryObserver --model=DocumentCategory
+- preline table
 
 
 - VNPay test
@@ -25,4 +26,6 @@ Tên chủ thẻ	NGUYEN VAN A
 Ngày phát hành	07/15
 Mật khẩu OTP	123456
 
-- preline table
+
+- MOMO test: https://developers.momo.vn/v3/vi/docs/payment/onboarding/test-instructions/
+- Tài liệu tích hợp: https://github.com/toancongdang/sdk-for-me

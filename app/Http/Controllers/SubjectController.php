@@ -44,7 +44,7 @@ class SubjectController extends BaseApiController
             'name' => 'required|string|max:255',
         ]);
         if (Subject::where('name', $validated['name'])->exists()) {
-            return $this->errorResponse('Môn học đã tồn tại!', 422);
+            return $this->errorResponse(null, 'Môn học đã tồn tại!', 422);
         }
         $subject = Subject::create($validated);
         return $this->successResponse($subject, 'Tạo môn học thành công!');

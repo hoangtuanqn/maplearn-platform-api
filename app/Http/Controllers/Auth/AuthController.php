@@ -32,7 +32,7 @@ class AuthController extends BaseApiController
 
         if (!JWTAuth::attempt($credentials)) {
             // return response()->json(['error' => 'Thông tin đăng nhập chưa chính xác!'], 401);
-            return $this->errorResponse('Thông tin đăng nhập chưa chính xác!', 401);
+            return $this->errorResponse(null, 'Thông tin đăng nhập chưa chính xác!', 401);
         }
 
         // Lấy user từ token
@@ -85,7 +85,7 @@ class AuthController extends BaseApiController
         ]);
         $user = User::where('verification_token', $validator->safe()->only('token'))->first();
         if (!$user) {
-            return $this->errorResponse('Token xác minh không hợp lệ!', 404);
+            return $this->errorResponse(null, 'Token xác minh không hợp lệ!', 404);
         }
         // Cập nhật trạng thái đã xác minh
         $user->email_verified_at = now();
@@ -104,10 +104,10 @@ class AuthController extends BaseApiController
         $email = $validator->safe()->only('email');
         $user = User::where('email', $email)->first();
         if (!$user) {
-            return $this->errorResponse('Email không tồn tại trong hệ thống!', 404);
+            return $this->errorResponse(null, 'Email không tồn tại trong hệ thống!', 404);
         }
         if ($user->email_verified_at) {
-            return $this->errorResponse('Email đã được xác minh trước đó!', 400);
+            return $this->errorResponse(null, 'Email đã được xác minh trước đó!', 400);
         }
         // Tạo token mới và gửi email xác minh
         $user->verification_token = bin2hex(random_bytes(50));
@@ -125,14 +125,14 @@ class AuthController extends BaseApiController
         try {
             $refreshToken = $request->cookie('jwt_refresh');
             if (!$refreshToken) {
-                return $this->errorResponse('Mã refresh token không tồn tại!', 401);
+                return $this->errorResponse(null, 'Mã refresh token không tồn tại!', 401);
             }
 
             JWTAuth::setToken($refreshToken);
             $payload = JWTAuth::getPayload();
 
             if (!$payload->get('jwt_refresh')) {
-                return $this->errorResponse('Refresh token không hợp lệ!', 401);
+                return $this->errorResponse(null, 'Refresh token không hợp lệ!', 401);
             }
 
             $user = JWTAuth::authenticate();
@@ -140,7 +140,7 @@ class AuthController extends BaseApiController
             // Cấp lại token mới
             return $this->respondWithToken($user, 'Làm mới token thành công!');
         } catch (\Exception $e) {
-            return $this->errorResponse('Không thể làm mới token! Vui lòng thử lại! ' . $e->getMessage(), 401);
+            return $this->errorResponse(null, 'Không thể làm mới token! Vui lòng thử lại! ' . $e->getMessage(), 401);
             // logger("Refresh token error >> " . $e->getMessage());
 
         }
@@ -169,14 +169,14 @@ class AuthController extends BaseApiController
         $token = base64_decode($request->token);
         // Kiểm tra salt phải nằm trong token
         if (!str_contains($token, env('T1_SECRET', ""))) {
-            return $this->errorResponse('Token không hợp lệ!', 401);
+            return $this->errorResponse(null, 'Token không hợp lệ!', 401);
         }
         // Xóa salt ra khỏi token
         $token = str_replace(env('T1_SECRET'), "", $token);
         JWTAuth::setToken($token);
         $user = JWTAuth::authenticate();
         if (!$user->google2fa_secret) {
-            return $this->errorResponse('Tài khoản này chưa bật xác thực 2 lớp!', 401);
+            return $this->errorResponse(null, 'Tài khoản này chưa bật xác thực 2 lớp!', 401);
         }
         $google2fa = new Google2FA();
         $isValid = $google2fa->verifyKey(
@@ -185,7 +185,7 @@ class AuthController extends BaseApiController
         );
 
         if (!$isValid) {
-            return $this->errorResponse('Mã OTP không chính xác hoặc đã hết hạn!', 401);
+            return $this->errorResponse(null, 'Mã OTP không chính xác hoặc đã hết hạn!', 401);
         }
         return $this->respondWithToken($user, 'Xác thực tài khoản thành công!');
     }

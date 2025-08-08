@@ -25,11 +25,15 @@ class Invoice extends Model
         'total_price',
         'due_date',
         'note',
+        // 'partner_id',
         'status',
     ];
     protected $appends = [
         'course_count',
     ];
+    // protected $hidden = [
+    //     'partner_id',
+    // ];
     protected $casts = [
         'due_date' => 'datetime',
         'total_price' => 'double',
@@ -46,6 +50,13 @@ class Invoice extends Model
     public function getCourseCountAttribute()
     {
         return $this->items()->count();
+    }
+
+
+    // Check tính hợp lệ của hóa đơn này
+    public function isValid()
+    {
+        return $this->status === 'pending' && $this->due_date > now();
     }
 
     // Quan hệ với bảng Payment

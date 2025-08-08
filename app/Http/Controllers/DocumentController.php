@@ -61,7 +61,7 @@ class DocumentController extends BaseApiController
         $data = $request->all();
 
         if (isset($data['tags_id']) && !is_array($data['tags_id'])) {
-            return $this->errorResponse("Tags ID phải là 1 mảng");
+            return $this->errorResponse(null, "Tags ID phải là 1 mảng");
         }
         if (is_array($data['tags_id'])) {
             // Loại bỏ những ID tags trùng nhau
