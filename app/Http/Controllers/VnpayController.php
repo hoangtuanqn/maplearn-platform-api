@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 
 class VnpayController extends BaseApiController
 {
-    public function createPayment(Request $request, $invoice)
+    public function createPayment(Request $request, $transaction_code)
     {
+        $invoice = Invoice::where('transaction_code', $transaction_code)->where('status', 'pending')->where('due_date', '>', now())->first();
         if (!$invoice) {
             return $this->errorResponse('Hóa đơn không tồn tại', 404);
         }

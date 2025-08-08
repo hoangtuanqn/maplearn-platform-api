@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Invoice;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class InvoiceController extends BaseApiController
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -36,10 +38,15 @@ class InvoiceController extends BaseApiController
      */
     public function show(Invoice $invoice)
     {
-        $user = Auth::user();
-        if ($invoice->user_id !== $user->id) {
-            return $this->errorResponse('Bạn không có quyền truy cập vào hóa đơn này.', 403);
-        }
+        // Check các course trong invoice này (Nếu có kcais nào ko tồn tại hoặc status = false thì hủy hóa đơn luôn)
+        $invoice->items->where('status', 'pending')->each(function ($item) use ($invoice) {
+            if (!$item->course || !$item->course->status) {
+                $invoice->status = 'failed';
+                $invoice->note = 'Hệ thống: Hóa đơn này đã bị hủy do có khóa học không còn khả dụng.';
+                $invoice->save();
+                return;
+            }
+        });
 
         $invoice->load(['items.course']);
         return $this->successResponse($invoice, 'Lấy thông tin hóa đơn thành công!');
@@ -59,5 +66,21 @@ class InvoiceController extends BaseApiController
     public function destroy(Invoice $invoice)
     {
         //
+    }
+
+    // Cancel hóa đơn
+    public function cancel(Invoice $invoice)
+    {
+        $this->authorize('cancel', $invoice);
+
+        if ($invoice->status !== 'pending') {
+            return $this->errorResponse('Chỉ có thể hủy hóa đơn đang chờ xử lý.', 400);
+        }
+
+        $invoice->status = 'failed';
+
+        $invoice->save();
+
+        return $this->successResponse($invoice, 'Hóa đơn đã được hủy thành công!');
     }
 }

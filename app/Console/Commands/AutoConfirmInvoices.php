@@ -54,8 +54,10 @@ class AutoConfirmInvoices extends Command
                     if (str_contains($transaction['transaction_content'], $invoice->transaction_code)) {
                         $count++;
                         // Cập nhật trạng thái hóa đơn
-                        $invoice->status = 'paid';
-                        $invoice->save();
+                        $invoice::update([
+                            'status' => 'paid',
+                            'payment_method' => 'transfer'
+                        ]);
 
                         broadcast(new PusherEvent([
                             'message' => 'Hóa đơn #' . $invoice->transaction_code . ' đã được xác nhận.',

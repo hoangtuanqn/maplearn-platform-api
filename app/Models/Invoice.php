@@ -24,6 +24,7 @@ class Invoice extends Model
         'payment_method',
         'total_price',
         'due_date',
+        'note',
         'status',
     ];
     protected $appends = [
@@ -45,5 +46,11 @@ class Invoice extends Model
     public function getCourseCountAttribute()
     {
         return $this->items()->count();
+    }
+
+    // Quan hệ với bảng Payment
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
     }
 }

@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             CartItemSeeder::class,
             CourseDiscountSeeder::class,
             DiscountSeeder::class,
-            InvoiceSeeder::class,
+            // InvoiceSeeder::class,
         ]);
     }
 }
