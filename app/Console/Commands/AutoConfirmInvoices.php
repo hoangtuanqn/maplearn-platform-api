@@ -35,9 +35,9 @@ class AutoConfirmInvoices extends Command
         // Gọi lại 3 lần mỗi lần cách nhau 2 giây nếu không thành công
         $this->info('Đang xác nhận hóa đơn...');
         $res = Http::retry(3, 2000)->withHeaders([
-            "Authorization" => "Bearer VHEXV2FKTUKHCUGPWJVMOI6JXUWKSZNRTES1723H8T5YAJUYBDLA6PCFN3NHD9IR",
+            "Authorization" => "Bearer " . env("SEPAY_TOKEN"),
             "Content-Type" => "application/json",
-        ])->get("https://my.sepay.vn/userapi/transactions/list?account_number=259876543210&limit=10");
+        ])->get("https://my.sepay.vn/userapi/transactions/list?account_number=" . env("SEPAY_ACCOUNT") . "&limit=10");
         $data = $res->json();
         if ($res->failed()) {
             $this->error('Lỗi khi lấy dữ liệu từ API: ' . $res->status());
@@ -51,13 +51,12 @@ class AutoConfirmInvoices extends Command
                 foreach ($invoices as $invoice) {
                     // $this->info("Kiểm tra hóa đơn {$invoice->id} với mã giao dịch {$invoice->transaction_code}...");
                     // Kiểm tra mã giao dịch
-                    if (str_contains($transaction['transaction_content'], $invoice->transaction_code)) {
+                    if (str_contains($transaction['transaction_content'], $invoice->transaction_code) && $transaction['amount_in'] >= $invoice->total_price) {
                         $count++;
                         // Cập nhật trạng thái hóa đơn
-                        $invoice::update([
-                            'status' => 'paid',
-                            'payment_method' => 'transfer'
-                        ]);
+                        $invoice->status = 'paid';
+                        $invoice->payment_method = 'transfer';
+                        $invoice->save();
 
                         broadcast(new PusherEvent([
                             'message' => 'Hóa đơn #' . $invoice->transaction_code . ' đã được xác nhận.',
