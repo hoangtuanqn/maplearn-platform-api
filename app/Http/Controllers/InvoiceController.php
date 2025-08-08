@@ -68,6 +68,15 @@ class InvoiceController extends BaseApiController
         //
     }
 
+    // confirm hóa đơn
+    public function confirm(Invoice $invoice)
+    {
+        $invoice->status = 'paid';
+        $invoice->save();
+        // $invoice->user->purchasedCourses()->attach([1,2]);
+        return $this->successResponse($invoice, 'Hóa đơn đã được xác nhận thành công!');
+    }
+
     // Cancel hóa đơn
     public function cancel(Invoice $invoice)
     {

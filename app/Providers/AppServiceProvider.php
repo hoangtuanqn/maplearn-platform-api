@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\InvoicePaidMail;
 use App\Models\Post;
 use App\Observers\PostObserver;
 use App\Policies\PostPolicy;
@@ -31,11 +32,17 @@ class AppServiceProvider extends ServiceProvider
         App::setLocale('vi'); // nếu bạn đang dùng `trans()` hay đa ngôn ngữ Laravel
 
         Post::observe(PostObserver::class); // Đăng ký observer cho model Post
+
+        // Đăng ký event
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
         });
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);
         });
+
+        Event::listen(
+            InvoicePaidMail::class
+        );
     }
 }

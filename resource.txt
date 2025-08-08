@@ -2,6 +2,8 @@
     composer require tymon/jwt-auth
     php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
     php artisan jwt:secret
+
+- Chạy nền công việc: php artisan queue:work
 - QueryBuilder: https://querybuilder.js.org/
 - pragmarx/google2fa: https://github.com/antonioribeiro/google2fa
 
@@ -18,7 +20,6 @@
 - Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer DocumentCategoryObserver --model=DocumentCategory
 - preline table
 
-
 - VNPay test
 Ngân hàng	NCB
 Số thẻ	9704198526191432198
@@ -29,3 +30,12 @@ Mật khẩu OTP	123456
 
 - MOMO test: https://developers.momo.vn/v3/vi/docs/payment/onboarding/test-instructions/
 - Tài liệu tích hợp: https://github.com/toancongdang/sdk-for-me
+
+- Clear cachce
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:cache
+php artisan route:cache
+
+- Chạy ngầm: php artisan queue:work

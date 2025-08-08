@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
-
-class VerifyEmailNotification extends Notification
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
+class VerifyEmailNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
     public $token; // <-- BẠN PHẢI CÓ DÒNG NÀY
 
     public function __construct($token)
