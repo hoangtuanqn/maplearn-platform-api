@@ -17,7 +17,7 @@ class CartItemSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             $courseId = rand(1, 81); // Giả sử có 81 khóa học
             $course = Course::findOrFail($courseId);
-            CartItem::create([
+            CartItem::updateOrCreate([
                 'user_id' => rand(8, 10),
                 'course_id' => $course->id,
                 'price_snapshot' => $course->price,

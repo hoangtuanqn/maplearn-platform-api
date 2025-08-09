@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\BaseApiController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
-class ProfileController extends Controller
+class ProfileController extends BaseApiController
 {
     public function update(Request $request)
     {
@@ -47,5 +49,21 @@ class ProfileController extends Controller
         return response()->json([
             'message' => 'Đổi mật khẩu thành công.',
         ]);
+    }
+
+    // Lấy danh sách khóa học của tôi
+    public function getCoursesMe(Request $request)
+    {
+        $user = $request->user();
+        $limit = $request->input('limit', 10); // số item mỗi trang, mặc định 10
+
+        $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('course_enrollments.created_at', 'desc'))
+            ->allowedFilters(['title']) // lọc theo title nếu cần
+            ->allowedSorts(['created_at', 'id']) // sắp xếp
+            // ->latest('created_at')
+            ->paginate($limit)
+            ->appends($request->query()); // giữ nguyên query string khi phân trang
+
+        return $this->successResponse($courses, "Đã lấy danh sách khóa học của bạn thành công!");
     }
 }

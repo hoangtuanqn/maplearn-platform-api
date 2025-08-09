@@ -146,6 +146,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
             // ->withPivot('id', 'created_at', 'updated_at')
+            // lấy thêm cột created_at của bảng course_enrollments
+            ->withPivot('created_at')
             ->withTimestamps();
     }
 

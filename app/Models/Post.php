@@ -20,6 +20,7 @@ class Post extends Model
         'content',
         'views',
         'tags_id',
+        'subject_id',
         'created_by',
         'status'
     ];
@@ -45,11 +46,17 @@ class Post extends Model
     {
         return 'slug';
     }
- 
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+    //  Subjects
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
     public function getTagsAttribute()
     {
         return Tag::whereIn('id', $this->tags_id ?? [])->select('id', 'name', 'created_at')->get();
@@ -58,8 +65,6 @@ class Post extends Model
     {
         return Carbon::parse($value)->format('H:i - d/m/Y');
     }
-
-
     public function getCreatorAttribute()
     {
         return $this->creator()->select('id', 'full_name')->get();

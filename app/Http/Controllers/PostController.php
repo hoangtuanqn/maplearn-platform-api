@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\Post\CourseFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PostController extends BaseApiController
@@ -19,7 +21,7 @@ class PostController extends BaseApiController
         $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
 
         $posts = QueryBuilder::for(Post::class)
-            ->allowedFilters(['title'])
+            ->allowedFilters(['title',  AllowedFilter::custom('courses', new CourseFilter)])
             ->select(['id', 'slug', 'thumbnail', 'title', 'views', 'created_by', 'tags_id', 'created_at'])
             ->allowedSorts(['created_at', 'views'])
             ->where('status', true)
