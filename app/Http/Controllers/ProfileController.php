@@ -74,14 +74,33 @@ class ProfileController extends BaseApiController
     // Lấy danh sách hóa đơn
     public function getInvoicesMe(Request $request)
     {
+        $limit = $request->input('limit', 10);
         $user = $request->user();
-        $invoices = QueryBuilder::for(Invoice::class)
-            ->allowedSorts(['created_at'])
-            ->allowedFilters(AllowedFilter::custom('status', new StatusFilter), AllowedFilter::custom('date', new DateFilter))
-            ->where('user_id', $user->id)
-            ->orderByDesc('id')
-            ->paginate(10);
 
-        return $this->successResponse($invoices, 'Lấy danh sách hóa đơn thành công!');
+        // Query chính với filter, sort, user_id
+        $invoicesQuery = QueryBuilder::for(Invoice::class)
+            ->allowedSorts(['created_at'])
+            ->allowedFilters([
+                AllowedFilter::custom('status', new StatusFilter),
+                AllowedFilter::custom('date', new DateFilter)
+            ])
+            ->where('user_id', $user->id)
+            ->orderByDesc('id');
+
+        // Clone query để tính summary
+        $summaryQuery = clone $invoicesQuery;
+
+        // Thêm điều kiện status = 'pending' cho summary
+        $summaryQuery->where('status', 'pending');
+
+        $summary = [
+            'total_pending' => $summaryQuery->count(),
+            'total_price_pending' => (float)$summaryQuery->sum('total_price'),
+        ];
+
+        return $this->successResponse([
+            'invoices' => $invoicesQuery->paginate($limit),
+            'summary' => $summary,
+        ], 'Lấy danh sách hóa đơn thành công!');
     }
 }

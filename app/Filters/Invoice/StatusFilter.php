@@ -12,13 +12,13 @@ class StatusFilter implements Filter
         switch ($value) {
             case "expiring":
                 // Lấy các hóa đơn gần hết hạn (còn 1 ngày trước due)
-                $query->where('due_date', '<=', now()->addDay());
+                $query->where('status', 'pending')->where('due_date', '<=', now()->addDay());
                 break;
             case "cancelled":
                 $query->whereIn('status', ['failed', 'expired']);
                 break;
             default:
-                // $query->where('status', $value);
+                $query->where('status', $value);
                 break;
         }
     }
