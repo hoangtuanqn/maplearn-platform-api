@@ -33,6 +33,9 @@ class InvoiceObserver
             // 1. Gửi email xác nhận
             Mail::to($invoice->user->email)
                 ->send(new InvoicePaidMail($invoice));
+            $invoice->update([
+                'paid_at' => now()
+            ]);
 
             // 2. Gắn khóa học vào tài khoản user
             $courseIds = $invoice->items->pluck('course_id')->toArray();

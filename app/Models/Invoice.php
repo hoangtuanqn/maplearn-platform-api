@@ -20,12 +20,12 @@ class Invoice extends Model
     }
     protected $fillable = [
         'user_id',
+        'payment_id',
         'transaction_code',
         'payment_method',
         'total_price',
         'due_date',
         'note',
-        // 'partner_id',
         'status',
     ];
     protected $appends = [

@@ -2,7 +2,9 @@
 
 use App\Models\Setting;
 
-function setting($name, $default = null)
-{
-    return Setting::where('name', $name)->value('value') ?? $default;
+if (!function_exists('setting')) {
+    function setting($name, $default = null)
+    {
+        return Setting::where('name', $name)->value('value') ?? $default;
+    }
 }

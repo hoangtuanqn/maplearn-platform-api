@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\Invoice\DateFilter;
+use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ProfileController extends BaseApiController
@@ -65,5 +69,19 @@ class ProfileController extends BaseApiController
             ->appends($request->query()); // giữ nguyên query string khi phân trang
 
         return $this->successResponse($courses, "Đã lấy danh sách khóa học của bạn thành công!");
+    }
+
+    // Lấy danh sách hóa đơn
+    public function getInvoicesMe(Request $request)
+    {
+        $user = $request->user();
+        $invoices = QueryBuilder::for(Invoice::class)
+            ->allowedSorts(['created_at'])
+            ->allowedFilters(AllowedFilter::custom('status', new StatusFilter), AllowedFilter::custom('date', new DateFilter))
+            ->where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->paginate(10);
+
+        return $this->successResponse($invoices, 'Lấy danh sách hóa đơn thành công!');
     }
 }

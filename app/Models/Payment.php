@@ -12,10 +12,15 @@ class Payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
+    public function getRouteKeyName()
+    {
+        return 'transaction_code';
+    }
 
     protected $fillable = [
         'user_id',
         'payment_method',
+        'transaction_code',
         'status',
         'paid_at'
     ];
@@ -26,5 +31,11 @@ class Payment extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+    public function isValid()
+    {
+        // Kiểm tra các invoice bên trong đều phải là hợp lệ
+        // return $this->invoices->every(fn($invoice) => $invoice->isValid());
+        return true;
     }
 }

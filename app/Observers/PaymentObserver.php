@@ -4,9 +4,17 @@ namespace App\Observers;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Log;
 
 class PaymentObserver
 {
+
+    public function creating(Payment $paymment)
+    {
+        $paymment->transaction_code = strtoupper(uniqid()); // Tạo mã giao dịch duy nhất
+        $paymment->status = 'pending'; // Mặc định trạng thái là 'pending'
+    }
+
     /**
      * Handle the Payment "created" event.
      */
@@ -20,7 +28,23 @@ class PaymentObserver
      */
     public function updated(Payment $payment): void
     {
-        //
+        switch ($payment->status) {
+
+            case "paid":
+                $payment->invoices()->update([
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                    'payment_method' => $payment->payment_method,
+                ]);
+                break;
+            case "failed":
+                $payment->invoices()->update([
+                    'status' => 'failed',
+                    'payment_method' => $payment->payment_method,
+                ]);
+
+                break;
+        }
     }
 
     // Xử lý trước khi xóa

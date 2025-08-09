@@ -15,9 +15,9 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
 
-            $table->enum('payment_method', ['transfer', 'vnpay'])->default('transfer'); // 'transfer', 'vnpay', 'paypal', etc
-            $table->string('gateway_transaction_code')->nullable(); // mã giao dịch từ VNPAY hoặc Momo
-            $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
+            $table->string('transaction_code')->unique();
+            $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay'])->default('transfer'); // 'transfer', 'vnpay', 'momo', 'zalopay'
+            $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
 
             $table->timestamp('paid_at')->nullable(); // thời điểm thanh toán thành công
             $table->timestamps();

@@ -8,4 +8,5 @@ Route::prefix('profile')->name('account.')->middleware('auth.jwt')->group(functi
     Route::post('/update', [ProfileController::class, 'update']);
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
     Route::get('/courses', [ProfileController::class, 'getCoursesMe']);
+    Route::get('/invoices', [ProfileController::class, 'getInvoicesMe']);
 });

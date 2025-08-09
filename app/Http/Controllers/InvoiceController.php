@@ -17,15 +17,15 @@ class InvoiceController extends BaseApiController
      */
     public function index()
     {
-        $user = Auth::user();
-        $invoices = QueryBuilder::for(Invoice::class)
+        // $user = Auth::user();
+        // $invoices = QueryBuilder::for(Invoice::class)
 
-            ->allowedSorts(['created_at', 'updated_at'])
-            ->where('user_id', $user->id)
-            ->orderByDesc('id')
-            ->paginate(10);
+        //     ->allowedSorts(['created_at', 'updated_at'])
+        //     ->where('user_id', $user->id)
+        //     ->orderByDesc('id')
+        //     ->paginate(10);
 
-        return $this->successResponse($invoices, 'Lấy danh sách hóa đơn thành công!');
+        // return $this->successResponse($invoices, 'Lấy danh sách hóa đơn thành công!');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Invoice;
@@ -18,13 +19,23 @@ class InvoiceSeeder extends Seeder
         // Seender Faker
 
         for ($i = 0; $i < 100; $i++) {
-            Invoice::create([
+
+            $courses = Course::inRandomOrder()->limit(5)->get();
+            $invoice = Invoice::create([
                 'user_id' => 8,
                 'transaction_code' => strtoupper(Str::random(10)), // Tạo mã giao dịch duy nhất
                 'payment_method' => 'transfer',
-                'total_price' => rand(1000, 10000) * 100, // Giá trị ngẫu nhiên từ 10.00 đến 100.00
+                'total_price' => $courses->sum('final_price'),
                 'status' => Arr::random(['pending', 'paid', 'failed', 'expired']),
             ]);
+
+            foreach ($courses as $course) {
+                $invoice->items()->create([
+                    'invoice_id' => $invoice->id,
+                    'course_id' => $course->id,
+                    'price_snapshot' => $course->final_price,
+                ]);
+            }
         }
     }
 }
