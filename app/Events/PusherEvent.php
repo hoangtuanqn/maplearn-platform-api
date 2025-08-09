@@ -15,16 +15,18 @@ class PusherEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+    public $email;
 
-    public function __construct($message)
+    public function __construct($message, $email = null)
     {
         $this->message = $message;
+        $this->email = $email;
     }
 
     // Tên channel phải trùng với frontend: "my-channel"
     public function broadcastOn()
     {
-        return new Channel('my-channel'); // public channel
+        return new Channel($this->email); // public channel
     }
 
     // Tên event phải trùng frontend: "my-event"

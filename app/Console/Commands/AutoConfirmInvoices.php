@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Events\PusherEvent;
 use App\Models\Invoice;
+use App\Models\Payment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -60,8 +61,27 @@ class AutoConfirmInvoices extends Command
 
                         broadcast(new PusherEvent([
                             'message' => 'Hóa đơn #' . $invoice->transaction_code . ' đã được xác nhận.',
-                        ]));
+                        ], $invoice->user()->email));
                         $this->info("Hóa đơn #{$invoice->transaction_code} đã được xác nhận.");
+                    }
+                }
+
+
+                $payments = Payment::where('payment_method', 'transfer')->where('status', 'pending')->get();
+                foreach ($payments as $payment) {
+                    if (!$payment->isValid()) continue;
+                    // Kiểm tra mã giao dịch
+                    if (str_contains($transaction['transaction_content'], $payment->transaction_code) && $transaction['amount_in'] >= $payment->invoices()->sum('total_price')) {
+                        $count++;
+                        // Cập nhật trạng thái thanh toán
+                        $payment->status = 'paid';
+                        $payment->payment_method = 'transfer';
+                        $payment->save();
+
+                        broadcast(new PusherEvent([
+                            'message' => 'Thanh toán #' . $payment->transaction_code . ' đã được xác nhận.',
+                        ], $payment->users()->first()?->email));
+                        $this->info("Thanh toán #{$payment->transaction_code} đã được xác nhận.");
                     }
                 }
             }

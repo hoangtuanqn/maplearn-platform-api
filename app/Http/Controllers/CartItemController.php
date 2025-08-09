@@ -96,16 +96,16 @@ class CartItemController extends BaseApiController
                 return $this->errorResponse(null, 'Khóa học đã có trong giỏ hàng');
             }
             // Kiểm tra xem đã có trong hóa đơn nào (trạng thái pending)  -> Không cho thêm nữa
-            $hasPendingInvoice = Invoice::where('user_id', $user->id)
-                ->where('status', 'pending')
-                ->whereHas('items', function ($query) use ($courseId) {
-                    $query->where('course_id', $courseId);
-                })
-                ->exists();
+            // $hasPendingInvoice = Invoice::where('user_id', $user->id)
+            //     ->where('status', 'pending')
+            //     ->whereHas('items', function ($query) use ($courseId) {
+            //         $query->where('course_id', $courseId);
+            //     })
+            //     ->exists();
 
-            if ($hasPendingInvoice) {
-                return $this->errorResponse(null, 'Khóa học này đã có trong hóa đơn đang chờ thanh toán!');
-            }
+            // if ($hasPendingInvoice) {
+            //     return $this->errorResponse(null, 'Khóa học này đã có trong hóa đơn đang chờ thanh toán!');
+            // }
 
             // Thêm vào giỏ hàng
             $cart = CartItem::create([

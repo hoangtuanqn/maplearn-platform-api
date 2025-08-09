@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Events\PusherEvent;
 
 Route::prefix('v1')->group(function () {
     require __DIR__ . '/auth.php';
@@ -22,3 +23,9 @@ Route::prefix('v1')->group(function () {
     require __DIR__ . '/payment.php';
     require __DIR__ . '/others.php';
 });
+// Route::get('/pusher/auth2', function () {
+//     broadcast(new PusherEvent([
+//         'message' => 'Hóa đơn  đã được xác nhận.',
+//     ], 'nguyen_thi_thanh_thuy_8@example.com'));
+//     return 'Đã bắn';
+// });

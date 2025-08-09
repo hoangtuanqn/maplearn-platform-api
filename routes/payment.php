@@ -32,10 +32,10 @@ Route::prefix('payment')->group(function () {
     Route::get('/vnpay/return/{type?}', [VnpayController::class, 'paymentReturn']);
     Route::get('/zalopay/return/{type?}', [ZalopayController::class, 'paymentReturn']);
 
-    Route::get("/test", function () {
-        // return response()->json(['message' => 'Test route']);
-        return response()->json(Payment::where('transaction_code', '689761C19079F')->first()->update([
-            'status' => 'failed',
-        ]));
-    });
+    // Route::get("/test", function () {
+    //     // return response()->json(['message' => 'Test route']);
+    //     return response()->json(Payment::where('transaction_code', '6897C498D3026')->first()->update([
+    //         'status' => 'paid',
+    //     ]));
+    // });
 });

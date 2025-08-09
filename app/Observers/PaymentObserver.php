@@ -31,18 +31,21 @@ class PaymentObserver
         switch ($payment->status) {
 
             case "paid":
-                $payment->invoices()->update([
-                    'status' => 'paid',
-                    'paid_at' => now(),
-                    'payment_method' => $payment->payment_method,
-                ]);
+                foreach ($payment->invoices as $invoice) {
+                    $invoice->update([
+                        'status' => 'paid',
+                        'paid_at' => now(),
+                        'payment_method' => $payment->payment_method,
+                    ]);
+                }
                 break;
             case "failed":
-                $payment->invoices()->update([
-                    'status' => 'failed',
-                    'payment_method' => $payment->payment_method,
-                ]);
-
+                foreach ($payment->invoices as $invoice) {
+                    $invoice->update([
+                        'status' => 'failed',
+                        'payment_method' => $payment->payment_method,
+                    ]);
+                }
                 break;
         }
     }

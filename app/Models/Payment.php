@@ -35,7 +35,20 @@ class Payment extends Model
     public function isValid()
     {
         // Kiểm tra các invoice bên trong đều phải là hợp lệ
-        // return $this->invoices->every(fn($invoice) => $invoice->isValid());
-        return true;
+        return $this->invoices->every(fn($invoice) => $invoice->isValid());
+        // return true;
+    }
+
+    // Quan hệ  hasManyThrough
+    public function users()
+    {
+        return $this->hasManyThrough(
+            User::class,     // Model đích
+            Invoice::class,  // Model trung gian
+            'payment_id',    // Khóa ngoại trên bảng invoices trỏ tới payment
+            'id',            // Khóa chính trên bảng users
+            'id',            // Khóa chính trên bảng payments
+            'user_id'        // Khóa ngoại trên bảng invoices trỏ tới user
+        );
     }
 }
