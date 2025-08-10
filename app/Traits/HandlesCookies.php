@@ -13,12 +13,14 @@ trait HandlesCookies
      */
     private function respondWithToken(User $user, string $message, int $status = 200)
     {
-        // Access Token sống 15 phút
-        JWTAuth::factory()->setTTL(15);
+        $timeLiveToken = 120; // Sống 120 phút
+        $timeLiveRefresh = 60 * 24 * 7; // Sống 7 ngày
+        // Access Token sống 120 phút
+        JWTAuth::factory()->setTTL($timeLiveToken);
         $accessToken = JWTAuth::fromUser($user);
 
         // Refresh Token sống 7 ngày (60 * 24 * 7 = 10080 phút)
-        JWTAuth::factory()->setTTL(60 * 24 * 7);
+        JWTAuth::factory()->setTTL($timeLiveRefresh);
         $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
 
         return response()->json([
@@ -26,8 +28,8 @@ trait HandlesCookies
             'message' => $message,
             'data' => $user,
         ], $status)
-            ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
-            ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
+            ->withCookie($this->buildCookie('jwt_token', $accessToken,  $timeLiveToken)) // set 120p = 2 tiếng
+            ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, $timeLiveRefresh));
     }
 
     /**

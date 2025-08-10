@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\CourseEnrollment;
 use App\Models\Invoice;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -38,17 +39,54 @@ class InvoiceController extends BaseApiController
      */
     public function show(Invoice $invoice)
     {
-        // Check các course trong invoice này (Nếu có kcais nào ko tồn tại hoặc status = false thì hủy hóa đơn luôn)
-        $invoice->items->where('status', 'pending')->each(function ($item) use ($invoice) {
-            if (!$item->course || !$item->course->status) {
-                $invoice->status = 'failed';
-                $invoice->note = 'Hệ thống: Hóa đơn này đã bị hủy do có khóa học không còn khả dụng.';
-                $invoice->save();
-                return;
-            }
-        });
+        // Lấy tất cả items và load course liên quan
+        $items = $invoice->items()->with('course')->get();
 
+        $hasInvalidCourse = false;
+        // Kiểm tra khóa học còn khả dụng hay không ?
+        foreach ($items as $item) {
+            // Nếu course không tồn tại hoặc không còn khả dụng
+            if (!$item->course || !$item->course->status) {
+                $hasInvalidCourse = true;
+                break;
+            }
+        }
+
+        if ($hasInvalidCourse) {
+            $invoice->status = 'failed';
+            $invoice->note = 'Hệ thống: Hóa đơn này đã bị hủy do có khóa học không còn khả dụng.';
+            $invoice->save();
+            // Reload lại invoice để trả về trạng thái mới nhất
+            $invoice->load(['items.course']);
+            return $this->successResponse($invoice, 'Lấy thông tin hóa đơn thành công!');
+        }
+        $totalDeducted = 0;
+        // Hóa đơn là chờ xử lý thì check các khóa nào trong hóa đơn, xem khóa học nào đã được mua từ trước thì trừ ra
+        if ($invoice->status === 'pending') {
+            // Lấy danh sách course_id mà user đã mua
+            $enrolledCourseIds = CourseEnrollment::where('user_id', $invoice->user_id)
+                ->pluck('course_id')
+                ->toArray();
+            foreach ($items as $item) {
+                if ($item->price_snapshot > 0 && in_array($item->course_id, $enrolledCourseIds)) {
+                    $totalDeducted += $item->price_snapshot;
+                    $item->price_snapshot = 0;
+                    $item->save();
+                }
+            }
+            if ($totalDeducted > 0) {
+
+                if ($invoice->total_price - $totalDeducted == 0) {
+                    $invoice->status = 'paid';
+                    $invoice->note = 'Hệ thống: Hóa đơn này đã được thanh toán tự động do bạn đã mua khóa học trước đó.';
+                } else {
+                    $invoice->total_price -= $totalDeducted;
+                }
+                $invoice->save();
+            }
+        }
         $invoice->load(['items.course']);
+
         return $this->successResponse($invoice, 'Lấy thông tin hóa đơn thành công!');
     }
 

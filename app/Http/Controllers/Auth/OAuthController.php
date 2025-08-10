@@ -65,7 +65,7 @@ class OAuthController extends Controller
         } else {
             $refreshToken = JWTAuth::customClaims(['jwt_refresh' => true])->fromUser($user);
             return redirect(env('APP_URL_FRONT_END') . "/auth/login-social")
-                ->withCookie($this->buildCookie('jwt_token', $accessToken, 15))
+                ->withCookie($this->buildCookie('jwt_token', $accessToken, 120))
                 ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, 60 * 24 * 7));
         }
     }

@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\HandlesCookies;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\VerifyEmail;
+
 use App\Notifications\VerifyEmailNotification;
+use App\Services\GoogleAuthenService;
 use Illuminate\Support\Facades\Validator;
 use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -38,7 +37,7 @@ class AuthController extends BaseApiController
         // Lấy user từ token
         $user = JWTAuth::user();
         // Xử lý nếu bật 2FA
-        if ($user->google2fa_secret) {
+        if ($user->google2fa_enabled) {
             return response()->json([
                 'success' => true,
                 'message' => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",
@@ -95,27 +94,6 @@ class AuthController extends BaseApiController
         return $this->successResponse(null, 'Xác minh email thành công!', 200);
     }
 
-    // Gửi lại email xác minh
-    public function resendVerification(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-        ]);
-        $email = $validator->safe()->only('email');
-        $user = User::where('email', $email)->first();
-        if (!$user) {
-            return $this->errorResponse(null, 'Email không tồn tại trong hệ thống!', 404);
-        }
-        if ($user->email_verified_at) {
-            return $this->errorResponse(null, 'Email đã được xác minh trước đó!', 400);
-        }
-        // Tạo token mới và gửi email xác minh
-        $user->verification_token = bin2hex(random_bytes(50));
-        $user->save();
-        $user->notify(new VerifyEmailNotification($user->verification_token));
-        // Trả về thông báo thành công
-        return $this->successResponse(null, 'Đã gửi lại email xác minh!', 200);
-    }
 
     /**
      * Refresh token khi token cũ đã hết hạn
@@ -175,13 +153,12 @@ class AuthController extends BaseApiController
         $token = str_replace(env('T1_SECRET'), "", $token);
         JWTAuth::setToken($token);
         $user = JWTAuth::authenticate();
-        if (!$user->google2fa_secret) {
+        if (!$user->google2fa_enabled) {
             return $this->errorResponse(null, 'Tài khoản này chưa bật xác thực 2 lớp!', 401);
         }
-        $google2fa = new Google2FA();
-        $isValid = $google2fa->verifyKey(
+        $isValid = GoogleAuthenService::verify2FA(
             $user->google2fa_secret,
-            $request->otp
+            $validator->safe()->only('otp')['otp']
         );
 
         if (!$isValid) {

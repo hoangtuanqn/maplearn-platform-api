@@ -26,7 +26,9 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
             $table->boolean('banned')->default(0);
+            // lưu mã 2fa, và trạng thái
             $table->string('google2fa_secret')->nullable();
+            $table->boolean('google2fa_enabled')->default(false);
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();
             $table->string('discord_id')->nullable();

@@ -32,6 +32,7 @@ class User extends Authenticatable implements JWTSubject
         'github_id',
         'banned',
         'google2fa_secret',
+        'google2fa_enabled',
         'email_verified_at',
         'verification_token',
     ];
@@ -62,6 +63,7 @@ class User extends Authenticatable implements JWTSubject
         'current_balance' => 'decimal:2',
         'total_deposit' => 'decimal:2',
         'banned' => 'boolean',
+        'google2fa_enabled' => 'boolean',
         'birth_year' => 'integer',
     ];
     protected $appends = ['cart_item_count'];

@@ -9,4 +9,10 @@ Route::prefix('profile')->name('account.')->middleware('auth.jwt')->group(functi
     Route::post('/change-password', [ProfileController::class, 'changePassword']);
     Route::get('/courses', [ProfileController::class, 'getCoursesMe']);
     Route::get('/invoices', [ProfileController::class, 'getInvoicesMe']);
+    Route::post('/resend-verify-email', [ProfileController::class, 'resendVerification'])->middleware('throttle:2,5'); // Gửi lại email xác minh, 5 phút 2 lần
+    // tạo mã 2fa
+    Route::prefix('2fa')->group(function () {
+        Route::get('/generate', [ProfileController::class, 'generate2FA']);
+        Route::post('/toggle', [ProfileController::class, 'toggle2FA']);
+    });
 });

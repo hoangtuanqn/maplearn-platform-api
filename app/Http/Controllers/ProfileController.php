@@ -6,8 +6,11 @@ use App\Filters\Invoice\DateFilter;
 use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Invoice;
+use App\Notifications\VerifyEmailNotification;
+use App\Services\GoogleAuthenService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -102,5 +105,87 @@ class ProfileController extends BaseApiController
             'invoices' => $invoicesQuery->paginate($limit),
             'summary' => $summary,
         ], 'Lấy danh sách hóa đơn thành công!');
+    }
+
+    // Tạo mã 2FA
+    public function generate2FA(Request $request)
+    {
+        $user = $request->user();
+
+        // Generate new 2FA secret and QR code
+        $google2fa = GoogleAuthenService::generateSecret2FA($user->email);
+
+        if (!$google2fa || empty($google2fa['secret']) || empty($google2fa['qr_base64'])) {
+            return $this->errorResponse(null, "Không thể tạo mã 2FA. Vui lòng thử lại.", 500);
+        }
+        $user->update([
+            'google2fa_secret' => $google2fa['secret'],
+        ]);
+
+        // Không lưu secret vào DB ở bước này, chỉ trả về cho user xác thực
+        return $this->successResponse([
+            'secret' => $google2fa['secret'],
+            'qr_base64' => $google2fa['qr_base64'],
+        ], "Tạo mã 2FA thành công. Vui lòng xác thực để hoàn tất.");
+    }
+
+    // Xác thực 2FA + Add mã vô DB
+    public function toggle2FA(Request $request)
+    {
+        // Validate otp
+        Validator::make($request->all(), [
+            'otp' => 'required|string|size:6',
+            'type' => 'required|string|in:active,unactive',
+        ])->validate();
+        $type = $request->input('type');
+        $user = $request->user();
+        if ($type === 'active') {
+            if ($user->google2fa_enabled) {
+                return $this->errorResponse(null, "Tài khoản của bạn đã được bật 2FA.", 400);
+            }
+        } elseif ($type === 'unactive') {
+            if (!$user->google2fa_enabled) {
+                return $this->errorResponse(null, "Tài khoản của bạn chưa bật 2FA.", 400);
+            }
+        } else {
+            return $this->errorResponse(null, "Loại yêu cầu không hợp lệ.", 400);
+        }
+
+
+
+        $secret = $user->google2fa_secret;
+        $otp = $request->input('otp');
+
+        $isValid = GoogleAuthenService::verify2FA($secret, $otp);
+
+        if (!$isValid) {
+            return $this->errorResponse(null, "Mã xác thực không chính xác. Vui lòng thử lại.", 401);
+        }
+
+        // Nếu đúng thì lưu flag bật 2FA
+        $user->update([
+            'google2fa_secret' => $type === 'active' ? $secret : null,
+            'google2fa_enabled' => $type === 'active' ? true : false,
+        ]);
+
+        return $this->successResponse([], $type === 'active' ? "Đã bật 2FA thành công." : "Đã tắt 2FA thành công.");
+    }
+
+
+    // Gửi lại email xác minh
+
+    // Gửi lại email xác minh
+    public function resendVerification(Request $request)
+    {
+        $user = $request->user();
+        if ($user->email_verified_at) {
+            return $this->errorResponse(null, 'Email đã được xác minh trước đó!', 400);
+        }
+        // Tạo token mới và gửi email xác minh
+        $user->verification_token = bin2hex(random_bytes(50));
+        $user->save();
+        $user->notify(new VerifyEmailNotification($user->verification_token));
+        // Trả về thông báo thành công
+        return $this->successResponse(null, 'Đã gửi lại email xác minh!', 200);
     }
 }
