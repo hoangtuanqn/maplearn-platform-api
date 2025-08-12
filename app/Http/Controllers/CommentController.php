@@ -49,10 +49,10 @@ class CommentController extends BaseApiController
             ->where('type_id', $record->id)
             ->whereNull('reply_id') // chỉ lấy bình luận cha
             ->with([
-                'creator:id,full_name,role',
+                'creator:id,full_name,role,avatar',
                 'replies' => function ($q) {
                     $q->select(['id', 'description', 'reply_id', 'created_at', 'user_id'])
-                        ->with('creator:id,full_name,role');
+                        ->with('creator:id,full_name,role,avatar');
                 }
             ])
             ->orderByDesc('id')
@@ -100,7 +100,7 @@ class CommentController extends BaseApiController
      */
     public function show(Comment $comment)
     {
-        $comment->load('creator:id,full_name,role', 'replies.creator:id,full_name,role');
+        $comment->load('creator:id,full_name,role,avatar', 'replies.creator:id,full_name,role,avatar');
 
         return $this->successResponse($comment, 'Chi tiết bình luận');
     }
