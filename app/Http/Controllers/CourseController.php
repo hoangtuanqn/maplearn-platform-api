@@ -30,22 +30,7 @@ class CourseController extends BaseApiController
         // dd($limit);
         // loại bỏ key lesson_count, duration
         $courses = QueryBuilder::for(Course::class)
-            ->allowedFilters([
-                'id',
-                'name',
-                'name',
-                'category_id',
-                'reviews_count',
-                AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
-                AllowedFilter::custom('category', new CategoryCourseSlugFilter),
-                AllowedFilter::custom('subject', new SubjectSlugFilter),
-                AllowedFilter::custom('rating', new CustomRatingFilter),
-                AllowedFilter::custom('price_range', new PriceFilter),
-                AllowedFilter::custom('teachers', new TeacherFilter),
-                AllowedFilter::custom('is_discounted', new IsDiscountedFilter),
 
-
-            ])
             ->select([
                 'id',
                 'name',
@@ -60,6 +45,20 @@ class CourseController extends BaseApiController
 
             ])
             ->allowedSorts(['created_at', 'download_count', 'reviews_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
+            ->allowedFilters([
+                'id',
+                'name',
+                'name',
+                'category_id',
+                'reviews_count',
+                AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
+                AllowedFilter::custom('category', new CategoryCourseSlugFilter),
+                AllowedFilter::custom('subject', new SubjectSlugFilter),
+                AllowedFilter::custom('rating', new CustomRatingFilter),
+                AllowedFilter::custom('price_range', new PriceFilter),
+                AllowedFilter::custom('teachers', new TeacherFilter),
+                AllowedFilter::custom('is_discounted', new IsDiscountedFilter),
+            ])
             ->where('status', true)
             // ->orderByDesc('id')
             ->paginate($limit);

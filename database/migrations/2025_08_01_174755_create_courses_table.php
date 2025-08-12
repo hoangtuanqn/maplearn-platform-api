@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->string('intro_video')->nullable(); // Video giới thiệu khóa học
             $table->decimal('price', 10, 2)->default(0.00); // Giá khóa học
+            // Có phép bỏ bài hay không, hay phải học tuần tự các bài
+            $table->boolean('is_sequential')->default(false); // true: tuần tự, false: có thể nhảy cóc
             // $table->integer('audience_id')->unsigned();
             $table->unsignedInteger('grade_level_id')->unsigned(); // Đối tượng học phù hợp
             $table->unsignedInteger('subject_id')->unsigned(); // Môn học (Toán, lý, hóa, ...)

@@ -55,22 +55,38 @@ class PaymentController extends BaseApiController
         // Gán payment_id cho các invoice
         Invoice::whereIn('id', $invoiceIds)->update(['payment_id' => $payment->id]);
 
-        // Trả về URL THANH TOÁN
+
         $payment->load('invoices');
+
+        $total = $payment->invoices()->sum('total_price');
+        // // Trừ số tiền đang có trong tài khoản
+        // if ($user->money > 0) {
+        //     $total = max(0, $total - $user->money);
+        //     $payment->total_price = $total;
+
+        //     // Nếu số tiền cuối = 0 thì có nghĩa là đã trả hết
+        //     if ($total == 0) {
+        //         $payment->status = 'paid';
+        //     }
+        //     $payment->save();
+        // }
+
+
 
         switch ($request->payment_method) {
             case 'vnpay':
-                $result = PaymentService::createInvoiceVNPAY($payment->invoices()->sum('total_price'), $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/vnpay");
+                $result = PaymentService::createInvoiceVNPAY($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/vnpay");
                 break;
             case 'momo':
-                $result = PaymentService::createInvoiceMOMO($payment->invoices()->sum('total_price'), $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/momo");
+                $result = PaymentService::createInvoiceMOMO($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/momo");
                 break;
             case 'zalopay':
-                $result   = PaymentService::createInvoiceZALOPAY($payment->invoices()->sum('total_price'), $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/zalopay");
+                $result   = PaymentService::createInvoiceZALOPAY($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/zalopay");
                 break;
                 // default:
                 //     return $this->errorResponse(null, 'Phương thức thanh toán không hợp lệ', 400);
         }
+        // Trả về URL THANH TOÁN
         $payment['url_payment'] = $result['url_payment'] ?? null;
         return $this->successResponse($payment, 'Tạo payment thành công', 201);
     }

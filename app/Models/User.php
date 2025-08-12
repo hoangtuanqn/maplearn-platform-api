@@ -30,6 +30,7 @@ class User extends Authenticatable implements JWTSubject
         'facebook_id',
         'discord_id',
         'github_id',
+        'money',
         'banned',
         'google2fa_secret',
         'google2fa_enabled',
@@ -58,10 +59,11 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
+        'money' => 'float',
         'password' => 'hashed',
         'email_verified_at' => 'datetime',
-        'current_balance' => 'decimal:2',
-        'total_deposit' => 'decimal:2',
+        'current_balance' => 'float',
+        'total_deposit' => 'float',
         'banned' => 'boolean',
         'google2fa_enabled' => 'boolean',
         'birth_year' => 'integer',

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('school')->nullable();
             $table->string('city')->nullable();
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
+            $table->decimal('money', 10, 2)->default(0); // Số dư tiền trong tài khoản
             $table->boolean('banned')->default(0);
             // lưu mã 2fa, và trạng thái
             $table->string('google2fa_secret')->nullable();

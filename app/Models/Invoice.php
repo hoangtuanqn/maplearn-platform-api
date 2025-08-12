@@ -64,4 +64,9 @@ class Invoice extends Model
     {
         return $this->belongsTo(Payment::class);
     }
+
+    public function cards()
+    {
+        return $this->hasMany(CardTopup::class);
+    }
 }

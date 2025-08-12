@@ -365,7 +365,7 @@ class CartItemController extends BaseApiController
     public function checkout(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|string|in:transfer,vnpay,momo,zalopay'
+            'payment_method' => 'required|string|in:transfer,vnpay,momo,zalopay,card'
         ]);
 
         $user = Auth::user();
@@ -386,6 +386,19 @@ class CartItemController extends BaseApiController
         try {
             // 2. Tính tổng tiền
             $total = $cartItems->sum('price_snapshot');
+
+            // Nếu user có tiền trong tài khoản, ưu tiên trừ vào tổng tiền
+            if ($user->money > 0) {
+                if ($user->money >= $total) {
+                    // Đủ tiền, trừ hết và set tổng tiền còn lại = 0
+                    $user->decrement('money', $total);
+                    $total = 0;
+                } else {
+                    // Không đủ, trừ hết số tiền hiện có, phần còn lại phải thanh toán
+                    $total -= $user->money;
+                    $user->decrement('money', $user->money);
+                }
+            }
 
 
             // 3. Tạo hóa đơn

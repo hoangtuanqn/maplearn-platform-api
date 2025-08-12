@@ -28,6 +28,7 @@ class Course extends Model
         'start_date',
         'end_date',
         'status',
+        'is_sequential'
     ];
     protected $hidden = [
         'updated_at',
@@ -37,7 +38,7 @@ class Course extends Model
     protected $appends = ['final_price', 'department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration',  'is_best_seller']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'double',
-
+        'is_sequential' => 'boolean',
         'status' => 'boolean',
     ];
     public function getRouteKeyName()

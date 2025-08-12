@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\User;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Log;
 
 class InvoicePolicy
 {
@@ -15,6 +16,7 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
+
         return false;
     }
 
@@ -23,9 +25,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice): Response
     {
-        return in_array($user->role, ['admin', 'teacher'])
-            ? Response::allow()
-            : Response::deny('Bạn không có quyền xem hóa đơn này.');
+        return $this->canManage($user, $invoice, 'xem hóa đơn');
     }
 
     /**

@@ -15,7 +15,7 @@ class InvoiceItem extends Model
         'price_snapshot',
     ];
     protected $casts = [
-        'price_snapshot' => 'decimal:2',
+        'price_snapshot' => 'float',
     ];
     public function invoice()
     {

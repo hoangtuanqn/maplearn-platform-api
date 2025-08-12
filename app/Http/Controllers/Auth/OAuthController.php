@@ -45,7 +45,7 @@ class OAuthController extends Controller
             ]);
         } else {
             $data = [
-                'full_name' => $socialUser->getName() ?? "",
+                'full_name' => $socialUser->getName() ?? $socialUser->getNickname(),
                 'username' => $socialUser->getNickname() . rand(1, 1000) ?: 'user_' . time(),
                 'email' => $socialUser->getEmail() ?? "",
                 'password' => $socialUser->getId() . rand(2000, time()),
