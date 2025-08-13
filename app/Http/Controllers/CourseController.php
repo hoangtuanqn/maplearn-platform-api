@@ -181,19 +181,19 @@ class CourseController extends BaseApiController
             ->where('status', true)
             ->orderByDesc('id')
             ->get();
-        $courses->transform(function ($course) {
-            /*
-            "department": [],
-            "subject": [],
-            "category": [],
-            "grade_level": null,
-            "is_favorite": false,
-            "is_cart": false,
-            "is_enrolled": false,
-            department
-            */
-            return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department']);
-        });
+        // $courses->transform(function ($course) {
+        //     /*
+        //     "department": [],
+        //     "subject": [],
+        //     "category": [],
+        //     "grade_level": null,
+        //     "is_favorite": false,
+        //     "is_cart": false,
+        //     "is_enrolled": false,
+        //     department
+        //     */
+        //     return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department']);
+        // });
 
         return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
     }
@@ -209,6 +209,7 @@ class CourseController extends BaseApiController
         $courses = QueryBuilder::for(Course::class)
             ->whereIn('id', $courseIds)
             ->select([
+                'id',
                 'name',
                 'slug',
                 'thumbnail',
