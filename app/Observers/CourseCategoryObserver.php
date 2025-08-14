@@ -2,19 +2,15 @@
 
 namespace App\Observers;
 
+use App\Helpers\CommonHelper;
 use App\Models\CourseCategory;
-use Illuminate\Support\Str;
 
 class CourseCategoryObserver
 {
     public function creating(CourseCategory $courseCategory)
     {
         if (empty($courseCategory->slug)) {
-            $slugBase = Str::slug($courseCategory->name);
-            // // Thêm mã ngẫu nhiên 12 ký tự
-            // $randomSuffix = Str::random(12);
-            // Gán slug
-            $courseCategory->slug = $slugBase;
+            $courseCategory->slug = CommonHelper::generateSlug($courseCategory->name);
         }
     }
 

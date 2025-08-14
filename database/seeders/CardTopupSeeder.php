@@ -25,6 +25,7 @@ class CardTopupSeeder extends Seeder
                 'code' => str_pad(rand(1, 999999999999999), 15, '0', STR_PAD_LEFT),
                 'status' => 'pending',
                 'response_message' => null,
+                'request_id' => rand(111111111111, 999999999999999),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

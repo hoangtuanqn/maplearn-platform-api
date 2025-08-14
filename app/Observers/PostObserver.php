@@ -2,19 +2,15 @@
 
 namespace App\Observers;
 
+use App\Helpers\CommonHelper;
 use App\Models\Post;
-use Illuminate\Support\Str;
 
 class PostObserver
 {
     public function creating(Post $post)
     {
         if (empty($post->slug)) {
-            $slugBase = Str::slug($post->title);
-            // Thêm mã ngẫu nhiên 6 ký tự
-            $randomSuffix = Str::random(12);
-            // Gán slug
-            $post->slug = $slugBase . '-' . strtolower($randomSuffix);
+            $post->slug = CommonHelper::generateSlug($post->title);
         }
     }
     /**

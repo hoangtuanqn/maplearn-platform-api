@@ -2,18 +2,15 @@
 
 namespace App\Observers;
 
+use App\Helpers\CommonHelper;
 use App\Models\Course;
-use Illuminate\Support\Str;
 
 class CourseObserver
 {
     public function creating(Course $course)
     {
         if (empty($course->slug)) {
-            $slugBase = Str::slug($course->name);
-            $randomSuffix = Str::random(12);
-            // Gán slug
-            $course->slug = $slugBase . '-' . $randomSuffix;
+            $course->slug = CommonHelper::generateSlug($course->name);
         }
     }
 

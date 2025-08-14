@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('course_discounts', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->unsignedInteger('course_id'); // Khóa học áp dụng giảm giá
             $table->enum('type', ['percentage', 'fixed']); // Loại giảm giá: phần trăm hay cố định
             $table->decimal('value', 10, 2); // Giá trị giảm giá => 1000.000.00đ hoặc 100.00%

@@ -2,8 +2,9 @@
 
 namespace App\Observers;
 
+use App\Helpers\CommonHelper;
 use App\Models\Subject;
-use Illuminate\Support\Str;
+
 
 class SubjectObserver
 {
@@ -12,7 +13,7 @@ class SubjectObserver
     {
         // Tạo slug từ tên môn học
         if (empty($subject->slug)) {
-            $subject->slug = Str::slug($subject->name);
+            $subject->slug = CommonHelper::generateSlug($subject->name);
         }
     }
 

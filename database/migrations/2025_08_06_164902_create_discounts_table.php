@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('discounts', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('code')->unique(); // Mã giảm giá
             $table->enum('type', ['percentage', 'fixed']); // % hay cố định
             $table->decimal('value', 10, 2); // Giá trị giảm => 1000.000.00đ hoặ 100.00%
@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->unsignedInteger('usage_limit')->nullable();  // Tổng lượt dùng
             $table->unsignedInteger('user_limit')->nullable();   // Số người dùng tối đa
-            
+
             $table->json('conditions')->nullable(); // Lớp, combo, đơn đầu tiên, v.v.
 
             $table->boolean('stackable')->default(false); // Cho phép cộng dồn với auto discount?

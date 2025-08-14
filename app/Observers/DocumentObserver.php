@@ -2,19 +2,15 @@
 
 namespace App\Observers;
 
+use App\Helpers\CommonHelper;
 use App\Models\Document;
-use Illuminate\Support\Str;
 
 class DocumentObserver
 {
     public function creating(Document $document)
     {
         if (empty($document->slug)) {
-            $slugBase = Str::slug($document->title);
-            // Thêm mã ngẫu nhiên 12 ký tự
-            $randomSuffix = Str::random(12);
-            // Gán slug
-            $document->slug = $slugBase . '-' . strtolower($randomSuffix);
+            $document->slug = CommonHelper::generateSlug($document->title);
         }
     }
 

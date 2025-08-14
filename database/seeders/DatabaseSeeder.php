@@ -42,7 +42,8 @@ class DatabaseSeeder extends Seeder
             DiscountSeeder::class,
             InvoiceSeeder::class,
             CardTopupSeeder::class,
-
+            ExamCategorySeeder::class,
+            ExamPaperSeeder::class,
         ]);
     }
 }
