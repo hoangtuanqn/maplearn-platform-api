@@ -54,6 +54,12 @@ class ExamPaper extends Model
         return $this->belongsTo(GradeLevel::class);
     }
 
+    // questions
+    public function questions()
+    {
+        return $this->hasMany(ExamQuestion::class);
+    }
+
     // Các sự kiện event
     protected static function booted()
     {
