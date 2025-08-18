@@ -68,7 +68,7 @@ class ExamPaperSeeder extends Seeder
                 'grade_level' => rand(1, 4),
                 'difficulty' => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
                 'province' => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
-                'exam_type' => collect(['HSA', 'V-ACT', 'TSA', 'OTHER'])->random()
+                'exam_type' => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random()
             ]);
         }
     }

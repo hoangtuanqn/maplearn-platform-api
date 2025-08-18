@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('province')->nullable(); // Tỉnh ra đề (Quảng ngãi, Bình Định, ...)
             $table->enum('difficulty', ['easy', 'normal', 'hard', 'very_hard'])->default('normal'); // Dễ, Bình thường, Khó, Rất khó
-            $table->enum('exam_type', ['HSA', 'V-ACT', 'TSA', 'OTHER'])->default('OTHER'); // Loại kì thi -> Đánh dấu để hiển thị ra đẹp hơn
+            $table->enum('exam_type', ['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->default('OTHER'); // Loại kì thi -> Đánh dấu để hiển thị ra đẹp hơn
             $table->decimal('max_score', 5, 2)->default(10.00); // Cơ số 10, 100, ...
             $table->integer('duration_minutes'); // Thời gian làm bài (phút)
             $table->boolean('anti_cheat_enabled')->default(false); // Bật/tắt chống gian lận

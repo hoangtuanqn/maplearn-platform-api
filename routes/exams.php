@@ -12,4 +12,6 @@ Route::apiResource('exams', ExamPaperController::class)->middlewareFor(['store',
 Route::prefix('exams')->group(function () {
     // Route::apiResource('questions', ExamQuestionController::class)->middleware('auth.jwt');
     Route::get('questions/{exam}', [ExamQuestionController::class, 'index'])->middleware('auth.jwt');
+    // Url nộp bài
+    Route::post('/{exam}/submit', [ExamQuestionController::class, 'submitExam'])->middleware('auth.jwt');
 });
