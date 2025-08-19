@@ -36,7 +36,7 @@ class ExamQuestionSeeder extends Seeder
                         'is_correct' => false
                     ],
                 ],
-                'marks' => 1
+                'marks' => 0.25
             ],
         ];
         for ($i = 0; $i < 40; $i++) {

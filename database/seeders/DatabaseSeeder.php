@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             CardTopupSeeder::class,
             ExamCategorySeeder::class,
             ExamPaperSeeder::class,
+            ExamQuestionSeeder::class,
         ]);
     }
 }

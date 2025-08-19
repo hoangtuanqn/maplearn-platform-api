@@ -14,10 +14,28 @@ class ExamQuestionController extends BaseApiController
      */
     public function index(Request $request, ExamPaper $exam)
     {
-        // Lấy đề thi + answer
+        // Kiểm tra người đang lấy có lịch sử đang làm hay k
+
+        $user = $request->user();
+
+        $attemp =  $user->examAttempts()->where('exam_paper_id', $exam->id)->where('status', 'in_progress')->first();
+
+        if (!$attemp) {
+            return $this->errorResponse('Không tìm thấy bài làm!', 403);
+        }
+        // Check thời gian làm bài
+        if ($attemp && $attemp->started_at->diffInMinutes(now()) > $exam->duration_minutes) {
+            // Tự động nộp bài, gọi controller nộp bài
+            $examPaper = new ExamPaperController();
+            $examPaper->submitExam($request, $exam);
+            return $this->errorResponse('Thời gian làm bài đã hết hạn', 403);
+        }
+        // Lấy đề thi + answers
         $exam->load('questions.answers');
         return $this->successResponse($exam);
     }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -46,72 +64,5 @@ class ExamQuestionController extends BaseApiController
     public function destroy(ExamQuestion $question)
     {
         //
-    }
-
-    /// Submit bài làm
-    public function submitExam(Request $request, ExamPaper $exam)
-    {
-        // Validate input
-        $data = $request->validate([
-            'slug' => 'required|string',
-            'data' => 'required|array',
-        ]);
-
-        $slug = $data['slug'];
-        $answers = $data['data'];
-        $paper = $exam->with('questions.answers')->firstOrFail();
-        $questions = $paper->questions;
-
-        $scores = 0; // Điểm của người dùng
-        // dd($questions->toArray());
-        // Câu trả lời của người dùng
-        foreach ($answers['answers'] as $key => $value) {
-            $question = $questions[$key - 1] ?? []; // Lấy câu hỏi theo key hiện tại
-            // dd($question);
-            // Dạng chọn 1 đáp án đúng
-            switch ($question->type) {
-                case "single_choice":
-                case "numeric_input":
-                case "true_false":
-                    // $value là ở dạng mảng
-                    $isCheck = $question->answers->where('content', $value[0])->where('is_correct', 1)->first();
-                    if ($isCheck) {
-                        $scores += $question->marks ?? 0;
-                    }
-                    break;
-                case "multiple_choice":
-                    $answersInCorrect = $question->answers->where('is_correct', 1);
-                    if (count($value) === count($answersInCorrect)) {
-                        foreach ($answersInCorrect as $answerInCorrect) {
-                            // Chỉ  cần có 1 cái sai thì xem như sai hết
-
-                            if (array_search($answerInCorrect->content, $value) === false) {
-                                echo $answerInCorrect->content;
-                                break 2;
-                            }
-                        }
-                        $scores +=  $question->marks ?? 0;
-                    }
-                    break;
-                case "drag_drop":
-                    //  drag_drop phải theo đúng thứ tự
-                    $answersInCorrect = $question->answers->where('is_correct', 1);
-                    if (count($value) === count($answersInCorrect)) {
-                        $i = 0;
-                        foreach ($answersInCorrect as $answerInCorrect) {
-
-                            if ($answerInCorrect->content != $value[$i++]) {
-                                break 2;
-                            }
-                        }
-                        $scores +=  $question->marks ?? 0;
-                    }
-                    break;
-            }
-        }
-
-        return $this->successResponse([
-            'scores' => $scores,
-        ], 'Bài làm đã được nộp thành công');
     }
 }

@@ -142,6 +142,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Invoice::class);
     }
 
+    // examAttempts
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
     // Lấy danh sách giỏ hàng
     public function cartItems()
     {

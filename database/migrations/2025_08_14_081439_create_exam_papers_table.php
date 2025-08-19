@@ -23,10 +23,16 @@ return new class extends Migration
             $table->enum('difficulty', ['easy', 'normal', 'hard', 'very_hard'])->default('normal'); // Dễ, Bình thường, Khó, Rất khó
             $table->enum('exam_type', ['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->default('OTHER'); // Loại kì thi -> Đánh dấu để hiển thị ra đẹp hơn
             $table->decimal('max_score', 5, 2)->default(10.00); // Cơ số 10, 100, ...
+            $table->decimal('pass_score', 5, 2)->default(5.00); // Điểm đạt
             $table->integer('duration_minutes'); // Thời gian làm bài (phút)
             $table->boolean('anti_cheat_enabled')->default(false); // Bật/tắt chống gian lận
             $table->integer('max_violation_attempts')->default(3);   // Số lần vi phạm tối đa sẽ bị khóa này (nếu anti_cheat_enabled bật)
+            // lượt làm bài tối đa, null nghĩa là không giới hạn
+            $table->integer('max_attempts')->nullable()->default(null); // null: Không giới hạn,
             $table->boolean('status')->default(true); // Có public hay không
+            // Ngày bắt đầu kì thi + kết thức kỳ thi
+            $table->timestamp('start_time')->default(now());
+            $table->timestamp('end_time')->nullable(); // Null là ko giới hạn
             $table->timestamps();
 
             $table->foreign('exam_category_id')->references('id')->on('exam_categories')->onDelete('cascade');
