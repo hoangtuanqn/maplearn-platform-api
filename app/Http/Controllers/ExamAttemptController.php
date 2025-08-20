@@ -66,6 +66,7 @@ class ExamAttemptController extends BaseApiController
             // Update status = canceled
             $examAttempt->update([
                 'status' => 'detected',
+     
                 'note' => 'Thí sinh gian lận trong quá trình thi cử. Bài thi đã bị hủy.',
                 'score' => 0,
             ]);
