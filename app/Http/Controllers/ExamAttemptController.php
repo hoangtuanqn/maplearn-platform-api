@@ -82,4 +82,83 @@ class ExamAttemptController extends BaseApiController
 
         return $this->successResponse($examAttempt, "Đã đánh dấu bài thi gian lận!");
     }
+
+    public function ranking(ExamPaper $exam)
+    {
+        // Lấy danh sách bài thi đã hoàn thành, chỉ tính lần làm bài đầu tiên của mỗi người
+        $attempts = $exam->examAttempts()
+            ->where('status', 'submitted')
+            ->with(['user' => function ($query) {
+                $query->select('id', 'avatar', 'full_name');
+            }])
+            ->orderByDesc('score')
+            ->orderBy('time_spent') // Ưu tiên thời gian thấp hơn nếu điểm bằng nhau
+            ->get()
+            ->each(function ($item) {
+                $item->makeHidden(['details']);
+            })
+            ->groupBy('user_id')
+            ->map(function ($group) {
+                // Chỉ lấy lần làm bài đầu tiên (theo id nhỏ nhất)
+                return $group->sortBy('id')->first();
+            })
+            ->sort(function ($a, $b) {
+                // Sắp xếp theo điểm giảm dần, nếu bằng thì theo time_spent tăng dần
+                if ($a->score == $b->score) {
+                    return $a->time_spent <=> $b->time_spent;
+                }
+                return $b->score <=> $a->score;
+            })
+            ->filter(function ($item) {
+                return $item->score > 0;
+            })
+            ->take(10) // Lấy 10 người
+            ->values();
+
+        return $this->successResponse($attempts, 'Lấy bảng xếp hạng thành công!');
+    }
+
+    // Check ranking của người dùng đang gửi request
+    public function checkUserRanking(Request $request, ExamPaper $exam)
+    {
+        $user = $request->user();
+
+        // Lấy tất cả các bài thi đã nộp, chỉ lấy lần đầu tiên của mỗi người
+        $attempts = $exam->examAttempts()
+            ->where('status', 'submitted')
+            ->orderByDesc('score')
+            ->orderBy('time_spent')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function ($group) {
+                return $group->sortBy('id')->first();
+            })
+            ->sort(function ($a, $b) {
+                if ($a->score == $b->score) {
+                    return $a->time_spent <=> $b->time_spent;
+                }
+                return $b->score <=> $a->score;
+            })
+            ->filter(function ($item) {
+                return $item->score > 0;
+            })
+            ->values();
+
+        // Tìm vị trí của user hiện tại
+        $ranking = $attempts->search(function ($attempt) use ($user) {
+            return $attempt->user_id == $user->id;
+        });
+
+        if ($ranking === false) {
+            return $this->errorResponse([], 'Người dùng chưa có bài thi trong bảng xếp hạng.');
+        }
+
+        $userAttempt = $attempts[$ranking];
+        $userAttempt->makeHidden(['details']);
+
+        return $this->successResponse([
+            'rank' => $ranking + 1,
+            'attempt' => $userAttempt,
+        ], 'Lấy thứ hạng của người dùng thành công!');
+    }
 }

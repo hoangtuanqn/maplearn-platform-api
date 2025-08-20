@@ -28,4 +28,13 @@ Route::prefix('exams')->middleware('auth.jwt')->group(function () {
 
     // Lấy lịch sử làm bài thi
     Route::get("/{exam}/attempts", [ExamAttemptController::class, 'index']);
+
+    // Kiểm tra xếp hạng của người dùng
+    Route::get("/{exam}/check-ranking", [ExamAttemptController::class, 'checkUserRanking']);
+});
+
+// Ko cần login
+Route::prefix('exams')->group(function () {
+    // Bảng ranking (Xếp hạng)
+    Route::get("/{exam}/ranking", [ExamAttemptController::class, 'ranking']);
 });
