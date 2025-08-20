@@ -9,7 +9,9 @@ use App\Http\Controllers\ExamQuestionController;
 Route::apiResource('exam-categories', ExamCategoryController::class)->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::apiResource('exams', ExamPaperController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::prefix('exams')->middleware('auth.jwt')->group(function () {
+    // Lấy danh sách câu hỏi đề thi
     Route::get('/questions/{exam}', [ExamQuestionController::class, 'index']);
+
     // Url bắt đầu làm bài (lưu lại data)
     Route::post('/{exam}/start', [ExamPaperController::class, 'startExam']);
     // Url nộp bài

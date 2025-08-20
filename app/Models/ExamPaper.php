@@ -42,7 +42,8 @@ class ExamPaper extends Model
     protected $appends = [
         'is_in_progress', // Kiểm tra người dùng có đang làm bài thi hay không
         'question_count',
-        'attempt_count'
+        'total_attempt_count',  // tổng số lượt thi của đề thi
+        'attempt_count' // số lượt thi của user đang gọi request
     ];
 
     public function getRouteKeyName()
@@ -71,6 +72,10 @@ class ExamPaper extends Model
     {
         return $this->hasMany(ExamQuestion::class);
     }
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
 
     // Check xem người dùng có đang trong quá trình làm bài thi hay không
     public function getIsInProgressAttribute()
@@ -87,7 +92,10 @@ class ExamPaper extends Model
     {
         return $this->questions()->count();
     }
-
+    public function getTotalAttemptCountAttribute()
+    {
+        return $this->examAttempts()->count();
+    }
     public function getAttemptCountAttribute()
     {
         $user = Auth::user();
