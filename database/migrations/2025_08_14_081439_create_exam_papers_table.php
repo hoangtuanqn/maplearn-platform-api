@@ -16,7 +16,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('exam_category_id'); // Liên kết danh mục kỳ thi
             $table->unsignedInteger('subject_id'); // Liên kết môn học
-            $table->unsignedInteger('grade_level'); // Lớp 10, 11, 12, ..
+            $table->unsignedInteger('grade_level_id'); // Lớp 10, 11, 12, ..
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('province')->nullable(); // Tỉnh ra đề (Quảng ngãi, Bình Định, ...)
@@ -36,7 +36,7 @@ return new class extends Migration
 
             $table->foreign('exam_category_id')->references('id')->on('exam_categories')->onDelete('cascade');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-            $table->foreign('grade_level')->references('id')->on('grade_levels')->onDelete('cascade');
+            $table->foreign('grade_level_id')->references('id')->on('grade_levels')->onDelete('cascade');
         });
     }
 

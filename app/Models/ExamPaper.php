@@ -62,6 +62,11 @@ class ExamPaper extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(ExamCategory::class, 'exam_category_id');
+    }
+
     public function gradeLevel()
     {
         return $this->belongsTo(GradeLevel::class);

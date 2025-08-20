@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\PaperExam\CategoriesSlugFilter;
+use App\Filters\PaperExam\DifficultiesSlugFilter;
+use App\Filters\PaperExam\GradeLevelSlugFilter;
+use App\Filters\PaperExam\ProvincesSlugFilter;
+use App\Filters\PaperExam\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use PhpParser\Node\Expr;
+
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ExamPaperController extends BaseApiController
@@ -21,9 +26,17 @@ class ExamPaperController extends BaseApiController
     public function index()
     {
         $limit = min((int)($request->limit ?? 20), 100); // Giới hạn tối đa 100 items
-
+        // Filter môn học, phân loại học, độ khóa
         $posts = QueryBuilder::for(ExamPaper::class)
             ->where('status', true)
+            ->allowedFilters([
+                'title',
+                AllowedFilter::custom('provinces', new ProvincesSlugFilter),
+                AllowedFilter::custom('categories', new CategoriesSlugFilter),
+                AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
+                AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
+                AllowedFilter::custom('subject', new SubjectSlugFilter),
+            ])
             ->orderByDesc('id')
             ->paginate($limit);
 

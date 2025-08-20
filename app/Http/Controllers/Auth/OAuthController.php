@@ -41,16 +41,16 @@ class OAuthController extends Controller
             $user->update([
                 'full_name' => $socialUser->getName(),
                 "{$provider}_id" => $socialUser->getId(),
-                'avatar' => $socialUser->getAvatar(),
+                'avatar' => 'https://res.cloudinary.com/dbu1zfbhv/image/upload/v1755729796/avatars/ccrlg1hkjtc6dyeervsv.jpg',
             ]);
         } else {
             $data = [
                 'full_name' => $socialUser->getName() ?? $socialUser->getNickname(),
-                'username' => $socialUser->getNickname() . rand(1, 1000) ?: 'user_' . time(),
+                'username' => $socialUser->getEmail() ?: 'user_' . time(),
                 'email' => $socialUser->getEmail() ?? "",
                 'password' => $socialUser->getId() . rand(2000, time()),
                 "{$provider}_id" => $socialUser->getId() ?? "",
-                'avatar' => $socialUser->getAvatar() ?? "",
+                'avatar' => 'https://res.cloudinary.com/dbu1zfbhv/image/upload/v1755729796/avatars/ccrlg1hkjtc6dyeervsv.jpg',
             ];
             if ($provider === 'google') {
                 $data['email_verified_at'] = now();

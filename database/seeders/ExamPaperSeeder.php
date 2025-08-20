@@ -65,7 +65,7 @@ class ExamPaperSeeder extends Seeder
                 'duration_minutes' => 120,
                 'exam_category_id' => ExamCategory::inRandomOrder()->first()->id,
                 'subject_id' => Subject::inRandomOrder()->first()->id,
-                'grade_level' => rand(1, 4),
+                'grade_level_id' => rand(1, 4),
                 'difficulty' => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
                 'province' => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
                 'exam_type' => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random()
