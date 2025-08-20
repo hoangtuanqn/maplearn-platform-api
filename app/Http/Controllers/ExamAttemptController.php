@@ -12,9 +12,17 @@ class ExamAttemptController extends BaseApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, ExamPaper $exam)
     {
-        //
+
+        // Lấy lịch sử làm bài
+        $user = $request->user();
+
+        $attempts = $user->examAttempts()->where('exam_paper_id', $exam->id)->orderBy('id', 'DESC')->get();
+        $attempts->each(function ($item) {
+            $item->makeHidden(['details']);
+        });
+        return $this->successResponse($attempts, 'Lấy danh sách lịch sử làm bài thành công!');
     }
 
     /**
@@ -66,7 +74,7 @@ class ExamAttemptController extends BaseApiController
             // Update status = canceled
             $examAttempt->update([
                 'status' => 'detected',
-     
+
                 'note' => 'Thí sinh gian lận trong quá trình thi cử. Bài thi đã bị hủy.',
                 'score' => 0,
             ]);

@@ -80,16 +80,24 @@ class ExamPaperController extends BaseApiController
     }
 
     // Xem chi tiết thông tin bài thi (bài thi cuối cùng, thi gần nhất)
-    public function detailResultExam(Request $request, ExamPaper $exam)
+    public function detailResultExam(Request $request, ExamPaper $exam, $id = null)
     {
         $user = $request->user();
+        // Kiểm tra id này có phải của người dùng này hay k
+
         $this->authorize('admin-teacher-owner', $exam);
-        $exam['results'] = ExamAttempt::where('exam_paper_id', $exam->id)
+        $query = ExamAttempt::where('exam_paper_id', $exam->id)
             ->where('user_id', $user->id)
-            ->whereIn('status', ['submitted', 'detected'])
-            ->latest()
-            ->first();
-        return $this->successResponse($exam, 'Lấy thông tin bài thi thành công!');
+            ->whereIn('status', ['submitted', 'detected']);
+        if ($id) {
+            $query->where('id', $id);
+        }
+        $exam['results'] = $query->latest()->first();
+        if ($exam['results']) {
+            return $this->successResponse($exam, 'Lấy thông tin bài thi thành công!');
+        } else {
+            return $this->errorResponse(null, 'Không tìm thấy thông tin bài thi!');
+        }
     }
 
     /// Submit bài làm
