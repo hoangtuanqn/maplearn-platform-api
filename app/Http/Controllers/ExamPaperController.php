@@ -29,6 +29,10 @@ class ExamPaperController extends BaseApiController
         // Filter môn học, phân loại học, độ khóa
         $posts = QueryBuilder::for(ExamPaper::class)
             ->where('status', true)
+            ->where(function ($query) {
+                $query->whereNull('end_time')
+                    ->orWhere('end_time', '>', now());
+            })
             ->allowedFilters([
                 'title',
                 AllowedFilter::custom('provinces', new ProvincesSlugFilter),
@@ -56,6 +60,10 @@ class ExamPaperController extends BaseApiController
      */
     public function show(ExamPaper $exam)
     {
+        if ($exam->end_time && $exam->end_time < now()) {
+            return $this->errorResponse(null, 'Đề thi đã kết thúc!', 400);
+        }
+
         return $this->successResponse($exam, 'Lấy thông tin đề thi thành công!');
     }
 
