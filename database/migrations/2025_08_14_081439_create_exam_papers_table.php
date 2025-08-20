@@ -27,8 +27,7 @@ return new class extends Migration
             $table->integer('duration_minutes'); // Thời gian làm bài (phút)
             $table->boolean('anti_cheat_enabled')->default(false); // Bật/tắt chống gian lận
             $table->integer('max_violation_attempts')->default(3);   // Số lần vi phạm tối đa sẽ bị khóa này (nếu anti_cheat_enabled bật)
-            // lượt làm bài tối đa, null nghĩa là không giới hạn
-            $table->integer('max_attempts')->nullable()->default(null); // null: Không giới hạn,
+            $table->integer('max_attempts')->nullable()->default(null); // lượt làm bài tối đa, null nghĩa là không giới hạn
             $table->boolean('status')->default(true); // Có public hay không
             // Ngày bắt đầu kì thi + kết thức kỳ thi
             $table->timestamp('start_time')->default(now());

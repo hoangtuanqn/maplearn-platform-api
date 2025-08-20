@@ -65,6 +65,10 @@ class ExamPaperController extends BaseApiController
     public function startExam(Request $request, ExamPaper $exam)
     {
         $user = $request->user();
+        // Check số lần đã thi
+        if ($exam->max_attempts && $exam->attempt_count >= $exam->max_attempts) {
+            return $this->errorResponse(null, 'Bạn đã vượt quá số lần làm bài thi cho phép!');
+        }
         if (!ExamAttempt::where('exam_paper_id', $exam->id)->where('user_id', $user->id)->where('status', 'in_progress')->exists()) {
             // Chưa có bài làm nào, tạo mới
             ExamAttempt::create([

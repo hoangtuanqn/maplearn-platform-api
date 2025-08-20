@@ -42,6 +42,7 @@ class ExamPaper extends Model
     protected $appends = [
         'is_in_progress', // Kiểm tra người dùng có đang làm bài thi hay không
         'question_count',
+        'attempt_count'
     ];
 
     public function getRouteKeyName()
@@ -85,6 +86,15 @@ class ExamPaper extends Model
     public function getQuestionCountAttribute()
     {
         return $this->questions()->count();
+    }
+
+    public function getAttemptCountAttribute()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return 0;
+        }
+        return $user->examAttempts()->where('exam_paper_id', $this->id)->count();
     }
 
 
