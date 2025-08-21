@@ -31,6 +31,9 @@ Route::prefix('exams')->middleware('auth.jwt')->group(function () {
 
     // Kiểm tra xếp hạng của người dùng
     Route::get("/{exam}/check-ranking", [ExamAttemptController::class, 'checkUserRanking']);
+
+    // Get bài làm của người dùng (câu hỏi đề thi + đáp án)
+    Route::get("/{exam}/{id}/my-attempts", [ExamAttemptController::class, 'myAttempts']);
 });
 
 // Ko cần login

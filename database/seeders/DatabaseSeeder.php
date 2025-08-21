@@ -30,6 +30,12 @@ class DatabaseSeeder extends Seeder
             DocumentSeeder::class,
             TeacherSeeder::class,
             DepartmentTeacherSeeder::class,
+
+
+            ExamCategorySeeder::class,
+            ExamPaperSeeder::class,
+            ExamQuestionSeeder::class,
+
             CourseSeeder::class,
             CourseReviewSeeder::class,
             CourseTeacherSeeder::class,
@@ -42,9 +48,6 @@ class DatabaseSeeder extends Seeder
             DiscountSeeder::class,
             InvoiceSeeder::class,
             CardTopupSeeder::class,
-            ExamCategorySeeder::class,
-            ExamPaperSeeder::class,
-            ExamQuestionSeeder::class,
         ]);
     }
 }

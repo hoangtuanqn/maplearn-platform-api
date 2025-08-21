@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
+use App\Traits\AuthorizesOwnerOrAdmin;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ExamAttemptController extends BaseApiController
 {
+    use AuthorizesRequests, AuthorizesOwnerOrAdmin;
     /**
      * Display a listing of the resource.
      */
@@ -160,5 +164,60 @@ class ExamAttemptController extends BaseApiController
             'rank' => $ranking + 1,
             'attempt' => $userAttempt,
         ], 'Lấy thứ hạng của người dùng thành công!');
+    }
+
+    public function myAttempts(Request $request, ExamPaper $exam, $id)
+    {
+
+        $user = $request->user();
+
+        // Bài làm của học sinh
+        $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
+            ->where('user_id', $user->id)
+            ->where('id', $id)
+            ->where('status', 'submitted')
+            ->first();
+        if (!$attempt) {
+            return $this->errorResponse(null, 'Không tìm thấy bài làm của bạn!');
+        }
+
+        $answers = $attempt->details['answers'];
+        // return $this->successResponse($attempt->details['answers'], 'Lấy thông tin bài làm thành công!');
+
+
+        if (!$attempt) {
+            return $this->errorResponse(null, 'Không tìm thấy bài làm của bạn!');
+        }
+
+        $questions = $exam->questions;
+        // $this->successResponse($questions, 'Lấy thông tin bài làm thành công!');
+
+        // Gắn thông tin đáp án của người dùng vào từng câu hỏi
+        $questions->each(function ($question) use ($answers) {
+            // Nếu người dùng có trả lời câu hỏi này
+            if (isset($answers[$question->id])) {
+                $userAnswer = $answers[$question->id];
+                $question->is_correct = $userAnswer['is_correct'];
+                $question->your_choice = $userAnswer['value'];
+
+                // Nếu trả lời sai, lấy đáp án đúng
+                if (!$userAnswer['is_correct']) {
+                    $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
+                        ->where('is_correct', 1)
+                        ->pluck('content')
+                        ->toArray();
+                }
+
+                // Add thêm các những options của question này
+                $question->answers = ExamAnswer::where('exam_question_id', $question->id)->get()
+                    ->toArray();
+            }
+        });
+        return $this->successResponse($exam->questions, 'Lấy thông tin bài làm thành công!');
+
+
+        // Ẩn chi tiết nếu cần
+
+        return $this->successResponse($attempt, 'Lấy thông tin bài làm thành công!');
     }
 }
