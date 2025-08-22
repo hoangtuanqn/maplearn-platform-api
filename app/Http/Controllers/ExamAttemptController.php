@@ -7,6 +7,7 @@ use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Traits\AuthorizesOwnerOrAdmin;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,17 @@ class ExamAttemptController extends BaseApiController
         $user = $request->user();
 
         $attempts = $user->examAttempts()->where('exam_paper_id', $exam->id)->orderBy('id', 'DESC')->get();
+        // Check xem nhưng để thi nào đang in_process mà đã hết giờ thì hủy bài
+        $attempts->each(function ($item) use ($exam) {
+            // Công thêm 2 phút để tránh lỗi (nếu k nộp bài thi => hủy bài)
+            // $item->started_at dạng timestamp, còn $exam->duration_minutes dạng phút
+            if ($item->status === 'in_progress' && Carbon::parse($item->started_at)->addMinutes($exam->duration_minutes + 2)->isPast()) {
+                $item->update([
+                    'status' => 'canceled',
+                    'note' => 'Thời gian làm bài đã hết nhưng không nộp.',
+                ]);
+            }
+        });
         $attempts->each(function ($item) {
             $item->makeHidden(['details']);
         });
@@ -199,19 +211,19 @@ class ExamAttemptController extends BaseApiController
                 $userAnswer = $answers[$question->id];
                 $question->is_correct = $userAnswer['is_correct'];
                 $question->your_choice = $userAnswer['value'];
-
                 // Nếu trả lời sai, lấy đáp án đúng
 
-                $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
-                    ->where('is_correct', 1)
-                    ->pluck('content')
-                    ->toArray();
-
-
-                // Modifier lại thông tin
-                $question->setAttribute('answers', ExamAnswer::where('exam_question_id', $question->id)->get()
-                    ->toArray());
+            } else {
+                $question->your_choice = [];
+                $question->is_correct = false;
             }
+            $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
+                ->where('is_correct', 1)
+                ->pluck('content')
+                ->toArray();
+            // Modifier lại thông tin
+            $question->setAttribute('answers', ExamAnswer::where('exam_question_id', $question->id)->get()
+                ->toArray());
         });
         return $this->successResponse($exam->questions, 'Lấy thông tin bài làm thành công!');
 
