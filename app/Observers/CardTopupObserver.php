@@ -7,7 +7,16 @@ use App\Models\Invoice;
 
 class CardTopupObserver
 {
+    public function created(CardTopup $cardTopup): void
+    {
+        $this->handleTopup($cardTopup);
+    }
+
     public function updated(CardTopup $cardTopup): void
+    {
+        $this->handleTopup($cardTopup);
+    }
+    protected function handleTopup(CardTopup $cardTopup): void
     {
         if ($cardTopup->status === 'success') {
             $invoice = Invoice::where('id', $cardTopup->invoice_id)->where('status', 'pending')->first();

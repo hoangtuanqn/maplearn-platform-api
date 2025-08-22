@@ -201,16 +201,16 @@ class ExamAttemptController extends BaseApiController
                 $question->your_choice = $userAnswer['value'];
 
                 // Nếu trả lời sai, lấy đáp án đúng
-                if (!$userAnswer['is_correct']) {
-                    $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
-                        ->where('is_correct', 1)
-                        ->pluck('content')
-                        ->toArray();
-                }
 
-                // Add thêm các những options của question này
-                $question->answers = ExamAnswer::where('exam_question_id', $question->id)->get()
+                $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
+                    ->where('is_correct', 1)
+                    ->pluck('content')
                     ->toArray();
+
+
+                // Modifier lại thông tin
+                $question->setAttribute('answers', ExamAnswer::where('exam_question_id', $question->id)->get()
+                    ->toArray());
             }
         });
         return $this->successResponse($exam->questions, 'Lấy thông tin bài làm thành công!');

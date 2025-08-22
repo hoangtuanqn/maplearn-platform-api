@@ -183,6 +183,7 @@ class InvoiceController extends BaseApiController
                     'serial' => $card['serial'],
                     'code' => $card['code'],
                     'status' => $card['status'] == 1 ? 'success' : 'pending',
+                    'request_id' => $card['request_id'] ?? null,
                     'response_message' => $card['message']
                 ]);
             }
