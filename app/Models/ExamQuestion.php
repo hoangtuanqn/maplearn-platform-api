@@ -29,6 +29,11 @@ class ExamQuestion extends Model
     }
     public function examPaper()
     {
-        return $this->belongsTo(ExamPaper::class);
+        return $this->belongsTo(ExamPaper::class, 'exam_paper_id');
+    }
+
+    public function answersCorrect()
+    {
+        return $this->answers()->where('is_correct', true);
     }
 }

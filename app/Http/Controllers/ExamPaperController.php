@@ -10,6 +10,7 @@ use App\Filters\PaperExam\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
+use App\Models\UserWrongQuestion;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -128,13 +129,14 @@ class ExamPaperController extends BaseApiController
     /// Submit bài làm
     public function submitExam(Request $request, ExamPaper $exam)
     {
+        $user = $request->user();
         // Validate input
         $data = $request->validate([
             'data' => 'required|array',
         ]);
 
         $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->where('status', 'in_progress')
             ->first();
 
@@ -148,6 +150,7 @@ class ExamPaperController extends BaseApiController
         $questions = $paper->questions;
 
         $scores = 0; // Điểm của người dùng
+        $wrong_questions = [];
 
         // Duyệt qua câu trả lời của user
         foreach ($answers['answers'] as $key => $value) {
@@ -159,9 +162,9 @@ class ExamPaperController extends BaseApiController
             $isCorrect = false;
 
             switch ($question->type) {
-                case "single_choice":
-                case "numeric_input":
-                case "true_false":
+                case "SINGLE_CHOICE":
+                case "NUMERIC_INPUT":
+                case "TRUE_FALSE":
                     // $value có thể là mảng -> lấy phần tử đầu tiên
                     $userAnswer = is_array($value) ? $value[0] : $value;
                     $isCheck = $question->answers
@@ -180,7 +183,7 @@ class ExamPaperController extends BaseApiController
                     ];
                     break;
 
-                case "multiple_choice":
+                case "MULTIPLE_CHOICE":
                     $answersInCorrect = $question->answers->where('is_correct', 1);
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $allCorrect = true;
@@ -202,7 +205,7 @@ class ExamPaperController extends BaseApiController
                     ];
                     break;
 
-                case "drag_drop":
+                case "DRAG_DROP":
                     $answersInCorrect = $question->answers->where('is_correct', 1);
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $i = 0;
@@ -225,6 +228,18 @@ class ExamPaperController extends BaseApiController
                     ];
                     break;
             }
+
+            // Lưu lại các câu làm sai để lưu vô danh sách sau này làm lại (Chỉ tính những câu đã chọn nhưng sai thôi)
+            if ($isCorrect === false) {
+                $wrong_questions[] = [
+                    'user_id' => $user->id,
+                    'exam_question_id' => $question->id,
+                    'wrong_count' => 1, // Mới làm sai lần đầu
+                    'first_wrong_at' => now(),
+                    'last_wrong_at' => now(),
+                    'status' => 'active', // Trạng thái đang cần ôn
+                ];
+            }
         }
         // dd($answers);
         // bỏ key không cần thiết
@@ -235,6 +250,31 @@ class ExamPaperController extends BaseApiController
         $attempt->score = $scores;
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
+
+
+        // return $this->errorResponse($wrong_questions, "thành công");
+        // Add các câu sai vô DB
+        foreach ($wrong_questions as $wrong_question) {
+            $record = UserWrongQuestion::firstOrNew([
+                'user_id'     => $user->id,
+                'exam_question_id' => $wrong_question['exam_question_id'],
+            ]);
+
+            if ($record->exists) {
+                $record->increment('wrong_count');
+                $record->last_wrong_at = now();
+                $record->save();
+            } else {
+                $record->fill([
+                    'exam_question_id' => $wrong_question['exam_question_id'] ?? null,
+                    'wrong_count'      => 1,
+                    'first_wrong_at'   => now(),
+                    'last_wrong_at'    => now(),
+                    'status'           => 'active',
+                ]);
+                $record->save();
+            }
+        }
 
         return $this->successResponse([
             'scores' => $scores,

@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('exam_questions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('exam_paper_id'); // Liên kết đề thi
-            $table->enum('type', ['single_choice', 'multiple_choice', 'drag_drop', 'true_false', 'numeric_input']); // Loại câu hỏi: 1 đáp án, nhiều đáp án, kéo thả, đúng/sai, nhập đáp án
+            $table->enum('type', ['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'DRAG_DROP', 'TRUE_FALSE', 'NUMERIC_INPUT']); // Loại câu hỏi: 1 đáp án, nhiều đáp án, kéo thả, đúng/sai, nhập đáp án
             $table->text('content'); // Nội dung câu hỏi (Mã HTML)
             $table->longText('explanation')->nullable(); // Giải thích đáp án cho câu hỏi (nếu có) HTML giải thích
             $table->json('images')->nullable(); // Danh sách ảnh JSON. VD: ["image1.jpg", "image2.jpg"]

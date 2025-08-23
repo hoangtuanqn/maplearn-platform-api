@@ -20,9 +20,6 @@ return new class extends Migration
             // FK -> exam_questions.id: câu hỏi đã từng làm sai
             $table->unsignedInteger('exam_question_id');
 
-            // FK -> exam_attempts.id: lần gần nhất phát sinh sai của câu này (có thể null)
-            $table->unsignedInteger('last_attempt_id')->nullable();
-
             // Tổng số lần user làm sai câu này
             $table->unsignedInteger('wrong_count')->default(0);
 
@@ -33,8 +30,8 @@ return new class extends Migration
             $table->timestamp('first_wrong_at')->nullable();
             $table->timestamp('last_wrong_at')->nullable();
 
-            // Thời điểm nên ôn lại tiếp (ưu tiên chọn câu đến hạn)
-            $table->timestamp('next_review_at')->nullable();
+            // Lần cuối làm đúng câu này
+            $table->timestamp('last_correct_at')->nullable();
 
             // Trạng thái ôn: đang cần ôn/hoãn/đã nắm
             $table->enum('status', ['active', 'snoozed', 'mastered'])->default('active');
@@ -46,8 +43,8 @@ return new class extends Migration
             $table->unique(['user_id', 'exam_question_id'], 'uq_user_question');
 
             // Index phục vụ truy vấn danh sách cần ôn
-            $table->index(['user_id', 'next_review_at', 'status'], 'idx_user_due_status');
-            $table->index(['last_attempt_id']);
+            $table->index(['user_id', 'status'], 'idx_user_due_status');
+
 
             // FKs
             $table->foreign('user_id')
