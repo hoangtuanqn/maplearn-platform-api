@@ -9,4 +9,5 @@ Route::apiResource('students', StudentController::class)->middleware(['auth.jwt'
 Route::prefix("students")->middleware(['auth.jwt', 'check.role:admin'])->group(function () {
     Route::post('/{student}/reset-password', [StudentController::class, 'resetPassword']);
     Route::get('/{student}/activity-history', [StudentController::class, 'activityHistory']);
+    Route::post('/import', [StudentController::class, 'imports']);// import nhiều học sinh từ file excel
 });
