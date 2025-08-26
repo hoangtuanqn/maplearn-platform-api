@@ -77,10 +77,11 @@ class AutoConfirmInvoices extends Command
                         $payment->status = 'paid';
                         $payment->payment_method = 'transfer';
                         $payment->save();
-
+                        $user = $payment->users()->first();
                         broadcast(new PusherEvent([
                             'message' => 'Thanh toán #' . $payment->transaction_code . ' đã được xác nhận.',
-                        ], $payment->users()->first()?->email));
+                        ], $user?->email));
+                        $user?->logActivity("confirm_payment", "Đã xác nhận thanh toán \"{$payment->transaction_code}\".");
                         $this->info("Thanh toán #{$payment->transaction_code} đã được xác nhận.");
                     }
                 }

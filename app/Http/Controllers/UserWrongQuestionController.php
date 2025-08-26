@@ -16,7 +16,7 @@ class UserWrongQuestionController extends BaseApiController
     // Lấy danh sách các câu hỏi đã làm sai
     public function index(Request $request)
     {
-        $limit = min((int)($request->limit ?? 10), 100);
+        $limit = (int)($request->limit ?? 10);
         $user = $request->user();
 
         $examAttempt = ExamAttempt::where('user_id', $user->id)

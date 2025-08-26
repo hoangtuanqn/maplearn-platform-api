@@ -90,12 +90,12 @@ class ExamAttemptController extends BaseApiController
             // Update status = canceled
             $examAttempt->update([
                 'status' => 'detected',
-
                 'note' => 'Thí sinh gian lận trong quá trình thi cử. Bài thi đã bị hủy.',
                 'score' => 0,
             ]);
         }
-
+        $exam = $examAttempt->paper();
+        $user->logActivity("detected_cheat", "Đã phát hiện gian lận trong bài thi \"{$exam->title}\".");
         return $this->successResponse($examAttempt, "Đã đánh dấu bài thi gian lận!");
     }
 

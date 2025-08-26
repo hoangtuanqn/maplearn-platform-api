@@ -47,6 +47,7 @@ class AuthController extends BaseApiController
                 'token' => base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
             ]);
         }
+        $user->logActivity("login", "Đăng nhập thành công");
         // logger("Login user >> " . $user);
 
         // Trả về token + refresh token dưới dạng cookie
@@ -71,6 +72,7 @@ class AuthController extends BaseApiController
         $user = User::create($data);
         $user->notify(new VerifyEmailNotification($user->verification_token));
 
+        // Lưu lịch sử hoạt động
 
         // Tạo cookie token và trả về response
         return $this->respondWithToken($user, 'Đã đăng ký tài khoản thành công!', 201);
@@ -90,6 +92,7 @@ class AuthController extends BaseApiController
         $user->email_verified_at = now();
         $user->verification_token = null; // Xóa token sau khi xác minh
         $user->save();
+        $user->logActivity("verify_email", "Xác minh email thành công");
         // Trả về thông báo thành công
         return $this->successResponse(null, 'Xác minh email thành công!', 200);
     }
@@ -164,6 +167,7 @@ class AuthController extends BaseApiController
         if (!$isValid) {
             return $this->errorResponse(null, 'Mã OTP không chính xác hoặc đã hết hạn!', 401);
         }
+        $user->logActivity("login", "Đăng nhập thành công");
         return $this->respondWithToken($user, 'Xác thực tài khoản thành công!');
     }
 

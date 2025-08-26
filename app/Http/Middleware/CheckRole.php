@@ -13,20 +13,17 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
 
-        // Nếu chưa đăng nhập
         if (!$user) {
-            // return response()->json(['message' => 'Bạn chưa đăng nhập!'], 401);
             return response()->json(['success' => false, 'message' => 'Bạn chưa đăng nhập!'], 401);
         }
 
-        // Nếu không phải admin hoặc teacher
-        if (!in_array($user->role, ['admin', 'teacher'])) {
-            // return response()->json(['message' => 'Bạn không có quyền để truy cập vào trang này!'], 403);
-            return response()->json(['success' => false, 'message' => 'Bạn không có quyền để truy cập vào trang này!'], 403);
+        // Nếu role user không nằm trong list
+        if (!in_array($user->role, $roles)) {
+            return response()->json(['success' => false, 'message' => 'Bạn không có quyền truy cập!'], 403);
         }
 
         return $next($request);

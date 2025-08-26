@@ -41,7 +41,7 @@ class CommentController extends BaseApiController
         }
 
         // Lấy danh sách bình luận
-        $limit = min((int)($request->limit ?? 10), 100);
+        $limit = (int)($request->limit ?? 10);
 
         $comments = Comment::query()
             ->select(['id', 'description', 'user_id', 'reply_id', 'created_at'])

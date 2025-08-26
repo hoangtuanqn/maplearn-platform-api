@@ -15,7 +15,7 @@ class DocumentCategoryController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
 
         $categories = QueryBuilder::for(DocumentCategory::class)
             ->select(['id', 'name', 'description', 'status', 'created_at', 'updated_at'])

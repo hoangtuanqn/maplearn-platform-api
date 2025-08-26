@@ -24,9 +24,9 @@ class ExamPaperController extends BaseApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $limit = min((int)($request->limit ?? 20), 100); // Giới hạn tối đa 100 items
+        $limit = (int)($request->limit ?? 20);
         // Filter môn học, phân loại học, độ khóa
         $posts = QueryBuilder::for(ExamPaper::class)
             ->where('status', true)
@@ -100,6 +100,8 @@ class ExamPaperController extends BaseApiController
                 'details' => (['answers' => [], 'start' => now()->timestamp, 'questionActive' => 0]), // Khởi tạo chi tiết bài làm là mảng rỗng
                 'started_at' => now(),
             ]);
+            $user->logActivity("start_exam", "Đã bắt đầu làm bài thi \"{$exam->title}\".");
+            return $this->successResponse(null, "Bắt đầu làm bài thi thành công!");
         } else {
             return $this->errorResponse(null, 'Bạn đang trong quá trình làm bài thi này rồi!');
         }
@@ -229,17 +231,15 @@ class ExamPaperController extends BaseApiController
                     break;
             }
 
-            // Lưu lại các câu làm sai để lưu vô danh sách sau này làm lại (Chỉ tính những câu đã chọn nhưng sai thôi)
-            if ($isCorrect === false) {
-                $wrong_questions[] = [
-                    'user_id' => $user->id,
-                    'exam_question_id' => $question->id,
-                    'wrong_count' => 1, // Mới làm sai lần đầu
-                    'first_wrong_at' => now(),
-                    'last_wrong_at' => now(),
-                    'status' => 'active', // Trạng thái đang cần ôn
-                ];
-            }
+            $wrong_questions[] = [
+                'user_id' => $user->id,
+                'exam_question_id' => $question->id,
+                'wrong_count' => 1, // Mới làm sai lần đầu
+                'first_wrong_at' => now(),
+                'last_wrong_at' => now(),
+                'status' => 'active', // Trạng thái đang cần ôn
+                'is_correct' => $isCorrect
+            ];
         }
         // dd($answers);
         // bỏ key không cần thiết
@@ -261,10 +261,18 @@ class ExamPaperController extends BaseApiController
             ]);
 
             if ($record->exists) {
-                $record->increment('wrong_count');
-                $record->last_wrong_at = now();
+                if ($wrong_question['is_correct']) {
+                    $record->increment('correct_streak');
+                    $record->last_correct_at = now();
+                } else {
+                    $record->increment('wrong_count');
+                    $record->correct_streak = 0; // nếu làm sai thì reset về 0
+                    $record->last_wrong_at = now();
+                }
                 $record->save();
             } else {
+                // Nếu câu này chưa tồn tại và làm đúng => bỏ qua
+                if ($wrong_question['is_correct']) continue;
                 $record->fill([
                     'exam_question_id' => $wrong_question['exam_question_id'] ?? null,
                     'wrong_count'      => 1,
@@ -275,6 +283,8 @@ class ExamPaperController extends BaseApiController
                 $record->save();
             }
         }
+
+        $user->logActivity("submit_exam", "Đã nộp bài thi \"{$exam->title}\".");
 
         return $this->successResponse([
             'scores' => $scores,

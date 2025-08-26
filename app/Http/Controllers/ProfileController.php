@@ -29,9 +29,10 @@ class ProfileController extends BaseApiController
             'facebook_link' => 'sometimes|string|max:255',
         ]));
 
-        return response()->json([
-            'message' => $request->user(),
-        ]);
+        // return response()->json([
+        //     'message' => $request->user(),
+        // ]);
+        return $this->successResponse($request->user(), "Cập nhật thông tin thành công!");
     }
     public function changePassword(Request $request)
     {
@@ -44,19 +45,19 @@ class ProfileController extends BaseApiController
 
         // Kiểm tra mật khẩu cũ có đúng không
         if (!Hash::check($request->password_old, $user->password)) {
-            return response()->json([
-                'message' => 'Mật khẩu cũ không chính xác.',
-            ], 401);
+            return $this->errorResponse(null, 'Mật khẩu cũ không chính xác.', 400);
         }
 
         // Cập nhật mật khẩu mới (đã hash)
         $user->update([
             'password' => Hash::make($request->password_new),
         ]);
+        $user->logActivity("change_password", "Đã đổi mật khẩu tài khoản");
+        return $this->successResponse(null, "Đổi mật khẩu thành công.");
 
-        return response()->json([
-            'message' => 'Đổi mật khẩu thành công.',
-        ]);
+        // return response()->json([
+        //     'message' => 'Đổi mật khẩu thành công.',
+        // ]);
     }
 
     // Lấy danh sách khóa học của tôi
@@ -168,8 +169,9 @@ class ProfileController extends BaseApiController
             'google2fa_secret' => $type === 'active' ? $secret : null,
             'google2fa_enabled' => $type === 'active' ? true : false,
         ]);
-
-        return $this->successResponse([], $type === 'active' ? "Đã bật 2FA thành công." : "Đã tắt 2FA thành công.");
+        $message = $type === 'active' ? "Đã bật 2FA thành công." : "Đã tắt 2FA thành công.";
+        $user->logActivity("change_2fa", $message);
+        return $this->successResponse([], $message);
     }
 
 

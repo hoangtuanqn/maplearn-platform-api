@@ -25,6 +25,7 @@ class ReportController extends BaseApiController
      */
     public function store(Request $request)
     {
+        $user = $request->user();
         $data = $request->validate([
             'reportable_id' => 'required|integer',
             'reportable_type' => 'required|string|in:document,post,course',
@@ -35,9 +36,9 @@ class ReportController extends BaseApiController
 
         // Tùy theo reportable_type, bạn lấy model phù hợp
         $modelClass = match ($data['reportable_type']) {
-            'document' => \App\Models\Document::class,
-            'post' => \App\Models\Post::class,
-            'course' => \App\Models\Course::class,
+            'document' => Document::class,
+            'post' => Post::class,
+            'course' => Course::class,
             default => null,
         };
         $userId = $request->user()->id;
@@ -75,6 +76,7 @@ class ReportController extends BaseApiController
 
         $report->reportable()->associate($reportable);
         $report->save();
+        $user->logActivity("report_content", "Đã báo cáo 1 nội dung trên hệ thống!");
 
         return $this->successResponse($report, 'Báo cáo thành công!');
     }

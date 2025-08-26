@@ -13,7 +13,7 @@ class SubjectController extends BaseApiController
      */
     public function index(Request $request)
     {
-        // $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        // $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
 
         // $subjects = QueryBuilder::for(Subject::class)
         //     ->allowedFilters(['name'])

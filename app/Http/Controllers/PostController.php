@@ -18,7 +18,7 @@ class PostController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
 
         $posts = QueryBuilder::for(Post::class)
             ->allowedFilters(['title',  AllowedFilter::custom('courses', new CourseFilter)])
@@ -111,7 +111,7 @@ class PostController extends BaseApiController
 
     public function showDataAI(Request $request)
     {
-        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
         $page = (int)($request->page ?? 1); // Giới hạn offset
         $data = Post::query()
             ->select(['id', 'title', 'slug'])

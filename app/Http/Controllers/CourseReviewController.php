@@ -56,7 +56,7 @@ class CourseReviewController extends BaseApiController
      */
     public function show(Request $request, string $slug)
     {
-        $limit = min((int)($request->limit ?? 10), 100); // Giới hạn tối đa 100 items
+        $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
         $userId = $request->user()->id ?? null;
         // $userId = 8;
         // Tìm khóa học theo slug

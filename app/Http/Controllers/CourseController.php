@@ -26,7 +26,7 @@ class CourseController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = min((int)($request->limit ?? 20), 100);
+        $limit = (int)($request->limit ?? 20);
         // dd($limit);
         // loại bỏ key lesson_count, duration
         $courses = QueryBuilder::for(Course::class)

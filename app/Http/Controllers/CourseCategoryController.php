@@ -16,7 +16,7 @@ class CourseCategoryController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = min((int)  ($request->limit ?? 10), 100);
+        $limit = (int)($request->limit ?? 10);
         $tags = QueryBuilder::for(CourseCategory::class)
             ->allowedFilters(['name'])
             ->allowedSorts(['created_at'])

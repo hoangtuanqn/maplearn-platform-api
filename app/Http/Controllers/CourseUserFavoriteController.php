@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Course;
 use App\Models\CourseUserFavorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class CourseUserFavoriteController extends BaseApiController
      */
     public function index(Request $request)
     {
-        $limit = min($request->get('limit', 10), 100);
+        $limit = (int)($request->get('limit', 10));
         $user = Auth::user();
 
         $query = $user->favoriteCourses()->with(['subject', 'gradeLevel']);
@@ -50,6 +51,12 @@ class CourseUserFavoriteController extends BaseApiController
         if (!$user->favoriteCourses->contains($courseId)) {
             $user->favoriteCourses()->attach($courseId);
         }
+
+        // Lấy tên khóa học
+        $course = Course::find($courseId);
+        $courseName = $course ? $course->name : 'khóa học';
+
+        $user->logActivity("add_to_favorites", "Đã thêm khóa học \"{$courseName}\" vào danh sách yêu thích");
         return $this->successResponse(null, "Thêm khóa học yêu thích thành công");
     }
 

@@ -115,7 +115,7 @@ class CartItemController extends BaseApiController
             ]);
 
             $cart->load('course');
-
+            $user->logActivity("add_to_cart", "Đã thêm khóa học \"{$cart->course->name}\" vào giỏ hàng");
             return $this->successResponse($cart, 'Đã thêm khóa học vào giỏ hàng', 201);
         } catch (ValidationException $e) {
             return response()->json([
@@ -432,7 +432,7 @@ class CartItemController extends BaseApiController
                 // Tạo liên kết thanh toán ZaloPay
                 return app(ZaloPayController::class)->createPayment($request, $invoice->transaction_code);
             }
-
+            $user->logActivity("create_invoice", "Đã tạo hóa đơn \"{$invoice->transaction_code}\".");
             return $this->successResponse($invoice, 'Đã tạo hóa đơn thành công. Vui lòng thanh toán');
         } catch (\Exception $e) {
             DB::rollBack();

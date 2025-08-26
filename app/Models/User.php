@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\ResetPasswordNotification;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 // Implement JWTSubject để sử dụng các phương thức được cấp
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
 
     protected $fillable = [
         'username',
@@ -153,6 +154,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(CartItem::class);
     }
+
+    // lịch sử hoạt động
+    public function activities()
+    {
+        return $this->hasMany(UserActivityLog::class);
+    }
+
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()
     {
