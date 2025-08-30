@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // chứa mã code trỏ tới invoices. Ví dụ khách hàng muốn thanh toán nhiều hóa đơn 1 lần, thì các invoice đó sẽ có 1 mã code trỏ tới payments. N invoice - 1 payment đó. Chỉ cần thanh toán 1 payment thì các invoice liên quan sẽ được thanh toán
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');

@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function () {
     require __DIR__ . '/discounts.php';
     require __DIR__ . '/chat.php';
     require __DIR__ . '/course_categories.php';
-    require __DIR__ . '/audiences.php';
+    // require __DIR__ . '/audiences.php';
     require __DIR__ . '/cart.php';
     require __DIR__ . '/payment.php';
     require __DIR__ . '/others.php';
