@@ -155,25 +155,19 @@ class User extends Authenticatable implements JWTSubject
     // }
 
     // Lấy danh sách khóa học đã mua
-    public function purchasedCourses()
-    {
-        return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
-            // ->withPivot('id', 'created_at', 'updated_at')
-            // lấy thêm cột created_at của bảng course_enrollments
-            ->withPivot('created_at')
-            ->withTimestamps();
-    }
+    // public function purchasedCourses()
+    // {
+    //     return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
+    //         // ->withPivot('id', 'created_at', 'updated_at')
+    //         // lấy thêm cột created_at của bảng course_enrollments
+    //         ->withPivot('created_at')
+    //         ->withTimestamps();
+    // }
 
-    // Lấy các khóa học của người dùng
-    public function favoriteCourses()
+
+    public function courses()
     {
-        /*
-        Cách dùng: $user->favoriteCourses()->attach($courseId);
-        * Thêm vào danh sách yêu thích: $user->favoriteCourses()->attach($courseId);
-        * Bỏ yêu thích: $user->favoriteCourses()->detach($courseId);
-        * Kiểm tra đã yêu thích hay chưa: $user->favoriteCourses->contains($courseId);
-        * withTimestamps(); Nó bảo Laravel tự động cập nhật hai cột created_at và updated_at trong bảng trung gian khi:
-        */
-        return $this->belongsToMany(Course::class, 'course_user_favorites')->withTimestamps();
+        // Nếu là teacher thì load cái này sẽ có data
+        return $this->hasMany(Course::class);
     }
 }

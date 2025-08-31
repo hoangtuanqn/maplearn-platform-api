@@ -14,7 +14,7 @@ class TeacherController extends BaseApiController
     public function index()
     {
         $teachers = User::where('role', 'teacher')->get();
-        
+
         return $this->successResponse($teachers, 'Lấy danh sách giáo viên thành công.');
     }
 
@@ -31,7 +31,7 @@ class TeacherController extends BaseApiController
      */
     public function show(User $teacher)
     {
-
+        $teacher->load('courses');
         return $this->successResponse($teacher, 'Lấy thông tin giáo viên thành công.');
     }
 

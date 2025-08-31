@@ -12,6 +12,7 @@ class Payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
+    public $timestamps = false;
     public function getRouteKeyName()
     {
         return 'transaction_code';
@@ -19,6 +20,7 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
+        'course_id',
         'payment_method',
         'transaction_code',
         'status',
