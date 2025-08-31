@@ -17,19 +17,19 @@ class MomoController extends BaseApiController
         $result = PaymentService::handleReturnMomo($request);
         $transaction = $result['transaction_code'];
 
-        $invoice = Payment::where('transaction_code', $transaction)->first();
-        if (!$invoice || ! $invoice->isValid()) {
+        $payment = Payment::where('transaction_code', $transaction)->first();
+        if (!$payment) {
             return $this->errorResponse(null, 'Hóa đơn không tồn tại hoặc đã được xử lý', 404);
         }
 
         if ($result['success']) {
-            $invoice->update([
+            $payment->update([
                 'status' => 'paid',
                 'payment_method' => 'momo',
             ]);
             return $this->successResponse($result, 'Thanh toán thành công!');
         } else {
-            $invoice->update([
+            $payment->update([
                 'status' => 'failed',
                 'payment_method' => 'momo',
             ]);

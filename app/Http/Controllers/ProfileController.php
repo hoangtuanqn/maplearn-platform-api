@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\Invoice\DateFilter;
 use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
-use App\Models\Invoice;
+use App\Models\Payment;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\GoogleAuthenService;
 use Illuminate\Support\Facades\Hash;
@@ -76,13 +76,13 @@ class ProfileController extends BaseApiController
     }
 
     // Lấy danh sách hóa đơn
-    public function getInvoicesMe(Request $request)
+    public function getPaymentsMe(Request $request)
     {
         $limit = $request->input('limit', 10);
         $user = $request->user();
 
         // Query chính với filter, sort, user_id
-        $invoicesQuery = QueryBuilder::for(Invoice::class)
+        $paymentsQuery = QueryBuilder::for(Payment::class)
             ->allowedSorts(['created_at'])
             ->allowedFilters([
                 AllowedFilter::custom('status', new StatusFilter),
@@ -92,18 +92,18 @@ class ProfileController extends BaseApiController
             ->orderByDesc('id');
 
         // Clone query để tính summary
-        $summaryQuery = clone $invoicesQuery;
+        $summaryQuery = clone $paymentsQuery;
 
         // Thêm điều kiện status = 'pending' cho summary
         $summaryQuery->where('status', 'pending');
 
         $summary = [
             'total_pending' => $summaryQuery->count(),
-            'total_price_pending' => (float)$summaryQuery->sum('total_price'),
+            'total_price_pending' => (float)$summaryQuery->sum('amount'),
         ];
 
         return $this->successResponse([
-            'invoices' => $invoicesQuery->paginate($limit),
+            'payments' => $paymentsQuery->paginate($limit),
             'summary' => $summary,
         ], 'Lấy danh sách hóa đơn thành công!');
     }

@@ -37,12 +37,13 @@ class PaymentController extends BaseApiController
             ['user_id' => $user->id, 'course_id' => $data['course_id']],
             [
                 'user_id' => $user->id,
+                'amount' => $course->price,
                 'course_id' => $data['course_id'],
                 'payment_method' => $request->payment_method,
                 'status' => 'pending'
             ]
         );
-        $total = $course->price;
+        $total = $payment->amount;
         switch ($request->payment_method) {
             case 'vnpay':
                 $result = PaymentService::createInvoiceVNPAY($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/vnpay");
@@ -71,7 +72,7 @@ class PaymentController extends BaseApiController
 
         // Hiển thị payment gồm nhiều invoice bên trong
         $payment->load([
-            'invoices.items.course'
+            'course'
         ]);
         return $this->successResponse($payment, 'Lấy dữ liệu payments thành công', 200);
     }

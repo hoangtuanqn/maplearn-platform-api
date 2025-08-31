@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedInteger('course_id'); // khóa học người dùng mua
 
             $table->string('transaction_code')->unique();
+            $table->decimal('amount', 10, 2);
+
             $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay'])->default('transfer'); // Phương thức thanh toán: 'transfer' (chuyển khoản), 'vnpay', 'momo', 'zalopay'
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
 

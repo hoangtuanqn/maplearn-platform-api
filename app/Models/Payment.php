@@ -21,24 +21,22 @@ class Payment extends Model
     protected $fillable = [
         'user_id',
         'course_id',
+        'amount',
         'payment_method',
         'transaction_code',
         'status',
         'paid_at'
     ];
     protected $casts = [
+        'amount' => 'float',
         'paid_at' => 'datetime',
     ];
-    // Quan hệ với bảng invoice
-    public function invoices()
+
+
+
+    public function course()
     {
-        return $this->hasMany(Invoice::class);
-    }
-    public function isValid()
-    {
-        // Kiểm tra các invoice bên trong đều phải là hợp lệ
-        return $this->invoices->every(fn($invoice) => $invoice->isValid());
-        // return true;
+        return $this->belongsTo(Course::class);
     }
 
     // Quan hệ  hasManyThrough

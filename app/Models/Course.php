@@ -177,6 +177,6 @@ class Course extends Model
         if (!$user) {
             return false;
         }
-        return $user->payments()->where('course_id', $this->id)->exists();
+        return $user->payments()->where('course_id', $this->id)->where('status', 'paid')->exists();
     }
 }

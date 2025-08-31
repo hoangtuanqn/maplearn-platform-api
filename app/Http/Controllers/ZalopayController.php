@@ -16,20 +16,20 @@ class ZalopayController extends BaseApiController
     {
         $result = PaymentService::handleReturnZaloPay($request);
         $transaction_code = $result['transaction_code'] ?? null;
-        $invoice = Payment::where('transaction_code', $transaction_code)->first();
+        $payment = Payment::where('transaction_code', $transaction_code)->first();
 
-        if (!$invoice || !$invoice->isValid()) {
+        if (!$payment) {
             return $this->errorResponse(null, 'Hóa đơn không tồn tại hoặc đã được xử lý', 404);
         }
-        $invoice->update([
+        $payment->update([
             'status' =>  $result['success'] == true ? 'paid' : 'failed',
             'payment_method' => 'zalopay',
         ]);
 
         if ($result['success'] == true) {
-            return $this->successResponse($invoice, 'Thanh toán thành công');
+            return $this->successResponse($payment, 'Thanh toán thành công');
         } else {
-            return $this->errorResponse($invoice, 'Thanh toán thất bại', 400);
+            return $this->errorResponse($payment, 'Thanh toán thất bại', 400);
         }
     }
 }

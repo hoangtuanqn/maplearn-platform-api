@@ -15,21 +15,21 @@ class VnpayController extends BaseApiController
         $result = PaymentService::handleReturnVNPAY($request);
         $transaction_code = $result['transaction_code'] ?? null;
 
-        $invoice = Payment::where('transaction_code', $transaction_code)->first();
-        if (!$invoice || !$invoice->isValid()) {
+        $payment = Payment::where('transaction_code', $transaction_code)->first();
+        if (!$payment) {
             return $this->errorResponse(null, 'Hóa đơn không tồn tại', 404);
         }
 
         if ($result['success']) {
             // Xử lý thành công
-            $invoice->update([
+            $payment->update([
                 'status' => 'paid',
                 'payment_method' => 'vnpay',
             ]);
-            return $this->successResponse($invoice, 'Thanh toán thành công');
+            return $this->successResponse($payment, 'Thanh toán thành công');
         } else {
             // Xử lý thất bại
-            $invoice->update([
+            $payment->update([
                 'status' => 'failed',
                 'payment_method' => 'vnpay',
             ]);
