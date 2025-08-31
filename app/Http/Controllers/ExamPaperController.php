@@ -10,7 +10,6 @@ use App\Filters\PaperExam\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
-use App\Models\UserWrongQuestion;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -100,7 +99,7 @@ class ExamPaperController extends BaseApiController
                 'details' => (['answers' => [], 'start' => now()->timestamp, 'questionActive' => 0]), // Khởi tạo chi tiết bài làm là mảng rỗng
                 'started_at' => now(),
             ]);
-            $user->logActivity("start_exam", "Đã bắt đầu làm bài thi \"{$exam->title}\".");
+
             return $this->successResponse(null, "Bắt đầu làm bài thi thành công!");
         } else {
             return $this->errorResponse(null, 'Bạn đang trong quá trình làm bài thi này rồi!');
@@ -152,7 +151,6 @@ class ExamPaperController extends BaseApiController
         $questions = $paper->questions;
 
         $scores = 0; // Điểm của người dùng
-        $wrong_questions = [];
 
         // Duyệt qua câu trả lời của user
         foreach ($answers['answers'] as $key => $value) {
@@ -231,15 +229,6 @@ class ExamPaperController extends BaseApiController
                     break;
             }
 
-            $wrong_questions[] = [
-                'user_id' => $user->id,
-                'exam_question_id' => $question->id,
-                'wrong_count' => 1, // Mới làm sai lần đầu
-                'first_wrong_at' => now(),
-                'last_wrong_at' => now(),
-                'status' => 'active', // Trạng thái đang cần ôn
-                'is_correct' => $isCorrect
-            ];
         }
         // dd($answers);
         // bỏ key không cần thiết
@@ -250,41 +239,6 @@ class ExamPaperController extends BaseApiController
         $attempt->score = $scores;
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
-
-
-        // return $this->errorResponse($wrong_questions, "thành công");
-        // Add các câu sai vô DB
-        foreach ($wrong_questions as $wrong_question) {
-            $record = UserWrongQuestion::firstOrNew([
-                'user_id'     => $user->id,
-                'exam_question_id' => $wrong_question['exam_question_id'],
-            ]);
-
-            if ($record->exists) {
-                if ($wrong_question['is_correct']) {
-                    $record->increment('correct_streak');
-                    $record->last_correct_at = now();
-                } else {
-                    $record->increment('wrong_count');
-                    $record->correct_streak = 0; // nếu làm sai thì reset về 0
-                    $record->last_wrong_at = now();
-                }
-                $record->save();
-            } else {
-                // Nếu câu này chưa tồn tại và làm đúng => bỏ qua
-                if ($wrong_question['is_correct']) continue;
-                $record->fill([
-                    'exam_question_id' => $wrong_question['exam_question_id'] ?? null,
-                    'wrong_count'      => 1,
-                    'first_wrong_at'   => now(),
-                    'last_wrong_at'    => now(),
-                    'status'           => 'active',
-                ]);
-                $record->save();
-            }
-        }
-
-        $user->logActivity("submit_exam", "Đã nộp bài thi \"{$exam->title}\".");
 
         return $this->successResponse([
             'scores' => $scores,

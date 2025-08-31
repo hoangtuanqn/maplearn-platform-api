@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Notifications\ResetPasswordNotification;
-use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +11,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 // Implement JWTSubject để sử dụng các phương thức được cấp
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, LogsActivity;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'username',
@@ -25,12 +24,13 @@ class User extends Authenticatable implements JWTSubject
         'birth_year',
         'facebook_link',
         'school',
+        'bio',
+        'degree',
         'city',
         'role',
         'google_id',
         'facebook_id',
         'discord_id',
-        'github_id',
         'money',
         'banned',
         'google2fa_secret',
@@ -48,7 +48,6 @@ class User extends Authenticatable implements JWTSubject
         'google_id',
         'facebook_id',
         'discord_id',
-        'github_id',
         'google2fa_secret',
         'password',
         'remember_token',
@@ -69,7 +68,6 @@ class User extends Authenticatable implements JWTSubject
         'google2fa_enabled' => 'boolean',
         'birth_year' => 'integer',
     ];
-    protected $appends = ['cart_item_count'];
 
 
     /**
@@ -113,10 +111,6 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function getCartItemCountAttribute()
-    {
-        return $this->cartItems()->count();
-    }
 
     // Cấu hình gửi Email
     public function sendPasswordResetNotification($token)
@@ -149,17 +143,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(ExamAttempt::class);
     }
 
-    // Lấy danh sách giỏ hàng
-    public function cartItems()
+    public function payments()
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(Payment::class);
     }
 
-    // lịch sử hoạt động
-    public function activities()
-    {
-        return $this->hasMany(UserActivityLog::class);
-    }
+    // // lịch sử hoạt động
+    // public function activities()
+    // {
+    //     return $this->hasMany(UserActivityLog::class);
+    // }
 
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()

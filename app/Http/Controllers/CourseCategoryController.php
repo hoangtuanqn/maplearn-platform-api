@@ -17,13 +17,13 @@ class CourseCategoryController extends BaseApiController
     public function index(Request $request)
     {
         $limit = (int)($request->limit ?? 10);
-        $tags = QueryBuilder::for(CourseCategory::class)
+        $courseCategory = QueryBuilder::for(CourseCategory::class)
             ->allowedFilters(['name'])
             ->allowedSorts(['created_at'])
             ->where('status', true)
             ->orderByDesc('id')
             ->paginate($limit);
-        return $this->successResponse($tags, 'Lấy danh sách danh mục khóa học thành công!');
+        return $this->successResponse($courseCategory, 'Lấy danh sách danh mục khóa học thành công!');
     }
 
     /**

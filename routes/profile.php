@@ -2,8 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserWrongQuestionController;
+
 
 Route::prefix('profile')->name('account.')->middleware('auth.jwt')->group(function () {
     Route::post('/update', [ProfileController::class, 'update']);
@@ -17,6 +16,4 @@ Route::prefix('profile')->name('account.')->middleware('auth.jwt')->group(functi
         Route::post('/toggle', [ProfileController::class, 'toggle2FA']);
     });
 
-    // Lấy danh sách các câu hòi đã làm sao
-    Route::get('/wrong-questions', [UserWrongQuestionController::class, 'index']);
 });

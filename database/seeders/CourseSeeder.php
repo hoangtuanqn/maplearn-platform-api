@@ -24,17 +24,6 @@ class CourseSeeder extends Seeder
         // 6. Văn
 
 
-        // Departments
-        // 1. Tổ toán
-        // 2. Tổ văn
-        // 3. Tổ Vật lý
-        // 4. Tổ hóa
-        // 5. Tổ Sinh
-        // 6. Tổ Sử
-        // 7. Tổ Địa
-        // 8. Tổ Giáo dục công dân
-        // 9. Tổ ngoại ngữ
-
 
         // Course Categories
         // 1. 2K8 - Xuất phát sớm lớp 12
@@ -57,7 +46,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 2, // DGNL
                 'subject_id' => 1, // Toán
                 'category_id' => 1, // 2K8 - Xuất phát sớm lớp 12
-                'department_id' => 1, // Tổ toán
+                'user_id' => 1, // Tổ toán
             ],
             [
                 'name' => 'SÁCH 10 ĐỀ THỰC CHIẾN KỲ THI ĐÁNH GIÁ NĂNG LỰC V-ACT 2025',
@@ -65,7 +54,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 2,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ LUYỆN THI ĐÁNH GIÁ NĂNG LỰC ĐHQG TP.HCM (V-ACT) - 2026',
@@ -73,7 +62,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 2,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ LUYỆN THI ĐÁNH GIÁ NĂNG LỰC ĐHQG HÀ NỘI (HSA) - 2026',
@@ -81,7 +70,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 2,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ LUYỆN THI ĐÁNH GIÁ TƯ DUY BÁCH KHOA (TSA) - 2026',
@@ -89,7 +78,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 2,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
 
             // Toán | Lớp 12 | 2K8
@@ -99,7 +88,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3, // Lớp 12
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH 30 ĐỀ MINH HOẠ MÔN TOÁN 2025',
@@ -107,7 +96,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ NGUYÊN HÀM TÍCH PHÂN - TOÁN 12',
@@ -115,7 +104,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ HÀM SỐ - TOÁN 12',
@@ -123,7 +112,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ I - CHUYÊN ĐỀ CƠ BẢN MÔN TOÁN NĂM 2026',
@@ -131,7 +120,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ M - VẬN DỤNG VÀ VẬN DỤNG CAO MÔN TOÁN NĂM 2026',
@@ -139,7 +128,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ O - THỰC CHIẾN LUYỆN ĐỀ MÔN TOÁN NĂM 2026',
@@ -147,7 +136,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'KHOÁ E - TỔNG ÔN TRỌNG ĐIỂM MÔN TOÁN NĂM 2026',
@@ -155,7 +144,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 1,
                 'category_id' => 1,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
 
 
@@ -166,7 +155,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2, // Lý
                 'category_id' => 1,
-                'department_id' => 3, // Tổ Vật lý
+                'user_id' => 3, // Tổ Vật lý
             ],
             [
                 'name' => 'SÁCH 100 ĐỀ VẬT LÝ CÁC TRƯỜNG SỞ 2025 - BẮC TRUNG NAM - TẬP 2',
@@ -174,7 +163,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH 30 ĐỀ MINH HOẠ MÔN VẬT LÝ 2025',
@@ -182,7 +171,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'CÀY LÍ THUYẾT 360 ĐỘ - VẬT LÝ 12',
@@ -190,7 +179,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH 100 ĐỀ VẬT LÝ CÁC TRƯỜNG SỞ 2025 - BẮC TRUNG NAM - TẬP 1',
@@ -198,7 +187,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH 45 MÔ HÌNH VẬT LÝ THỰC TẾ',
@@ -206,7 +195,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY TỪ TRƯỜNG VÀ HẠT NHÂN',
@@ -214,7 +203,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY KHÍ LÍ TƯỞNG',
@@ -222,7 +211,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY VẬT LÝ NHIỆT',
@@ -230,7 +219,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'Chinh phục đồ thị dao động cơ - 2025',
@@ -238,7 +227,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => '369 BÀI TOÁN DAO ĐỘNG CƠ KINH ĐIỂN - 2025',
@@ -246,7 +235,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH NHẬP MÔN NHIỆT HỌC - VẬT LÝ 12',
@@ -254,7 +243,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 2,
                 'category_id' => 1,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
 
             // Sinh | Lớp 12 | 2K8
@@ -264,7 +253,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 3, // Sinh
                 'category_id' => 1,
-                'department_id' => 5, // Tổ Sinh
+                'user_id' => 5, // Tổ Sinh
             ],
             [
                 'name' => 'KHOÁ I - CHUYÊN ĐỀ CƠ BẢN MÔN SINH NĂM 2026',
@@ -272,7 +261,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 3,
                 'category_id' => 1,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
             [
                 'name' => 'KHOÁ M - VẬN DỤNG VÀ VẬN DỤNG CAO MÔN SINH NĂM 2026',
@@ -280,7 +269,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 3,
                 'category_id' => 1,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
             [
                 'name' => 'KHOÁ O - THỰC CHIẾN LUYỆN ĐỀ MÔN SINH NĂM 2026',
@@ -288,7 +277,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 3,
                 'category_id' => 1,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
             [
                 'name' => 'KHOÁ E - TỔNG ÔN TRỌNG ĐIỂM MÔN SINH NĂM 2026',
@@ -296,7 +285,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 3,
                 'category_id' => 1,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
 
             // Ngoại ngữ (Anh) | Lớp 12 | 2K8
@@ -306,7 +295,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4, // Anh
                 'category_id' => 1,
-                'department_id' => 9, // Tổ ngoại ngữ
+                'user_id' => 9, // Tổ ngoại ngữ
             ],
             [
                 'name' => 'CHINH PHỤC NGỮ PHÁP TIẾNG ANH - 2025',
@@ -314,7 +303,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4,
                 'category_id' => 1,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
             [
                 'name' => 'KHOÁ I - NGỮ PHÁP ỨNG DỤNG MÔN TIẾNG ANH NĂM 2026',
@@ -322,7 +311,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4,
                 'category_id' => 1,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
             [
                 'name' => 'KHOÁ M - VẬN DỤNG VÀ VẬN DỤNG CAO MÔN TIẾNG ANH NĂM 2026',
@@ -330,7 +319,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4,
                 'category_id' => 1,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
             [
                 'name' => 'KHOÁ O - THỰC CHIẾN LUYỆN ĐỀ MÔN TIẾNG ANH NĂM 2026',
@@ -338,7 +327,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4,
                 'category_id' => 1,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
             [
                 'name' => 'KHOÁ E - TỔNG ÔN TRỌNG ĐIỂM MÔN TIẾNG ANH NĂM 2026',
@@ -346,7 +335,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 4,
                 'category_id' => 1,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
 
             // Hóa | Lớp 12 | 2K8
@@ -356,7 +345,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 5, // Hóa
                 'category_id' => 1,
-                'department_id' => 4, // Tổ hóa
+                'user_id' => 4, // Tổ hóa
             ],
             [
                 'name' => 'SÁCH 30 ĐỀ MINH HOẠ MÔN HOÁ - 2025',
@@ -364,7 +353,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 5,
                 'category_id' => 1,
-                'department_id' => 4,
+                'user_id' => 4,
             ],
 
             // Văn | Lớp 12 | 2K8
@@ -374,7 +363,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6, // Văn
                 'category_id' => 1,
-                'department_id' => 2, // Tổ văn
+                'user_id' => 2, // Tổ văn
             ],
             [
                 'name' => 'KHOÁ M - VẬN DỤNG VÀ VẬN DỤNG CAO NGỮ VĂN NĂM 2026',
@@ -382,7 +371,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 1,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'KHOÁ O - THỰC CHIẾN LUYỆN ĐỀ MÔN NGỮ VĂN NĂM 2026',
@@ -390,7 +379,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 1,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'KHOÁ E - TỔNG ÔN TRỌNG ĐIỂM NGỮ VĂN NĂM 2026',
@@ -398,7 +387,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 1,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
 
             // Toán | Lớp 11 | 2K9
@@ -408,7 +397,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 1,
                 'category_id' => 2,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY TOÁN HỌC 11 - TẬP 1 - 2025',
@@ -416,7 +405,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 1,
                 'category_id' => 2,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ TOÁN HỌC 11 - TẬP 1 (NĂM HỌC 2025-2026)',
@@ -424,7 +413,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4, // Lớp 11
                 'subject_id' => 1,
                 'category_id' => 2, // 2K9 - Xuất phát sớm lớp 11
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ TOÁN HỌC 11 - TẬP 2 (NĂM HỌC 2025-2026)',
@@ -432,7 +421,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 1,
                 'category_id' => 2,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => '2K9 XUẤT PHÁT SỚM MÔN TOÁN - LỚP 11',
@@ -440,7 +429,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 1,
                 'category_id' => 2,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
 
 
@@ -451,7 +440,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 2,
                 'category_id' => 2,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ VẬT LÝ 11 - TẬP 2 (NĂM HỌC 2025-2026)',
@@ -459,7 +448,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 2,
                 'category_id' => 2,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => '2K9 XUẤT PHÁT SỚM MÔN VẬT LÝ - LỚP 11',
@@ -467,7 +456,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 2,
                 'category_id' => 2,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
 
             // Sinh | Lớp 11 | 2K9
@@ -477,7 +466,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 3,
                 'category_id' => 2,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
 
             // Anh | Lớp 11 | 2K9
@@ -487,7 +476,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 4,
                 'category_id' => 2,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
 
             // Hóa | Lớp 11 | 2K9
@@ -497,7 +486,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 5,
                 'category_id' => 2,
-                'department_id' => 4,
+                'user_id' => 4,
             ],
 
             // Văn | Lớp 11 | 2K9
@@ -507,7 +496,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 6,
                 'category_id' => 2,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
 
             // Toán | Lớp 10 | 2K10
@@ -517,7 +506,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 1,
                 'category_id' => 3,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY TOÁN HỌC 10 - ĐẠI SỐ - 2025',
@@ -525,7 +514,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 1,
                 'category_id' => 3,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ TOÁN HỌC 10 - TẬP 1 (NĂM HỌC 2025-2026)',
@@ -533,7 +522,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5, // Lớp 10
                 'subject_id' => 1,
                 'category_id' => 3, // 2K10 - Xuất phát sớm lớp 10
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ TOÁN HỌC 10 - TẬP 2 (NĂM HỌC 2025-2026)',
@@ -541,7 +530,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 1,
                 'category_id' => 3,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => '2K10 XUẤT PHÁT SỚM MÔN TOÁN - LỚP 10',
@@ -549,7 +538,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 1,
                 'category_id' => 3,
-                'department_id' => 1,
+                'user_id' => 1,
             ],
             [
                 'name' => 'Học tốt Toán 9 - Từ cơ bản đến nâng cao',
@@ -557,7 +546,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 1,
                 'category_id' => 5, // Khóa học Trung học cơ sở
-                'department_id' => 1,
+                'user_id' => 1,
             ],
 
             // Lý | Lớp 10 | 2K10
@@ -567,7 +556,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'PHONG TOẢ VẬT LÝ LỚP 10 - TẬP 1',
@@ -575,7 +564,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY VẬT LÝ 10 - TẬP 2 - 2025',
@@ -583,7 +572,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'LẬP TRÌNH TƯ DUY VẬT LÝ 10 - TẬP 1 - 2025',
@@ -591,7 +580,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ VẬT LÝ 10 - TẬP 1 (NĂM HỌC 2025-2026)',
@@ -599,7 +588,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => 'SÁCH PHONG TOẢ VẬT LÝ 10 - TẬP 2 (NĂM HỌC 2025-2026)',
@@ -607,7 +596,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
             [
                 'name' => '2K10 XUẤT PHÁT SỚM MÔN VẬT LÝ - LỚP 10',
@@ -615,7 +604,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 2,
                 'category_id' => 3,
-                'department_id' => 3,
+                'user_id' => 3,
             ],
 
             // Sinh | Lớp 10 | 2K10
@@ -625,7 +614,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 3,
                 'category_id' => 3,
-                'department_id' => 5,
+                'user_id' => 5,
             ],
 
             // Anh | Lớp 10 | 2K10
@@ -635,7 +624,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 4,
                 'category_id' => 3,
-                'department_id' => 9,
+                'user_id' => 9,
             ],
 
             // Hóa | Lớp 10 | 2K10
@@ -645,7 +634,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 5,
                 'category_id' => 3,
-                'department_id' => 4,
+                'user_id' => 4,
             ],
 
             // Văn | Lớp 10 | 2K10
@@ -655,7 +644,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 6,
                 'category_id' => 3,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
 
             // Học tốt sách giáo khoa | Toán | Lớp 12
@@ -665,7 +654,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 4, // Học tốt sách giáo khoa
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 12 - Sách Giáo Khoa Kết Nối Tri Thức',
@@ -673,7 +662,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 12 - Sách Giáo Khoa Cánh Diều',
@@ -681,7 +670,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 12 - Sách Giáo Khoa Chân Trời Sáng Tạo',
@@ -689,7 +678,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 3,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 11 - Sách Giáo Khoa Kết Nối Tri Thức',
@@ -697,7 +686,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 11 - Sách Giáo Khoa Cánh Diều',
@@ -705,7 +694,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 11 - Sách Giáo Khoa Chân Trời Sáng Tạo',
@@ -713,7 +702,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 4,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 10 - Sách Giáo Khoa Kết Nối Tri Thức',
@@ -721,7 +710,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 10 - Sách Giáo Khoa Cánh Diều',
@@ -729,7 +718,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
             [
                 'name' => 'Học tốt Ngữ Văn 10 - Sách Giáo Khoa Chân Trời Sáng Tạo',
@@ -737,7 +726,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => 5,
                 'subject_id' => 6,
                 'category_id' => 4,
-                'department_id' => 2,
+                'user_id' => 2,
             ],
         ];
         $faker = \Faker\Factory::create();
@@ -748,7 +737,7 @@ class CourseSeeder extends Seeder
                 'grade_level_id' => $item['grade_level_id'],
                 'subject_id' => $item['subject_id'],
                 'category_id' => $item['category_id'],
-                'department_id' => $item['department_id'],
+                'user_id' => $item['user_id'],
 
                 'price' => $faker->numberBetween(1000, 10000) * 1000,
                 'description' => 'Khóa học được thiết kế nhằm cung cấp cho học sinh nền tảng kiến thức vững chắc, hệ thống hóa toàn bộ nội dung trọng tâm theo chương trình chuẩn, kết hợp với phương pháp học hiệu quả giúp rèn luyện tư duy, nâng cao kỹ năng làm bài và tự tin chinh phục các kỳ thi quan trọng như thi học kỳ, thi chuyển cấp hay kỳ thi THPT Quốc gia.',

@@ -13,7 +13,7 @@ class OAuthController extends Controller
 {
     use HandlesCookies;
 
-    private array $allowedProviders = ['google', 'facebook', 'discord', 'github'];
+    private array $allowedProviders = ['google', 'facebook', 'discord'];
 
     public function redirect($provider)
     {

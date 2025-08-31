@@ -14,7 +14,6 @@ class Document extends Model
         'slug',
         'download_count',
         'source',
-        'tags_id',
         'created_by',
         'category_id',
         'subject_id',
@@ -22,25 +21,22 @@ class Document extends Model
         'status',
     ];
 
-    // Dùng Document::find(1)->makeVisible('tags_id'); để hiển thị lại ở 1 số chỗ nếu cần
     // Nó chỉ ẩn khi output, k ảnh hưởng khi dùng code trong PHP
 
     // 'category' => khi cần thi thêm vô appends
-    protected $appends = ['tags', 'creator',  'subject', 'grade_level']; // tự động thêm vào JSON
+    protected $appends = ['creator',  'subject', 'grade_level']; // tự động thêm vào JSON
 
     protected $hidden = [
         // 'category_id',
         'grade_level_id',
         'subject_id',
         'created_by',
-        'tags_id',
         'deleted_at',
         'updated_at',
     ];
 
     protected $casts = [
         'download_count' => 'integer',
-        'tags_id' => 'array',
         'status' => 'boolean',
     ];
 
@@ -70,11 +66,6 @@ class Document extends Model
         return $this->belongsTo(GradeLevel::class, 'grade_level_id');
     }
 
-    // Lấy danh sách tag theo id
-    public function getTagsAttribute()
-    {
-        return Tag::whereIn('id', $this->tags_id ?? [])->select('id', 'name', 'created_at')->get();
-    }
 
     // Lấy thông tin người tạo
     public function getCreatorAttribute()

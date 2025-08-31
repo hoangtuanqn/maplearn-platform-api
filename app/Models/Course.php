@@ -21,10 +21,10 @@ class Course extends Model
         'thumbnail',
         'intro_video',
         'price',
+        'user_id',
         'grade_level_id',
         'subject_id',
         'category_id',
-        'department_id',
         'start_date',
         'end_date',
         'status',
@@ -35,7 +35,7 @@ class Course extends Model
         'deleted_at'
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['final_price', 'department', 'subject', 'category', 'grade_level', 'rating', 'is_favorite', 'is_cart', 'is_enrolled', 'lesson_count', 'duration',  'is_best_seller']; // tự động thêm vào JSON
+    protected $appends = ['teacher', 'subject', 'category', 'grade_level', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
     protected $casts = [
         'price' => 'double',
         'is_sequential' => 'boolean',
@@ -55,6 +55,21 @@ class Course extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+    // Lấy số bảng ghi học sinh đã thanh toán khóa học (status = paid)
+    public function payments()
+    {
+        return $this->hasMany(Payment::class)->where('status', 'paid');
+    }
+
+    // Danh sách học sinh đã thanh toán (qua bảng pivot: payments)
+    public function students()
+    {
+        // bảng payments chứa course_id, xem ai đã mua và lấy cột created_at, updated_at bên bảng payments
+        return $this->belongsToMany(User::class, 'payments', 'course_id', 'user_id')
+            ->withPivot(['id', 'status', 'amount'])
+            ->wherePivot('status', 'paid');
+    }
+
     // public function audience()
     // {
     //     return $this->belongTo(Audience::class);
@@ -67,23 +82,15 @@ class Course extends Model
     {
         return $this->belongsTo(Subject::class);
     }
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
 
-    public function getDepartmentAttribute()
-    {
-        return $this->department()->select('id', 'name')->get();
-    }
     public function getSubjectAttribute()
     {
-        return $this->subject()->select('id', 'name')->get();
+        return $this->subject()->select('id', 'name')->first();
     }
 
     public function getCategoryAttribute()
     {
-        return $this->courseCategory()->select('id', 'name')->get();
+        return $this->courseCategory()->select('id', 'name')->first();
     }
     public function gradeLevel()
     {
@@ -97,36 +104,6 @@ class Course extends Model
         // return null;
     }
 
-    // Lấy danh sách giáo viên đang dạy
-    public function teachers()
-    {
-        return $this->belongsToMany(Teacher::class, 'course_teacher');
-    }
-
-    // Reviews
-    public function reviews()
-    {
-        return $this->hasMany(CourseReview::class, 'course_id');
-    }
-    // Tính điểm đánh giá trung bình
-    public function getRatingAttribute()
-    {
-        return [
-            'average_rating' => round($this->reviews()->avg('rating'), 1),
-            'total_reviews' => $this->reviews()->count(),
-        ]; // Làm tròn 1 chữ số sau dấu phẩy
-    }
-
-    // Tính số lượng học viên đã đăng ký khóa học
-    public function enrollments()
-    {
-        return $this->hasMany(CourseEnrollment::class);
-    }
-    // Lấy danh sách học viên đã đăng ký khóa học
-    public function students()
-    {
-        return $this->belongsToMany(User::class, 'course_enrollments', 'course_id', 'user_id');
-    }
 
 
     // Danh sách chương học, sort theo vị trí
@@ -135,9 +112,10 @@ class Course extends Model
         return $this->hasMany(CourseChapter::class, 'course_id')->orderBy('position');
     }
 
-    public function courseDiscounts()
+
+    public function getEnrollmentsCountAttribute(): int
     {
-        return $this->hasMany(CourseDiscount::class, 'course_id');
+        return $this->students()->count();
     }
 
     public function getLessonCountAttribute()
@@ -158,116 +136,47 @@ class Course extends Model
     }
 
 
-    // Get số tiền sau khi áp dụng giảm giá (truyền số tiền gốc vào)
-    public function getDiscountedPrice(float $originalPrice): float
-    {
-        // Lấy tất cả giảm giá đang hoạt động và còn hiệu lực
-        $activeDiscounts = $this->courseDiscounts()
-            ->where('is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('start_date')
-                    ->orWhere('start_date', '<=', now());
-            })
-            ->where(function ($query) {
-                $query->whereNull('end_date')
-                    ->orWhere('end_date', '>=', now());
-            })
-            ->get();
-
-        if ($activeDiscounts->isEmpty()) {
-            return $originalPrice;
-        }
-
-        $minPrice = $originalPrice;
-
-        foreach ($activeDiscounts as $discount) {
-            $priceAfterDiscount = $discount->type === 'percentage'
-                ? $originalPrice * (1 - $discount->value / 100)
-                : max(0, $originalPrice - $discount->value);
-
-            $minPrice = min($minPrice, $priceAfterDiscount);
-        }
-
-        return round($minPrice, 2);
-    }
-
     // Lấy giá tiền sau khi áp dụng giảm giá (mã giảm giá cao nhất)
     public function getFinalPriceAttribute(): float
     {
-        $originalPrice = $this->price;
-
-        $activeDiscounts = $this->courseDiscounts()
-            ->where('is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('start_date')->orWhere('start_date', '<=', now());
-            })
-            ->where(function ($query) {
-                $query->whereNull('end_date')->orWhere('end_date', '>=', now());
-            })
-            ->where(function ($query) {
-                $query->whereColumn('usage_count', '<', 'usage_limit') // ✅ fix đúng
-                    ->orWhere('usage_limit', '=', 0);
-            })
-            ->get();
-
-        if ($activeDiscounts->isEmpty()) {
-            return round($originalPrice, 2);
-        }
-
-        $minPrice = $originalPrice;
-
-        foreach ($activeDiscounts as $discount) {
-            $priceAfterDiscount = $discount->type === 'percentage'
-                ? $originalPrice * (1 - $discount->value / 100)
-                : max(0, $originalPrice - $discount->value);
-
-            $minPrice = min($minPrice, $priceAfterDiscount);
-        }
-
-        return round($minPrice, 2);
+        return  $this->price;
     }
 
     // Liên kết v
 
-    // Đánh dấu sản phẩm có bán chạy hay không (trong vòng 7 ngày mà bàn được > 100 sản phẩm thì bán chạy)
+    // Đánh dấu sản phẩm có bán chạy hay không (trong vòng 7 ngày mà bàn được >= 100 sản phẩm thì bán chạy)
     public function getIsBestSellerAttribute(): bool
     {
-        return $this->enrollments()
+        return $this->students()
             ->where('created_at', '>=', now()->subDays(7))
-            ->count() > 100;
+            ->count() >= 100;
     }
 
-
-
-    // Check khóa học có dc yêu thích bởi người dùng đang gửi request lấy data hay k ?
-    public function getIsFavoriteAttribute()
+    // lấy thông tin giáo viên dạy
+    public function user()
     {
-        $user = Auth::user();
-        // Nếu chưa đăng nhập, trả về false
-        if (!$user) {
-            return false;
-        }
-        return $user->favoriteCourses->contains($this->id);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Check khóa học có dc thêm vô giỏ hàng bởi người dùng đang gửi request lấy data hay k ?
-    public function getIsCartAttribute()
+    public function teacher()
     {
-        $user = Auth::user();
-        // Nếu chưa đăng nhập, trả về false
-        if (!$user) {
-            return false;
-        }
-        return $user->cartItems->contains('course_id', $this->id);
+        return $this->user();
     }
+
+    public function getTeacherAttribute()
+    {
+        return $this->user()->select('id', 'full_name', 'avatar', 'bio', 'degree')->first();
+    }
+
+
     // Check khóa học có dc mua bởi người dùng đang gửi request lấy data hay k ?
-    public function getIsEnrolledAttribute()
+    public function getIsEnrolledAttribute(): bool
     {
         $user = Auth::user();
         // Nếu chưa đăng nhập, trả về false
         if (!$user) {
             return false;
         }
-        return $user->purchasedCourses->contains($this->id);
+        return $user->payments()->where('course_id', $this->id)->exists();
     }
 }

@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Models\CardTopup;
 use App\Models\CourseEnrollment;
 use App\Models\Invoice;
-use App\Services\CardTopupService;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -122,7 +120,6 @@ class InvoiceController extends BaseApiController
         $invoice->status = 'failed';
 
         $invoice->save();
-        $request->user()->logActivity("cancel_invoice", "Đã hủy hóa đơn \"{$invoice->transaction_code}\".");
         return $this->successResponse($invoice, 'Hóa đơn đã được hủy thành công!');
     }
 
@@ -142,71 +139,5 @@ class InvoiceController extends BaseApiController
         }
 
         return $this->successResponse($invoice, 'Kiểm tra hóa đơn thành công!');
-    }
-
-    public function payWithCard(Request $request, Invoice $invoice)
-    {
-        $this->authorize('admin-owner', $invoice);
-        $validated = $request->validate([
-            'cards' => 'required|array|min:1',
-            'cards.*.telco' => 'required|string|max:50',
-            'cards.*.amount' => 'required|integer|min:1000',
-            'cards.*.serial' => 'required|string|max:100',
-            'cards.*.code' => 'required|string|max:100',
-        ]);
-        $res = [];
-        foreach ($validated['cards'] as $card) {
-            $res[] = CardTopupService::cardToPartner($card);
-        }
-        // Xử lý logic, sai hết, sai 1 vài thẻ, ko sai thẻ nào
-        $allSuccess = true;
-        $someFailed = false;
-
-        // Lưu vô lịch sử
-        foreach ($res as $card) {
-
-            if ($card['status'] == 1 || $card['status'] == 99) {
-                CardTopup::create([
-                    'user_id' => $request->user()->id,
-                    'invoice_id' => $invoice->id,
-                    'network' => $card['telco'],
-                    'amount' => $card['declared_value'],
-                    'serial' => $card['serial'],
-                    'code' => $card['code'],
-                    'status' => $card['status'] == 1 ? 'success' : 'pending',
-                    'request_id' => $card['request_id'] ?? null,
-                    'response_message' => $card['message']
-                ]);
-            }
-
-            if ($card['status'] !== 1) {
-                $allSuccess = false;
-                if ($card['status'] === 99) {
-                    $someFailed = true;
-                }
-            }
-        }
-
-        if ($allSuccess) {
-            return $this->successResponse($res, 'Tất cả thẻ đã được nạp thành công!');
-        } elseif ($someFailed) {
-            return $this->successResponse($res, 'Một số thẻ đã gửi thành công, vui lòng kiểm tra lại!');
-        } else {
-            return $this->errorResponse($res, 'Tất cả thẻ nạp thất bại, vui lòng kiểm tra lại!');
-        }
-        $user->logActivity("pay_with_card", "Đã thanh toán bằng thẻ cào cho hóa đơn \"{$invoice->transaction_code}\".");
-        return $this->successResponse($res, 'Thanh toán bằng thẻ cào thành công!');
-    }
-
-    // Get Card đã nạp trong invoice này
-    public function getCards(Request $request, Invoice $invoice)
-    {
-        Gate::authorize('admin-owner', $invoice);
-        $limit = (int)($request->input('limit', 10));
-        // Gate::authorize('view-cards', $invoice);
-        $cards = QueryBuilder::for($invoice->cards())
-            ->orderByDesc('id')
-            ->paginate($limit);
-        return $this->successResponse($cards, 'Lấy danh sách thẻ thành công!');
     }
 }

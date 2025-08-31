@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string("thumbnail");
             $table->longText("content");
             $table->integer('views')->default(0);
-            $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
             $table->unsignedInteger('subject_id'); // Các môn liên quan
             $table->boolean('status')->default(true);
             $table->integer('created_by')->unsigned();

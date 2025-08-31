@@ -23,9 +23,10 @@ return new class extends Migration
             $table->integer('birth_year')->nullable();
             $table->string('facebook_link')->nullable();
             $table->string('school')->nullable();
+            $table->string('bio')->nullable();
+            $table->string('degree')->nullable();
             $table->string('city')->nullable();
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
-            $table->decimal('money', 10, 2)->default(0); // Số dư tiền trong tài khoản
             $table->boolean('banned')->default(0);
             // lưu mã 2fa, và trạng thái
             $table->string('google2fa_secret')->nullable();
@@ -33,7 +34,6 @@ return new class extends Migration
             $table->string('google_id')->nullable();
             $table->string('facebook_id')->nullable();
             $table->string('discord_id')->nullable();
-            $table->string('github_id')->nullable();
             $table->timestamp('email_verified_at')->nullable(); // Thời gian xác thực email
             $table->string('verification_token')->nullable()->unique(); // Mã token xác thực email
             $table->rememberToken();

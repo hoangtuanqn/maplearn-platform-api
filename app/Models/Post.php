@@ -19,24 +19,21 @@ class Post extends Model
         'thumbnail',
         'content',
         'views',
-        'tags_id',
         'subject_id',
         'created_by',
         'status'
     ];
 
-    protected $appends = ['tags', 'creator']; // tự động thêm vào JSON
+    protected $appends = [ 'creator']; // tự động thêm vào JSON
 
     // Không hiển thị các cột này khi in ra danh sách
     protected $hidden = [
         'created_by',
-        'tags_id',
         'deleted_at'
     ];
 
     protected $casts = [
         'views' => 'integer',
-        'tags_id' => 'array',
         'status' => 'boolean'
     ];
     // getRouteKeyName là phương thức để xác định trường nào sẽ được sử dụng làm khóa định tuyến
@@ -57,10 +54,7 @@ class Post extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function getTagsAttribute()
-    {
-        return Tag::whereIn('id', $this->tags_id ?? [])->select('id', 'name', 'created_at')->get();
-    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('H:i - d/m/Y');

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('slug')->unique(); // Thêm slug để dễ dàng tìm kiếm
             $table->integer('download_count')->default(0);
             $table->string('source')->nullable();
-            $table->json('tags_id')->nullable(); // VD: [1, 3, 5]
             $table->integer('category_id')->unsigned();
             $table->integer('created_by')->unsigned();
             $table->integer('grade_level_id')->unsigned(); // Khối lớp

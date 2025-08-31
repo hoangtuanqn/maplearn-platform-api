@@ -60,7 +60,6 @@ class StudentController extends BaseApiController
         $student->update([
             'password' => Hash::make($request->password),
         ]);
-        $student->logActivity("change_password", "Quản trị viên đã cập nhật lại mật khẩu!");
         return $this->successResponse($student, "Đặt lại mật khẩu thành công!");
     }
 
@@ -131,7 +130,6 @@ class StudentController extends BaseApiController
                         'data' => $student,
                         'error' => ""
                     ];
-                    $student->logActivity("import", "Tài khoản được quản trị viên thêm vào hệ thống!");
                 }
                 DB::commit();
             } catch (\Exception $e) {
@@ -162,7 +160,6 @@ class StudentController extends BaseApiController
                         'data' => $student,
                         'error' => ""
                     ];
-                    $student->logActivity("import", "Tài khoản được quản trị viên thêm vào hệ thống!");
                 } catch (\Exception $e) {
                     $errors[] = [
                         'data' => $studentData,

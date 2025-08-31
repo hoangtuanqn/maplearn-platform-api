@@ -63,8 +63,10 @@ class GradeLevelController extends BaseApiController
                 'slug',
                 'thumbnail',
                 'price',
-                'department_id',
+                'user_id',
                 'grade_level_id',
+                'subject_id',
+                'category_id'
             ])->where('status', true)->orderBy('id', 'desc')->take(8); // Giới hạn 8 khóa học mỗi khối lớp
         }])->get();
 

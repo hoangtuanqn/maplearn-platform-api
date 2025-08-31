@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Filters\Course\CategoryCourseSlugFilter;
 use App\Filters\Course\CustomRatingFilter;
-use App\Filters\Course\IsDiscountedFilter;
 use App\Filters\Course\PriceFilter;
 use App\Filters\Course\TeacherFilter;
 use App\Filters\GradeLevelSlugFilter;
 use App\Filters\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
-use App\Models\CourseUserFavorite;
 use App\Sorts\Course\EnrollmentCountSort;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,29 +39,26 @@ class CourseController extends BaseApiController
                 'price',
                 'subject_id',
                 'category_id',
-                'department_id',
-
+                'user_id',
             ])
-            ->allowedSorts(['created_at', 'download_count', 'reviews_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
+            ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
                 'id',
                 'name',
                 'name',
                 'category_id',
-                'reviews_count',
                 AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
                 AllowedFilter::custom('category', new CategoryCourseSlugFilter),
                 AllowedFilter::custom('subject', new SubjectSlugFilter),
                 AllowedFilter::custom('rating', new CustomRatingFilter),
                 AllowedFilter::custom('price_range', new PriceFilter),
-                AllowedFilter::custom('teachers', new TeacherFilter),
-                AllowedFilter::custom('is_discounted', new IsDiscountedFilter),
+                // AllowedFilter::custom('teachers', new TeacherFilter),
             ])
             ->where('status', true)
             // ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
-            return $course->makeHidden(['lesson_count', 'duration', 'reviews_count']);
+            return $course->makeHidden(['lesson_count', 'duration']);
         });
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
@@ -90,12 +85,11 @@ class CourseController extends BaseApiController
     public function show(Course $course)
     {
         // Dùng withCount trước
-        $course->loadCount('enrollments');
+        // $course->loadCount('enrollments');
 
         // Sau đó load các quan hệ khác
         $course->load([
-            'teachers',
-            'teachers.user:id,full_name,avatar',
+            'teacher:id,full_name,avatar,bio,degree',
         ]);
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
@@ -128,41 +122,45 @@ class CourseController extends BaseApiController
     // Lấy 8 khóa học
     public function recommended()
     {
-        $userId = Auth::id();
-        $favCourseIds = CourseUserFavorite::where('user_id', $userId)
-            ->pluck('course_id');
+        // $userId = Auth::id();
+        // $favCourseIds = CourseUserFavorite::where('user_id', $userId)
+        //     ->pluck('course_id');
 
-        if ($favCourseIds->isNotEmpty()) {
-            $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
-
-
-            // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
-            $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
-            $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
-            $categoryIds = $favoriteCourses->pluck('category_id')->unique();
+        // if ($favCourseIds->isNotEmpty()) {
+        //     $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
 
 
-            // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
-            $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');
+        //     // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
+        //     $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
+        //     $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
+        //     $categoryIds = $favoriteCourses->pluck('category_id')->unique();
 
-            // Đề xuất các khóa học tương tự nhưng chưa yêu thích (và người dùng chưa mua khóa học đó)
-            $recommendCourses = Course::whereNotIn('id', $favCourseIds)->whereNotIn('id', $purchasedCourseIds)
-                ->where('status', true)
-                ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
-                    $query->whereIn('subject_id', $subjectIds)
-                        ->orWhereIn('grade_level_id', $gradeLevels)
-                        ->orWhereIn('category_id', $categoryIds);
-                })
-                ->inRandomOrder()
-                ->limit(8)
-                ->get();
-        } else {
-            // Nếu chưa có khóa yêu thích → đề xuất ngẫu nhiên
-            $recommendCourses = Course::where('status', true)
-                ->inRandomOrder()
-                ->limit(8)
-                ->get();
-        }
+
+        //     // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
+        //     $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');
+
+        //     // Đề xuất các khóa học tương tự nhưng chưa yêu thích (và người dùng chưa mua khóa học đó)
+        //     $recommendCourses = Course::whereNotIn('id', $favCourseIds)->whereNotIn('id', $purchasedCourseIds)
+        //         ->where('status', true)
+        //         ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
+        //             $query->whereIn('subject_id', $subjectIds)
+        //                 ->orWhereIn('grade_level_id', $gradeLevels)
+        //                 ->orWhereIn('category_id', $categoryIds);
+        //         })
+        //         ->inRandomOrder()
+        //         ->limit(8)
+        //         ->get();
+        // } else {
+        //     // Nếu chưa có khóa yêu thích → đề xuất ngẫu nhiên
+        //     $recommendCourses = Course::where('status', true)
+        //         ->inRandomOrder()
+        //         ->limit(8)
+        //         ->get();
+        // }
+        $recommendCourses = Course::where('status', true)
+            ->inRandomOrder()
+            ->limit(8)
+            ->get();
         return $this->successResponse($recommendCourses, 'Lấy danh sách khóa học đề xuất thành công!');
     }
 
@@ -181,19 +179,6 @@ class CourseController extends BaseApiController
             ->where('status', true)
             ->orderByDesc('id')
             ->get();
-        // $courses->transform(function ($course) {
-        //     /*
-        //     "department": [],
-        //     "subject": [],
-        //     "category": [],
-        //     "grade_level": null,
-        //     "is_favorite": false,
-        //     "is_cart": false,
-        //     "is_enrolled": false,
-        //     department
-        //     */
-        //     return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department']);
-        // });
 
         return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
     }
@@ -219,7 +204,7 @@ class CourseController extends BaseApiController
             ->get();
 
         $courses->transform(function ($course) {
-            return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_cart', 'is_enrolled', 'rating', 'department', 'lesson_count', 'duration']);
+            return $course->makeHidden(['grade_level', 'subject', 'category', 'grade_level', 'is_favorite', 'is_enrolled', 'rating', 'lesson_count', 'duration']);
         });
 
         return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');

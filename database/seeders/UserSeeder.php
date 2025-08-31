@@ -18,55 +18,81 @@ class UserSeeder extends Seeder
         $teachers = [
             [
                 'name' => "Thầy Vũ Ngọc Anh",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/64b229b5d0a652b97e5ab22d/thay-vu-ngoc-anh-1719903957239.png",
+                'image' => "/assets/images/teachers/thay-vu-ngoc-anh.jpg",
+                'bio' => "Giáo viên dạy Toán với 10 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Toán học"
             ],
             [
                 'name' => "Thầy Nguyễn Anh Phong",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/ssje00d001mj/thay-phong-1719904088246.png",
+                'image' => "/assets/images/teachers/thay-nguyen-anh-phong.jpg",
+                'bio' => "Giáo viên dạy Lý với 5 năm kinh nghiệm.",
+                "degree" => "Cử nhân Vật lý"
             ],
             [
                 'name' => "Thầy Nguyễn Chí Nhân",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/64b22c56d0a652b97e5ab25a/thay-nguyen-chi-nhan-1719904691156.png",
+                'image' => "/assets/images/teachers/thay-nguyen-chi-nhan.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Lam Trường",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/64b22ae2d0a652b97e5ab23f/thay-pham-ngoc-lam-truong-1719904662328.png",
+                'image' => "/assets/images/teachers/thay-pham-ngoc-lam-truong.jpg",
+                'bio' => "Giáo viên dạy Toán với 10 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Toán học"
             ],
             [
                 'name' => "Thầy Thành Nam",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/yfmex9703azb/nguyen-thanh-nam-1731156203997.png",
+                'image' => "/assets/images/teachers/nguyen-thanh-nam.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Nguyễn Phụ Hoàng Lân",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/ssjd7mc001j2/thay-lan-1719904579214.png",
+                'image' => "/assets/images/teachers/thay-nguyen-phu-hoang-lan.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Đinh Hoàng Tùng",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/ssjep5c001pi/thay-tung-1719904541522.png",
+                'image' => "/assets/images/teachers/thay-dinh-hoang-tung.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Cô Nguyễn Thị Thanh Thủy",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/ssjc7vu001gz/co-thuy---gv-mon-ngu-van-1719904650486.png",
+                'image' => "/assets/images/teachers/co-nguyen-thi-thanh-thuy.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Vũ Trọng Đạt",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/64b22b96d0a652b97e5ab246/thay-nguyen-trong-dat-1719904677740.png",
+                'image' => "/assets/images/teachers/thay-nguyen-trong-dat.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Phạm Minh Kiên",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/64b263141c19c4e72029f3e6/thay-pham-minh-kien-1718876072336.png",
+                'image' => "/assets/images/teachers/thay-pham-minh-kien.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Đăng Tiến Nghĩa",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/6500812d4490d64f5f4aba61/thay-dang-tien-nghia-1730720187137.jpg",
+                'image' => "/assets/images/teachers/thay-dang-tien-nghia.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Thầy Đặng Tấn Hùng",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/3icn9d0006nq/thay-hung-1742205106984.jpg",
+                'image' => "/assets/images/teachers/thay-hung.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
             [
                 'name' => "Cô Nguyễn Thị Thu Thảo",
-                'image' => "https://mapstudy.sgp1.digitaloceanspaces.com/teacher/3icohhn007gz/co-hien-1742205164177.jpg",
+                'image' => "/assets/images/teachers/co-hien.jpg",
+                'bio' => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+                "degree" => "Thạc sĩ Hóa học"
             ],
         ];
 
@@ -96,6 +122,8 @@ class UserSeeder extends Seeder
                 'full_name'    => $fullName,
                 'gender'       => $gender,
                 'role'         => 'teacher',
+                'bio'          => $teacher['bio'],
+                'degree'      => $teacher['degree'],
                 'avatar'       => $teacher['image'],
                 'created_at'   => $now,
                 'updated_at'   => $now,

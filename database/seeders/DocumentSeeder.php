@@ -77,7 +77,6 @@ class DocumentSeeder extends Seeder
             $documentsData[] = [
                 'title' => $title,
                 'source' => '/doc.pdf',
-                'tags_id' => [1, 2, 3, 4],
                 'download_count' => rand(10000, 20000),
                 'category_id' => 1,
 
@@ -89,7 +88,6 @@ class DocumentSeeder extends Seeder
                 'title' => $document['title'],
                 'source' => $document['source'],
                 'download_count' => $document['download_count'],
-                'tags_id' => $document['tags_id'],
                 'category_id' => $document['category_id'],
                 'created_by' => 1,
                 'status' => 1,

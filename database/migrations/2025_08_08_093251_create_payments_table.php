@@ -15,15 +15,16 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
+            $table->unsignedInteger('course_id'); // khóa học người dùng mua
 
             $table->string('transaction_code')->unique();
-            $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay', 'card'])->default('transfer'); // Phương thức thanh toán: 'transfer' (chuyển khoản), 'vnpay', 'momo', 'zalopay', 'card' (thẻ cào)
+            $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay'])->default('transfer'); // Phương thức thanh toán: 'transfer' (chuyển khoản), 'vnpay', 'momo', 'zalopay'
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
 
             $table->timestamp('paid_at')->nullable(); // thời điểm thanh toán thành công
-            $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade'); // khóa học người dùng mua
         });
     }
 

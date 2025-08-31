@@ -22,7 +22,6 @@ class CourseCategory extends Model
         'status',
     ];
 
-    // Dùng Document::find(1)->makeVisible('tags_id'); để hiển thị lại ở 1 số chỗ nếu cần
     // Nó chỉ ẩn khi output, k ảnh hưởng khi dùng code trong PHP
     protected $appends = ['count_courses']; // tự động thêm vào JSON
 

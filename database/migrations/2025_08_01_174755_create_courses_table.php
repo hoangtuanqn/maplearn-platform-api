@@ -23,22 +23,21 @@ return new class extends Migration
             // Có phép bỏ bài hay không, hay phải học tuần tự các bài
             $table->boolean('is_sequential')->default(false); // true: tuần tự, false: có thể nhảy cóc
             // $table->integer('audience_id')->unsigned();
+            $table->unsignedInteger('user_id')->unsigned(); // giáo viên dạy
+
             $table->unsignedInteger('grade_level_id')->unsigned(); // Đối tượng học phù hợp
             $table->unsignedInteger('subject_id')->unsigned(); // Môn học (Toán, lý, hóa, ...)
             $table->unsignedInteger('category_id')->unsigned(); // Danh mục khóa học
-            $table->unsignedInteger('department_id')->unsigned(); // Tổ phủ trách khóa học
+
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             // $table->integer('created_by')->unsigned(); // created_by là INT
             $table->boolean('status')->default(true);
             $table->timestamps();
-            $table->softDeletes();
+   
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('grade_level_id')->references('id')->on('grade_levels')->onDelete('cascade');
-
-            // Foreign keys
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
             // $table->foreign('audience_id')->references('id')->on('audiences')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('course_categories')->onDelete('cascade');

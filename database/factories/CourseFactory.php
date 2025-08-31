@@ -23,7 +23,7 @@ class CourseFactory extends Factory
             'thumbnail' => $this->faker->imageUrl(640, 480, 'education', true),
             'intro_video' => $this->faker->imageUrl(800, 200, 'intro_video', true),
             'subject_id' => rand(1, 6),
-            'department_id' => rand(1, 4),
+            'user_id' => rand(1, 4),
             'category_id' => rand(1, 5),
             'start_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
             'end_date' => $this->faker->dateTimeBetween('+2 months', '+6 months'),

@@ -95,7 +95,7 @@ class ExamAttemptController extends BaseApiController
             ]);
         }
         $exam = $examAttempt->paper();
-        $user->logActivity("detected_cheat", "Đã phát hiện gian lận trong bài thi \"{$exam->title}\".");
+
         return $this->successResponse($examAttempt, "Đã đánh dấu bài thi gian lận!");
     }
 

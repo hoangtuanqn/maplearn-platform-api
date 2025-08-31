@@ -56,7 +56,6 @@ class PostFactory extends Factory
                 return '<p>' . $this->faker->paragraph() . '</p>';
             })->implode("\n"),
             'thumbnail' => $real['thumbnail'],
-            'tags_id' => [1, 2, 3, 4, 5],
             // random id trong subject ngẫu nhiên
 
             'subject_id' => Subject::where('slug', $real['subject'])->first()->id,

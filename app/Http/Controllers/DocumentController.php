@@ -35,7 +35,6 @@ class DocumentController extends BaseApiController
                 'slug',
                 'source',
                 'download_count',
-                'tags_id',
                 'grade_level_id',
                 'subject_id',
                 'category_id',
@@ -60,21 +59,14 @@ class DocumentController extends BaseApiController
         // Lấy toàn bộ dữ liệu gửi lên
         $data = $request->all();
 
-        if (isset($data['tags_id']) && !is_array($data['tags_id'])) {
-            return $this->errorResponse(null, "Tags ID phải là 1 mảng");
-        }
-        if (is_array($data['tags_id'])) {
-            // Loại bỏ những ID tags trùng nhau
-            $data['tags_id'] = array_unique($data['tags_id']);
-        }
+
 
         // Validate
         $validated = validator($data, [
             'title' => 'required|string',
             'category_id' => 'required|exists:document_categories,id',
             'source' => 'nullable|string',
-            'tags_id' => 'nullable|array',
-            'tags_id.*' => 'exists:tags,id',
+
         ])->validate();
 
         // Thêm các giá trị mặc định
@@ -108,10 +100,9 @@ class DocumentController extends BaseApiController
             'content' => 'sometimes|required|string',
             'category_id' => 'sometimes|required|exists:document_categories,id',
             'source' => 'sometimes|nullable|string',
-            'tags_id' => 'sometimes|nullable|array',
-            'tags_id.*' => 'exists:tags,id',
+
         ]));
-        return $this->successResponse($document->append('tags'), 'Cập nhật tài liệu thành công!');
+        return $this->successResponse($document, 'Cập nhật tài liệu thành công!');
     }
 
     /**

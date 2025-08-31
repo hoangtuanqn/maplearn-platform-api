@@ -22,7 +22,7 @@ class PostController extends BaseApiController
 
         $posts = QueryBuilder::for(Post::class)
             ->allowedFilters(['title',  AllowedFilter::custom('courses', new CourseFilter)])
-            ->select(['id', 'slug', 'thumbnail', 'title', 'views', 'created_by', 'tags_id', 'created_at'])
+            ->select(['id', 'slug', 'thumbnail', 'title', 'views', 'created_by', 'created_at'])
             ->allowedSorts(['created_at', 'views'])
             ->where('status', true)
             ->with(['creator:id,full_name']) // đảm bảo quan hệ creator đã được định nghĩa
@@ -39,7 +39,6 @@ class PostController extends BaseApiController
     {
         $data = [
             'posts' => $post,
-            'tags' => $post->getTagsAttribute(),
         ];
         return $this->successResponse($data, 'Lấy chi tiết bài viết thành công!');
     }
@@ -53,20 +52,13 @@ class PostController extends BaseApiController
     {
         Gate::authorize('create', Post::class);
         $data = $request->all();
-        if (isset($data['tags_id']) && !is_array($data['tags_id'])) {
-            return $this->errorResponse(null, "Tags ID phải là 1 mảng");
-        }
-        if (is_array($data['tags_id'])) {
-            // Loại bỏ những ID tags trùng nhau
-            $data['tags_id'] = array_unique($data['tags_id']);
-        }
+
         $validated = validator($data, [
             'title' => 'required|string',
             'thumbnail' => 'required|string',
             'content' => 'required|string',
             'category_id' => 'required|exists:document_categories,id',
-            'tags_id' => 'nullable|array',
-            'tags_id.*' => 'exists:tags,id',
+
         ])->validate();
 
         $validated['created_by'] = $request->user()->id;
@@ -84,8 +76,7 @@ class PostController extends BaseApiController
         $post->update($request->validate([
             'title' => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
-            'tags_id' => 'sometimes|nullable|array',
-            'tags_id.*' => 'exists:tags,id',
+
         ]));
         return $this->successResponse($post, 'Cập nhật bài viết thành công!');
     }
@@ -121,7 +112,7 @@ class PostController extends BaseApiController
             ->limit($limit)
             ->get()
             ->each(function ($post) {
-                $post->makeHidden(['tags', 'creator']);
+                $post->makeHidden(['creator']);
             });
 
         return $this->successResponse($data, 'Lấy dữ liệu AI thành công!');

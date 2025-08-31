@@ -37,9 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('discord', \SocialiteProviders\Discord\Provider::class);
         });
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('github', \SocialiteProviders\GitHub\Provider::class);
-        });
+
 
         Event::listen(
             InvoicePaidMail::class

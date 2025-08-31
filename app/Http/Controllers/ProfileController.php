@@ -52,7 +52,6 @@ class ProfileController extends BaseApiController
         $user->update([
             'password' => Hash::make($request->password_new),
         ]);
-        $user->logActivity("change_password", "Đã đổi mật khẩu tài khoản");
         return $this->successResponse(null, "Đổi mật khẩu thành công.");
 
         // return response()->json([
@@ -170,7 +169,6 @@ class ProfileController extends BaseApiController
             'google2fa_enabled' => $type === 'active' ? true : false,
         ]);
         $message = $type === 'active' ? "Đã bật 2FA thành công." : "Đã tắt 2FA thành công.";
-        $user->logActivity("change_2fa", $message);
         return $this->successResponse([], $message);
     }
 

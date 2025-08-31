@@ -184,7 +184,6 @@ abstract class PaymentService
             'pmcid'          => 'required',
             'bankcode'       => 'nullable',
             'amount'         => 'required',
-            'discountamount' => 'required',
             'status'         => 'required',
             'checksum'       => 'required',
         ]);
@@ -195,7 +194,6 @@ abstract class PaymentService
             $validated['pmcid'],
             $validated['bankcode'],
             $validated['amount'],
-            $validated['discountamount'],
             $validated['status'],
         ]);
 
