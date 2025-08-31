@@ -147,7 +147,7 @@ class ExamPaperController extends BaseApiController
 
         $answers = $data['data'];
 
-        $paper = $exam->load('questions.answers');
+        $paper = $exam->load('questions');
         $questions = $paper->questions;
 
         $scores = 0; // Điểm của người dùng
@@ -167,7 +167,7 @@ class ExamPaperController extends BaseApiController
                 case "TRUE_FALSE":
                     // $value có thể là mảng -> lấy phần tử đầu tiên
                     $userAnswer = is_array($value) ? $value[0] : $value;
-                
+
                     $isCheck = array_filter($question->correct, fn($item) => $item['content'] === $userAnswer && $item['is_correct']);
 
                     if ($isCheck) {
@@ -186,7 +186,7 @@ class ExamPaperController extends BaseApiController
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
-                            if (!in_array($answerInCorrect->content, $value)) {
+                            if (!in_array($answerInCorrect['content'], $value)) {
                                 $allCorrect = false;
                                 break;
                             }
@@ -209,7 +209,7 @@ class ExamPaperController extends BaseApiController
                         $i = 0;
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
-                            if ($answerInCorrect->content != $value[$i++]) {
+                            if ($answerInCorrect['content'] != $value[$i++]) {
                                 $allCorrect = false;
                                 break;
                             }
