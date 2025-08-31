@@ -31,7 +31,7 @@ class ExamQuestionController extends BaseApiController
             return $this->errorResponse('Thời gian làm bài đã hết hạn', 403);
         }
         // Lấy đề thi + answers
-        $exam->load('questions.answers');
+        $exam->load('questions');
         return $this->successResponse($exam);
     }
 

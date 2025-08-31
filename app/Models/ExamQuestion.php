@@ -15,25 +15,22 @@ class ExamQuestion extends Model
         'content',
         'marks',
         'explanation',
-        'images'
+        'images',
+        'options',
+        'correct'
     ];
     protected $casts = [
         'marks' => 'float',
+        'options' => 'array',
+        'correct' => 'array',
         'images' => 'array'
     ];
-    protected $hidden = ['created_at', 'updated_at',];
+    protected $hidden = ['created_at', 'updated_at'];
 
-    public function answers()
-    {
-        return $this->hasMany(ExamAnswer::class);
-    }
+
     public function examPaper()
     {
         return $this->belongsTo(ExamPaper::class, 'exam_paper_id');
     }
 
-    public function answersCorrect()
-    {
-        return $this->answers()->where('is_correct', true);
-    }
 }

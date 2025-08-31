@@ -515,14 +515,11 @@ class ExamQuestionSeeder extends Seeder
             // Remove answers from question array before creating ExamQuestion
             $answers = $question['answers'];
             unset($question['answers']);
+            $correct = array_filter($answers, fn($item) => $item['is_correct']);
+            $question['options'] = $answers;
+            $question['correct'] = array_values($correct);
 
-            // Create ExamQuestion model instance
-            $examQuestion = ExamQuestion::create($question);
-
-            // Add answers
-            foreach ($answers as $answer) {
-                $examQuestion->answers()->create($answer);
-            }
+            ExamQuestion::create($question);
         }
     }
 }

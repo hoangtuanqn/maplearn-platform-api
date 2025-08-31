@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('content'); // Nội dung câu hỏi (Mã HTML)
             $table->longText('explanation')->nullable(); // Giải thích đáp án cho câu hỏi (nếu có) HTML giải thích
             $table->json('images')->nullable(); // Danh sách ảnh JSON. VD: ["image1.jpg", "image2.jpg"]
+            $table->json('options')->notNull(); // Danh sách các options của câu hỏi
+            $table->json('correct')->notNull(); // Đáp án đúng (có thể có nhiều đáp án đúng)
             $table->decimal('marks', 5, 2)->default(1.00); // Điểm khi trả lời đúng câu hỏi này
             $table->timestamps();
 

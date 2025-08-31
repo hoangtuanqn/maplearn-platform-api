@@ -167,10 +167,8 @@ class ExamPaperController extends BaseApiController
                 case "TRUE_FALSE":
                     // $value có thể là mảng -> lấy phần tử đầu tiên
                     $userAnswer = is_array($value) ? $value[0] : $value;
-                    $isCheck = $question->answers
-                        ->where('content', $userAnswer)
-                        ->where('is_correct', 1)
-                        ->first();
+                
+                    $isCheck = array_filter($question->correct, fn($item) => $item['content'] === $userAnswer && $item['is_correct']);
 
                     if ($isCheck) {
                         $isCorrect = true;
@@ -184,7 +182,7 @@ class ExamPaperController extends BaseApiController
                     break;
 
                 case "MULTIPLE_CHOICE":
-                    $answersInCorrect = $question->answers->where('is_correct', 1);
+                    $answersInCorrect = array_filter($question->correct, fn($item) => $item['is_correct']);
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
@@ -206,7 +204,7 @@ class ExamPaperController extends BaseApiController
                     break;
 
                 case "DRAG_DROP":
-                    $answersInCorrect = $question->answers->where('is_correct', 1);
+                    $answersInCorrect = array_filter($question->correct, fn($item) => $item['is_correct']);
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $i = 0;
                         $allCorrect = true;
@@ -228,7 +226,6 @@ class ExamPaperController extends BaseApiController
                     ];
                     break;
             }
-
         }
         // dd($answers);
         // bỏ key không cần thiết

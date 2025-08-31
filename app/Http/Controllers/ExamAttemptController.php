@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Traits\AuthorizesOwnerOrAdmin;
@@ -217,15 +216,10 @@ class ExamAttemptController extends BaseApiController
                 $question->your_choice = [];
                 $question->is_correct = false;
             }
-            $question->correct_answer = ExamAnswer::where('exam_question_id', $question->id)
-                ->where('is_correct', 1)
-                ->pluck('content')
-                ->toArray();
-            // Modifier lại thông tin
-            $question->setAttribute('answers', ExamAnswer::where('exam_question_id', $question->id)->get()
-                ->toArray());
+
+            $question->correct_answer = array_map(fn($item) => $item['content'], array_filter($question->correct, fn($item) => $item['is_correct']));
         });
-        return $this->successResponse($exam->questions, 'Lấy thông tin bài làm thành công!');
+        return $this->successResponse($exam->questions->makeHidden(['correct']), 'Lấy thông tin bài làm thành công!');
 
 
         // Ẩn chi tiết nếu cần
