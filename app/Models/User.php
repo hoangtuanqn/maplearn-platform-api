@@ -155,14 +155,11 @@ class User extends Authenticatable implements JWTSubject
     // }
 
     // Lấy danh sách khóa học đã mua
-    // public function purchasedCourses()
-    // {
-    //     return $this->belongsToMany(Course::class, 'course_enrollments', 'user_id', 'course_id')
-    //         // ->withPivot('id', 'created_at', 'updated_at')
-    //         // lấy thêm cột created_at của bảng course_enrollments
-    //         ->withPivot('created_at')
-    //         ->withTimestamps();
-    // }
+    public function purchasedCourses()
+    {
+        // Dựa vô bảng payments có chứa user_id, course_id, để get course người dùng đã mua
+        return $this->hasManyThrough(Course::class, Payment::class, 'user_id', 'id', 'id', 'course_id')->where('payments.status', 'paid');
+    }
 
 
     public function courses()

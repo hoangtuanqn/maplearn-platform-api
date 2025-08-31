@@ -65,9 +65,9 @@ class ProfileController extends BaseApiController
         $user = $request->user();
         $limit = $request->input('limit', 10); // số item mỗi trang, mặc định 10
 
-        $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('course_enrollments.created_at', 'desc'))
+        $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('payments.id', 'desc'))
             ->allowedFilters(['title']) // lọc theo title nếu cần
-            ->allowedSorts(['created_at', 'id']) // sắp xếp
+
             // ->latest('created_at')
             ->paginate($limit)
             ->appends($request->query()); // giữ nguyên query string khi phân trang
