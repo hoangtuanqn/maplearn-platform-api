@@ -6,8 +6,6 @@ use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class InvoicePaidMail extends Mailable implements ShouldQueue
@@ -50,25 +48,25 @@ class InvoicePaidMail extends Mailable implements ShouldQueue
         }
         // Map token → giá trị
         $replace = [
-            '__STATUS_INVOICE__'    =>  $status,
+            '__STATUS_INVOICE__'     => $status,
             '__INVOICE_DETAIL_URL__' => env("APP_URL_FRONT_END") . '/invoices/' . $this->invoice->transaction_code,
-            '__INVOICE_ID__'       => $this->invoice->transaction_code,
-            '__INVOICE_DATE__'     => $this->invoice->created_at->format('d/m/Y'),
-            '__DUE_DATE__'         => $this->invoice->due_date?->format('d/m/Y') ?? '',
-            '__COMPANY_NAME__'     => 'Công ty cổ phần MapLearn',
-            '__COMPANY_ADDRESS__'  => 'Địa chỉ: Quận Thủ Đức, TP HCM.',
-            '__COMPANY_PHONE__'    => '0812 665 001',
-            '__COMPANY_EMAIL__'    => 'maplearn@fpt.edu.vn',
-            '__COMPANY_SUPPORT__'  =>  '0812 665 001',
-            '__COMPANY_TAX__'      =>  '0812 665 001',
-            '__CUSTOMER_NAME__'    => $this->invoice->user->full_name,
-            '__CUSTOMER_EMAIL__'   => $this->invoice->user->email,
-            '__CUSTOMER_COUNTRY__' => $this->invoice->user->city . ' Việt Nam',
-            '__CUSTOMER_TYPE__'    => 'Cá nhân',
-            '__ITEM_LIST__'        => $itemRows,
-            '__SUBTOTAL__'         => number_format($this->invoice->total_price, 0, ',', '.') . ' đ',
-            '__VAT__'              => number_format(0, 0, ',', '.') . ' đ',
-            '__TOTAL__'            => number_format($this->invoice->total_price, 0, ',', '.') . ' đ',
+            '__INVOICE_ID__'         => $this->invoice->transaction_code,
+            '__INVOICE_DATE__'       => $this->invoice->created_at->format('d/m/Y'),
+            '__DUE_DATE__'           => $this->invoice->due_date?->format('d/m/Y') ?? '',
+            '__COMPANY_NAME__'       => 'Công ty cổ phần MapLearn',
+            '__COMPANY_ADDRESS__'    => 'Địa chỉ: Quận Thủ Đức, TP HCM.',
+            '__COMPANY_PHONE__'      => '0812 665 001',
+            '__COMPANY_EMAIL__'      => 'maplearn@fpt.edu.vn',
+            '__COMPANY_SUPPORT__'    => '0812 665 001',
+            '__COMPANY_TAX__'        => '0812 665 001',
+            '__CUSTOMER_NAME__'      => $this->invoice->user->full_name,
+            '__CUSTOMER_EMAIL__'     => $this->invoice->user->email,
+            '__CUSTOMER_COUNTRY__'   => $this->invoice->user->city . ' Việt Nam',
+            '__CUSTOMER_TYPE__'      => 'Cá nhân',
+            '__ITEM_LIST__'          => $itemRows,
+            '__SUBTOTAL__'           => number_format($this->invoice->total_price, 0, ',', '.') . ' đ',
+            '__VAT__'                => number_format(0, 0, ',', '.') . ' đ',
+            '__TOTAL__'              => number_format($this->invoice->total_price, 0, ',', '.') . ' đ',
         ];
 
         // Thay token

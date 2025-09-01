@@ -3,7 +3,6 @@
 namespace App\Filters\Course;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\Filters\Filter;
 
 class PriceFilter implements Filter

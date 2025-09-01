@@ -6,7 +6,6 @@ use App\Models\Invoice;
 use App\Models\User;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Log;
 
 class InvoicePolicy
 {

@@ -30,7 +30,7 @@ class ExamAttemptController extends BaseApiController
             if ($item->status === 'in_progress' && Carbon::parse($item->started_at)->addMinutes($exam->duration_minutes + 2)->isPast()) {
                 $item->update([
                     'status' => 'canceled',
-                    'note' => 'Thời gian làm bài đã hết nhưng không nộp.',
+                    'note'   => 'Thời gian làm bài đã hết nhưng không nộp.',
                 ]);
             }
         });
@@ -89,8 +89,8 @@ class ExamAttemptController extends BaseApiController
             // Update status = canceled
             $examAttempt->update([
                 'status' => 'detected',
-                'note' => 'Thí sinh gian lận trong quá trình thi cử. Bài thi đã bị hủy.',
-                'score' => 0,
+                'note'   => 'Thí sinh gian lận trong quá trình thi cử. Bài thi đã bị hủy.',
+                'score'  => 0,
             ]);
         }
         $exam = $examAttempt->paper();
@@ -172,7 +172,7 @@ class ExamAttemptController extends BaseApiController
         $userAttempt->makeHidden(['details']);
 
         return $this->successResponse([
-            'rank' => $ranking + 1,
+            'rank'    => $ranking + 1,
             'attempt' => $userAttempt,
         ], 'Lấy thứ hạng của người dùng thành công!');
     }
@@ -195,7 +195,6 @@ class ExamAttemptController extends BaseApiController
         $answers = $attempt->details['answers'];
         // return $this->successResponse($attempt->details['answers'], 'Lấy thông tin bài làm thành công!');
 
-
         if (!$attempt) {
             return $this->errorResponse(null, 'Không tìm thấy bài làm của bạn!');
         }
@@ -207,20 +206,19 @@ class ExamAttemptController extends BaseApiController
         $questions->each(function ($question) use ($answers) {
             // Nếu người dùng có trả lời câu hỏi này
             if (isset($answers[$question->id])) {
-                $userAnswer = $answers[$question->id];
-                $question->is_correct = $userAnswer['is_correct'];
+                $userAnswer            = $answers[$question->id];
+                $question->is_correct  = $userAnswer['is_correct'];
                 $question->your_choice = $userAnswer['value'];
                 // Nếu trả lời sai, lấy đáp án đúng
 
             } else {
                 $question->your_choice = [];
-                $question->is_correct = false;
+                $question->is_correct  = false;
             }
 
             $question->correct_answer = array_map(fn($item) => $item['content'], array_filter($question->correct, fn($item) => $item['is_correct']));
         });
         return $this->successResponse($exam->questions->makeHidden(['correct']), 'Lấy thông tin bài làm thành công!');
-
 
         // Ẩn chi tiết nếu cần
 

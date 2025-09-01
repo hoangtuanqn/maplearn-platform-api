@@ -22,33 +22,28 @@ class Course extends Model
         'intro_video',
         'price',
         'user_id',
-        'grade_level_id',
-        'subject_id',
-        'category_id',
+        'grade_level',
+        'subject',
+        'category',
         'start_date',
         'end_date',
         'status',
-        'is_sequential'
+        'is_sequential',
     ];
     protected $hidden = [
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['teacher', 'subject', 'category', 'grade_level', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
-    protected $casts = [
-        'price' => 'double',
+    protected $appends = ['teacher', 'subject', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
+    protected $casts   = [
+        'price'         => 'double',
         'is_sequential' => 'boolean',
-        'status' => 'boolean',
+        'status'        => 'boolean',
     ];
     public function getRouteKeyName()
     {
         return 'slug';
-    }
-
-    public function courseCategory()
-    {
-        return $this->belongsTo(CourseCategory::class, 'category_id');
     }
 
     public function creator()
@@ -70,48 +65,16 @@ class Course extends Model
             ->wherePivot('status', 'paid');
     }
 
-    // public function audience()
-    // {
-    //     return $this->belongTo(Audience::class);
-    // }
-    public function category()
-    {
-        return $this->belongsTo(CourseCategory::class, 'category_id');
-    }
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
-
     public function getSubjectAttribute()
     {
         return $this->subject()->select('id', 'name')->first();
     }
-
-    public function getCategoryAttribute()
-    {
-        return $this->courseCategory()->select('id', 'name')->first();
-    }
-    public function gradeLevel()
-    {
-        return $this->belongsTo(GradeLevel::class, 'grade_level_id');
-    }
-
-    // Lấy thông tin grade level
-    public function getGradeLevelAttribute()
-    {
-        return $this->gradeLevel()->select('slug')->first()?->slug;
-        // return null;
-    }
-
-
 
     // Danh sách chương học, sort theo vị trí
     public function chapters()
     {
         return $this->hasMany(CourseChapter::class, 'course_id')->orderBy('position');
     }
-
 
     public function getEnrollmentsCountAttribute(): int
     {
@@ -134,7 +97,6 @@ class Course extends Model
         // Duyệt tất cả chương, gộp lại toàn bộ lesson, rồi tính tổng thời lượng
         return $chapters->flatMap->lessons->sum('duration');
     }
-
 
     // Lấy giá tiền sau khi áp dụng giảm giá (mã giảm giá cao nhất)
     public function getFinalPriceAttribute(): float
@@ -167,7 +129,6 @@ class Course extends Model
     {
         return $this->user()->select('id', 'full_name', 'avatar', 'bio', 'degree')->first();
     }
-
 
     // Check khóa học có dc mua bởi người dùng đang gửi request lấy data hay k ?
     public function getIsEnrolledAttribute(): bool

@@ -37,7 +37,7 @@ class AutoConfirmInvoices extends Command
         $this->info('Đang xác nhận hóa đơn...');
         $res = Http::retry(3, 2000)->withHeaders([
             "Authorization" => "Bearer " . env("SEPAY_TOKEN"),
-            "Content-Type" => "application/json",
+            "Content-Type"  => "application/json",
         ])->get("https://my.sepay.vn/userapi/transactions/list?account_number=" . env("SEPAY_ACCOUNT") . "&limit=10");
         $data = $res->json();
         if ($res->failed()) {
@@ -55,7 +55,7 @@ class AutoConfirmInvoices extends Command
                     if (str_contains($transaction['transaction_content'], $invoice->transaction_code) && $transaction['amount_in'] >= $invoice->total_price) {
                         $count++;
                         // Cập nhật trạng thái hóa đơn
-                        $invoice->status = 'paid';
+                        $invoice->status         = 'paid';
                         $invoice->payment_method = 'transfer';
                         $invoice->save();
 
@@ -66,7 +66,6 @@ class AutoConfirmInvoices extends Command
                     }
                 }
 
-
                 $payments = Payment::where('payment_method', 'transfer')->where('status', 'pending')->get();
                 foreach ($payments as $payment) {
                     if (!$payment->isValid()) continue;
@@ -74,7 +73,7 @@ class AutoConfirmInvoices extends Command
                     if (str_contains($transaction['transaction_content'], $payment->transaction_code) && $transaction['amount_in'] >= $payment->invoices()->sum('total_price')) {
                         $count++;
                         // Cập nhật trạng thái thanh toán
-                        $payment->status = 'paid';
+                        $payment->status         = 'paid';
                         $payment->payment_method = 'transfer';
                         $payment->save();
                         $user = $payment->users()->first();

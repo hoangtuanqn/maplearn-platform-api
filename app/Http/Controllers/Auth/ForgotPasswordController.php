@@ -22,7 +22,7 @@ class ForgotPasswordController extends Controller
         //     sleep(4);
         // }
         return response()->json([
-            'message' => 'Hãy kiểm tra email của bạn. Nếu địa chỉ đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu ngay lập tức.'
+            'message' => 'Hãy kiểm tra email của bạn. Nếu địa chỉ đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu ngay lập tức.',
         ]);
     }
 }

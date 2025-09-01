@@ -12,8 +12,8 @@ class ExamPaper extends Model
     /** @use HasFactory<\Database\Factories\ExamPaperFactory> */
     use HasFactory;
     protected $fillable = [
-        'exam_category_id',
-        'subject_id',
+        'exam_category',
+        'subject',
         'grade_level',
         'title',
         'slug',
@@ -27,49 +27,28 @@ class ExamPaper extends Model
         'max_violation_attempts',
         'status',
         'start_time',
-        'end_time'
+        'end_time',
     ];
     protected $casts = [
-        'max_score' => 'float',
-        'pass_score' => 'float',
-        'duration_minutes' => 'integer',
-        'anti_cheat_enabled' => 'boolean',
+        'max_score'              => 'float',
+        'pass_score'             => 'float',
+        'duration_minutes'       => 'integer',
+        'anti_cheat_enabled'     => 'boolean',
         'max_violation_attempts' => 'integer',
-        'status' => 'boolean',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime'
+        'status'                 => 'boolean',
+        'start_time'             => 'datetime',
+        'end_time'               => 'datetime',
     ];
     protected $appends = [
         'is_in_progress', // Kiểm tra người dùng có đang làm bài thi hay không
         'question_count',
         'total_attempt_count',  // tổng số lượt thi của đề thi
-        'attempt_count' // số lượt thi của user đang gọi request
+        'attempt_count', // số lượt thi của user đang gọi request
     ];
 
     public function getRouteKeyName()
     {
         return 'slug';
-    }
-
-    // Liên kết khóa ngoại
-    public function examCategory()
-    {
-        return $this->belongsTo(ExamCategory::class);
-    }
-
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(ExamCategory::class, 'exam_category_id');
-    }
-
-    public function gradeLevel()
-    {
-        return $this->belongsTo(GradeLevel::class);
     }
 
     // questions
@@ -109,7 +88,6 @@ class ExamPaper extends Model
         }
         return $user->examAttempts()->where('exam_paper_id', $this->id)->count();
     }
-
 
     // Các sự kiện event
     protected static function booted()

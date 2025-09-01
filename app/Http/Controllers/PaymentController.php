@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\Payment;
-use Illuminate\Http\Request;
 use App\Services\PaymentService;
-
+use Illuminate\Http\Request;
 
 class PaymentController extends BaseApiController
 {
@@ -26,7 +25,7 @@ class PaymentController extends BaseApiController
     {
         $user = $request->user();
         $data = $request->validate([
-            'course_id' => 'required|exists:courses,id',
+            'course_id'      => 'required|exists:courses,id',
             'payment_method' => 'required|in:transfer,vnpay,momo,zalopay',
         ]);
         $course = Course::find($data['course_id']);
@@ -36,11 +35,11 @@ class PaymentController extends BaseApiController
         $payment = Payment::updateOrCreate(
             ['user_id' => $user->id, 'course_id' => $data['course_id']],
             [
-                'user_id' => $user->id,
-                'amount' => $course->price,
-                'course_id' => $data['course_id'],
+                'user_id'        => $user->id,
+                'amount'         => $course->price,
+                'course_id'      => $data['course_id'],
                 'payment_method' => $request->payment_method,
-                'status' => 'pending'
+                'status'         => 'pending',
             ]
         );
         $total = $payment->amount;
@@ -52,7 +51,7 @@ class PaymentController extends BaseApiController
                 $result = PaymentService::createInvoiceMOMO($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/momo");
                 break;
             case 'zalopay':
-                $result   = PaymentService::createInvoiceZALOPAY($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/zalopay");
+                $result = PaymentService::createInvoiceZALOPAY($total, $payment->transaction_code, env("APP_URL_FRONT_END") . "/payments/return/zalopay");
                 break;
             case 'transfer':
                 break;
@@ -72,7 +71,7 @@ class PaymentController extends BaseApiController
 
         // Hiển thị payment gồm nhiều invoice bên trong
         $payment->load([
-            'course'
+            'course',
         ]);
         return $this->successResponse($payment, 'Lấy dữ liệu payments thành công', 200);
     }

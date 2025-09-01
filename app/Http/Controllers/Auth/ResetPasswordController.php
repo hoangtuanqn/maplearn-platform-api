@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\Base64Url;
 use App\Http\Controllers\Api\BaseApiController;
-use App\Http\Controllers\Controller;
 use App\Traits\HandlesCookies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Carbon;
 
 class ResetPasswordController extends BaseApiController
 {
@@ -41,21 +39,21 @@ class ResetPasswordController extends BaseApiController
 
         // Kiểm tra thời gian hết hạn
         $expireMinutes = config('auth.passwords.users.expire', 60); // thường là 60 phút
-        $createdAt = Carbon::parse($record->created_at);
+        $createdAt     = Carbon::parse($record->created_at);
 
         if ($createdAt->addMinutes($expireMinutes)->isPast()) {
             return $this->errorResponse(null, 'Token đã hết hạn.', 410);
         }
 
         return $this->successResponse([
-            'email' => $record->email
+            'email' => $record->email,
         ], 200);
     }
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'string|required',
-            'email' => 'required|email',
+            'token'    => 'string|required',
+            'email'    => 'required|email',
             'password' => 'required|min:6',
         ]);
 

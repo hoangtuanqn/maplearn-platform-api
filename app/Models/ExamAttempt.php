@@ -19,12 +19,12 @@ class ExamAttempt extends Model
         'started_at',
         'submitted_at',
         'status',
-        'note'
+        'note',
     ];
     protected $casts = [
-        'score' => 'float',
-        'details' => 'array',
-        'started_at' => 'datetime',
+        'score'        => 'float',
+        'details'      => 'array',
+        'started_at'   => 'datetime',
         'submitted_at' => 'datetime',
     ];
     public function user()
@@ -41,7 +41,7 @@ class ExamAttempt extends Model
         // Tự động tính thời gian làm bài thi khi thực hiện thành động nộp bài (chỉ áp dụng khi bài thi đang in_progress)
         static::updating(function ($attempt) {
             if (!$attempt->submitted_at && $attempt->getOriginal('status') === 'in_progress' && in_array($attempt->status, ['submitted', 'detected'])) {
-                $attempt->time_spent = $attempt->started_at->diffInSeconds(now());
+                $attempt->time_spent   = $attempt->started_at->diffInSeconds(now());
                 $attempt->submitted_at = now();
             }
         });

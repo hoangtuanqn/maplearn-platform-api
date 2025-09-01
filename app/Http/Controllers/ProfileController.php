@@ -8,8 +8,8 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Payment;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\GoogleAuthenService;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -19,13 +19,13 @@ class ProfileController extends BaseApiController
     public function update(Request $request)
     {
         $request->user()->update($request->validate([
-            'avatar' => 'sometimes|url|max:2048',
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'sometimes|string|max:20',
-            'gender' => 'sometimes|string|in:male,female,other',
-            'birth_year' => 'sometimes|nullable',
-            'school' => 'sometimes|string|max:255',
-            'city' => 'sometimes|string|max:255',
+            'avatar'        => 'sometimes|url|max:2048',
+            'full_name'     => 'required|string|max:255',
+            'phone_number'  => 'sometimes|string|max:20',
+            'gender'        => 'sometimes|string|in:male,female,other',
+            'birth_year'    => 'sometimes|nullable',
+            'school'        => 'sometimes|string|max:255',
+            'city'          => 'sometimes|string|max:255',
             'facebook_link' => 'sometimes|string|max:255',
         ]));
 
@@ -62,7 +62,7 @@ class ProfileController extends BaseApiController
     // Lấy danh sách khóa học của tôi
     public function getCoursesMe(Request $request)
     {
-        $user = $request->user();
+        $user  = $request->user();
         $limit = $request->input('limit', 10); // số item mỗi trang, mặc định 10
 
         $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('payments.id', 'desc'))
@@ -79,14 +79,14 @@ class ProfileController extends BaseApiController
     public function getPaymentsMe(Request $request)
     {
         $limit = $request->input('limit', 10);
-        $user = $request->user();
+        $user  = $request->user();
 
         // Query chính với filter, sort, user_id
         $paymentsQuery = QueryBuilder::for(Payment::class)
             ->allowedSorts(['created_at'])
             ->allowedFilters([
                 AllowedFilter::custom('status', new StatusFilter),
-                AllowedFilter::custom('date', new DateFilter)
+                AllowedFilter::custom('date', new DateFilter),
             ])
             ->where('user_id', $user->id)
             ->orderByDesc('id');
@@ -98,13 +98,13 @@ class ProfileController extends BaseApiController
         $summaryQuery->where('status', 'pending');
 
         $summary = [
-            'total_pending' => $summaryQuery->count(),
+            'total_pending'       => $summaryQuery->count(),
             'total_price_pending' => (float)$summaryQuery->sum('amount'),
         ];
 
         return $this->successResponse([
             'payments' => $paymentsQuery->paginate($limit),
-            'summary' => $summary,
+            'summary'  => $summary,
         ], 'Lấy danh sách hóa đơn thành công!');
     }
 
@@ -125,7 +125,7 @@ class ProfileController extends BaseApiController
 
         // Không lưu secret vào DB ở bước này, chỉ trả về cho user xác thực
         return $this->successResponse([
-            'secret' => $google2fa['secret'],
+            'secret'    => $google2fa['secret'],
             'qr_base64' => $google2fa['qr_base64'],
         ], "Tạo mã 2FA thành công. Vui lòng xác thực để hoàn tất.");
     }
@@ -135,7 +135,7 @@ class ProfileController extends BaseApiController
     {
         // Validate otp
         Validator::make($request->all(), [
-            'otp' => 'required|string|size:6',
+            'otp'  => 'required|string|size:6',
             'type' => 'required|string|in:active,unactive',
         ])->validate();
         $type = $request->input('type');
@@ -152,10 +152,8 @@ class ProfileController extends BaseApiController
             return $this->errorResponse(null, "Loại yêu cầu không hợp lệ.", 400);
         }
 
-
-
         $secret = $user->google2fa_secret;
-        $otp = $request->input('otp');
+        $otp    = $request->input('otp');
 
         $isValid = GoogleAuthenService::verify2FA($secret, $otp);
 
@@ -165,13 +163,12 @@ class ProfileController extends BaseApiController
 
         // Nếu đúng thì lưu flag bật 2FA
         $user->update([
-            'google2fa_secret' => $type === 'active' ? $secret : null,
+            'google2fa_secret'  => $type === 'active' ? $secret : null,
             'google2fa_enabled' => $type === 'active' ? true : false,
         ]);
         $message = $type === 'active' ? "Đã bật 2FA thành công." : "Đã tắt 2FA thành công.";
         return $this->successResponse([], $message);
     }
-
 
     // Gửi lại email xác minh
 

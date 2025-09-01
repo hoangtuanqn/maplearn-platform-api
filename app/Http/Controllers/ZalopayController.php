@@ -14,15 +14,15 @@ class ZalopayController extends BaseApiController
     // Xử lý redirect từ ZaloPay về Merchant (Laravel style)
     public function paymentReturn(Request $request)
     {
-        $result = PaymentService::handleReturnZaloPay($request);
+        $result           = PaymentService::handleReturnZaloPay($request);
         $transaction_code = $result['transaction_code'] ?? null;
-        $payment = Payment::where('transaction_code', $transaction_code)->first();
+        $payment          = Payment::where('transaction_code', $transaction_code)->first();
 
         if (!$payment) {
             return $this->errorResponse(null, 'Hóa đơn không tồn tại hoặc đã được xử lý', 404);
         }
         $payment->update([
-            'status' =>  $result['success'] == true ? 'paid' : 'failed',
+            'status'         => $result['success'] == true ? 'paid' : 'failed',
             'payment_method' => 'zalopay',
         ]);
 

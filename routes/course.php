@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\CourseChapterController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\CourseUserFavoriteController;
 use Illuminate\Support\Facades\Route;
 
 // Lấy chương học theo slug

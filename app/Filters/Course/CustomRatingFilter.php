@@ -20,7 +20,7 @@ class CustomRatingFilter implements Filter
                     ->pluck('course_id');
                 return $query->whereIn('id', $courseIds);
             default:
-                $value = (float) $value;
+                $value     = (float) $value;
                 $courseIds = DB::table('course_reviews')
                     ->select('course_id')
                     ->groupBy('course_id')

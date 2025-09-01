@@ -20,9 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         //
         $middleware->alias([
-            'auth.jwt' => AuthenticateJwt::class,
+            'auth.jwt'          => AuthenticateJwt::class,
             'auth.optional.jwt' => OptionalAuthenticateJwt::class,
-            'check.role' => CheckRole::class,
+            'check.role'        => CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -38,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'message' => $e->getMessage() ?? 'Bạn không có quyền thực hiện hành động này.',
-                    'type' => 'AccessDenied',
+                    'type'    => 'AccessDenied',
                 ], Response::HTTP_FORBIDDEN);
             }
         });

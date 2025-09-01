@@ -1,11 +1,12 @@
 <?php
+
 // routes/web.php
 
 use App\Http\Controllers\MomoController;
 use App\Http\Controllers\PaymentController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VnpayController;
 use App\Http\Controllers\ZalopayController;
+use Illuminate\Support\Facades\Route;
 
 Route::apiResource('/payments', PaymentController::class)->middleware('auth.jwt');
 Route::prefix('payment')->group(function () {

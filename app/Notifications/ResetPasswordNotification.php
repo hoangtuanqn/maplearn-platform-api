@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Helpers\Base64Url;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -37,7 +36,7 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $frontendUrl = env('APP_URL_FRONT_END', 'http://localhost:3000'); // frontend URL
-        $resetUrl = "{$frontendUrl}/auth/reset-password/" . $this->token;
+        $resetUrl    = "{$frontendUrl}/auth/reset-password/" . $this->token;
 
         return (new MailMessage)
             ->subject('Đặt lại mật khẩu')

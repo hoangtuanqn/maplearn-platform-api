@@ -29,7 +29,7 @@ trait AuthorizesOwnerOrAdmin
             return Response::allow();
         }
 
-        if ($user->role === 'teacher' || ($model->created_by === $user->id ||  $model->user_id === $user->id)) {
+        if ($user->role === 'teacher' || ($model->created_by === $user->id || $model->user_id === $user->id)) {
             return Response::allow();
         }
 

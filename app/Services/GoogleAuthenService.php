@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use PragmaRX\Google2FA\Google2FA;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+use PragmaRX\Google2FA\Google2FA;
 
 abstract class GoogleAuthenService
 {
@@ -18,21 +18,21 @@ abstract class GoogleAuthenService
 
         // 2. Tạo otpauth URL
         $companyName = 'MapLearn - ' . $email;
-        $otpauthUrl = $google2fa->getQRCodeUrl(
+        $otpauthUrl  = $google2fa->getQRCodeUrl(
             $companyName,
             $email,
             $secret
         );
 
         // 3. Tạo QR code PNG (bản mới không dùng create())
-        $qrCode = new QrCode($otpauthUrl);
-        $writer = new PngWriter();
+        $qrCode    = new QrCode($otpauthUrl);
+        $writer    = new PngWriter();
         $imageData = $writer->write($qrCode)->getString();
 
         // 4. Trả ảnh PNG trực tiếp
         return [
-            'secret' => $secret,
-            'qr_base64' => 'data:image/png;base64,' . base64_encode($imageData)
+            'secret'    => $secret,
+            'qr_base64' => 'data:image/png;base64,' . base64_encode($imageData),
         ];
     }
 

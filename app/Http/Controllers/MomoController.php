@@ -7,14 +7,12 @@ use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
-
 class MomoController extends BaseApiController
 {
 
-
     public function handleReturn(Request $request)
     {
-        $result = PaymentService::handleReturnMomo($request);
+        $result      = PaymentService::handleReturnMomo($request);
         $transaction = $result['transaction_code'];
 
         $payment = Payment::where('transaction_code', $transaction)->first();
@@ -24,13 +22,13 @@ class MomoController extends BaseApiController
 
         if ($result['success']) {
             $payment->update([
-                'status' => 'paid',
+                'status'         => 'paid',
                 'payment_method' => 'momo',
             ]);
             return $this->successResponse($result, 'Thanh toán thành công!');
         } else {
             $payment->update([
-                'status' => 'failed',
+                'status'         => 'failed',
                 'payment_method' => 'momo',
             ]);
             return $this->errorResponse(null, $result['message'], 400);

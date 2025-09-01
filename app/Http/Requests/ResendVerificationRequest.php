@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Http\Requests;
-use Illuminate\Foundation\Http\FormRequest;
+
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
 
 class ResendVerificationRequest extends FormRequest

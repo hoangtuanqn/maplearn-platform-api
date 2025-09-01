@@ -18,14 +18,12 @@ return new class extends Migration
             $table->string("thumbnail");
             $table->longText("content");
             $table->integer('views')->default(0);
-            $table->unsignedInteger('subject_id'); // Các môn liên quan
+            $table->enum('subject', ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'])->default('toan'); // Liên kết môn học
             $table->boolean('status')->default(true);
             $table->integer('created_by')->unsigned();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
         });
     }
 

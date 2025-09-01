@@ -25,14 +25,12 @@ class Payment extends Model
         'payment_method',
         'transaction_code',
         'status',
-        'paid_at'
+        'paid_at',
     ];
     protected $casts = [
-        'amount' => 'float',
+        'amount'  => 'float',
         'paid_at' => 'datetime',
     ];
-
-
 
     public function course()
     {

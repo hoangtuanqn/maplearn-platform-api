@@ -22,3 +22,12 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Ignore caches & build
+var/
+vendor/
+storage/
+bootstrap/cache/
+.phpstan
+.phpunit.result.cache
+.env

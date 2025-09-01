@@ -18,7 +18,7 @@ class ExamQuestionController extends BaseApiController
 
         $user = $request->user();
 
-        $attemp =  $user->examAttempts()->where('exam_paper_id', $exam->id)->where('status', 'in_progress')->first();
+        $attemp = $user->examAttempts()->where('exam_paper_id', $exam->id)->where('status', 'in_progress')->first();
 
         if (!$attemp) {
             return $this->errorResponse('Không tìm thấy bài làm!', 403);
@@ -34,8 +34,6 @@ class ExamQuestionController extends BaseApiController
         $exam->load('questions');
         return $this->successResponse($exam);
     }
-
-
 
     /**
      * Store a newly created resource in storage.

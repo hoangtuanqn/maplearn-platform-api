@@ -17,16 +17,15 @@ class ExamQuestion extends Model
         'explanation',
         'images',
         'options',
-        'correct'
+        'correct',
     ];
     protected $casts = [
-        'marks' => 'float',
+        'marks'   => 'float',
         'options' => 'array',
         'correct' => 'array',
-        'images' => 'array'
+        'images'  => 'array',
     ];
     protected $hidden = ['created_at', 'updated_at'];
-
 
     public function examPaper()
     {

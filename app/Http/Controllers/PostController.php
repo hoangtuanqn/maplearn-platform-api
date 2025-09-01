@@ -43,8 +43,6 @@ class PostController extends BaseApiController
         return $this->successResponse($data, 'Lấy chi tiết bài viết thành công!');
     }
 
-
-
     /**
      * Store a newly created resource in storage.
      */
@@ -54,18 +52,17 @@ class PostController extends BaseApiController
         $data = $request->all();
 
         $validated = validator($data, [
-            'title' => 'required|string',
-            'thumbnail' => 'required|string',
-            'content' => 'required|string',
+            'title'       => 'required|string',
+            'thumbnail'   => 'required|string',
+            'content'     => 'required|string',
             'category_id' => 'required|exists:document_categories,id',
 
         ])->validate();
 
         $validated['created_by'] = $request->user()->id;
-        $post = Post::create($validated);
+        $post                    = Post::create($validated);
         return $this->successResponse($post, 'Tạo bài viết mới thành công!', Response::HTTP_CREATED);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -74,7 +71,7 @@ class PostController extends BaseApiController
     {
         Gate::authorize('update', $post);
         $post->update($request->validate([
-            'title' => 'sometimes|required|string|max:255',
+            'title'   => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
 
         ]));
@@ -103,8 +100,8 @@ class PostController extends BaseApiController
     public function showDataAI(Request $request)
     {
         $limit = (int)($request->limit ?? 10); // Giới hạn tối đa 100 items
-        $page = (int)($request->page ?? 1); // Giới hạn offset
-        $data = Post::query()
+        $page  = (int)($request->page ?? 1); // Giới hạn offset
+        $data  = Post::query()
             ->select(['id', 'title', 'slug'])
             ->where('status', true)
             ->orderByDesc('id')

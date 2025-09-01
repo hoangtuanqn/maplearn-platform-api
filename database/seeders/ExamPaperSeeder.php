@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\ExamCategory;
 use App\Models\ExamPaper;
-use App\Models\GradeLevel;
-use App\Models\Subject;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 
 class ExamPaperSeeder extends Seeder
@@ -55,20 +52,22 @@ class ExamPaperSeeder extends Seeder
             'Đề minh họa thi tốt nghiệp THPT 2025 môn Vật lí',
             'Đề minh họa thi tốt nghiệp THPT 2025 môn Tiếng Anh',
             'Đề minh họa thi tốt nghiệp THPT 2025 môn Ngữ văn',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Toán'
+            'Đề minh họa thi tốt nghiệp THPT 2025 môn Toán',
         ];
-
+        $subjects    = ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'];
+        $gradeLevels = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
+        $categories  = ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'];
         foreach ($examPapers as $paper) {
             ExamPaper::create([
-                'title' => $paper,
-                'max_score' => 10,
+                'title'            => $paper,
+                'max_score'        => 10,
                 'duration_minutes' => 120,
-                'exam_category_id' => ExamCategory::inRandomOrder()->first()->id,
-                'subject_id' => Subject::inRandomOrder()->first()->id,
-                'grade_level_id' => rand(1, 4),
-                'difficulty' => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
-                'province' => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
-                'exam_type' => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random()
+                'exam_category'    => $categories[array_rand($categories)],
+                'subject'          => $subjects[array_rand($subjects)],
+                'grade_level'      => $gradeLevels[array_rand($gradeLevels)],
+                'difficulty'       => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
+                'province'         => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
+                'exam_type'        => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
             ]);
         }
     }

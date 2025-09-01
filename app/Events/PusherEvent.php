@@ -2,13 +2,12 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
 
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-
 
 class PusherEvent implements ShouldBroadcastNow
 {
@@ -20,7 +19,7 @@ class PusherEvent implements ShouldBroadcastNow
     public function __construct($message, $email = null)
     {
         $this->message = $message;
-        $this->email = $email;
+        $this->email   = $email;
     }
 
     // Tên channel phải trùng với frontend: "my-channel"

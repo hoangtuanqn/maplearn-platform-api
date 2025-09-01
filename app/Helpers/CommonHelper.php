@@ -9,7 +9,7 @@ class CommonHelper
     // Tạo slug từ title
     public static function generateSlug($string)
     {
-        $slugBase = Str::slug($string);
+        $slugBase     = Str::slug($string);
         $randomSuffix = Str::random(12);
         return $slugBase . '-' . strtolower($randomSuffix);
     }

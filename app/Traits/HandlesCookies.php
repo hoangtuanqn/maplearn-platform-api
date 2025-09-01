@@ -13,7 +13,7 @@ trait HandlesCookies
      */
     private function respondWithToken(User $user, string $message, int $status = 200)
     {
-        $timeLiveToken = 120; // Sống 120 phút
+        $timeLiveToken   = 120; // Sống 120 phút
         $timeLiveRefresh = 60 * 24 * 7; // Sống 7 ngày
         // Access Token sống 120 phút
         JWTAuth::factory()->setTTL($timeLiveToken);
@@ -26,9 +26,9 @@ trait HandlesCookies
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data' => $user,
+            'data'    => $user,
         ], $status)
-            ->withCookie($this->buildCookie('jwt_token', $accessToken,  $timeLiveToken)) // set 120p = 2 tiếng
+            ->withCookie($this->buildCookie('jwt_token', $accessToken, $timeLiveToken)) // set 120p = 2 tiếng
             ->withCookie($this->buildCookie('jwt_refresh', $refreshToken, $timeLiveRefresh));
     }
 

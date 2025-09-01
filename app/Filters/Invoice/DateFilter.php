@@ -2,9 +2,9 @@
 
 namespace App\Filters\Invoice;
 
-use Spatie\QueryBuilder\Filters\Filter;
-use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Spatie\QueryBuilder\Filters\Filter;
 
 class DateFilter implements Filter
 {
@@ -16,7 +16,7 @@ class DateFilter implements Filter
         if (is_array($value) && count($value) === 2) {
             // parse ngày theo định dạng d/m/Y
             $start = Carbon::createFromFormat('d/m/Y', trim($value[0]))->startOfDay();
-            $end = Carbon::createFromFormat('d/m/Y', trim($value[1]))->endOfDay();
+            $end   = Carbon::createFromFormat('d/m/Y', trim($value[1]))->endOfDay();
 
             // lọc theo cột created_at (datetime)
             $query->whereBetween('created_at', [$start, $end]);

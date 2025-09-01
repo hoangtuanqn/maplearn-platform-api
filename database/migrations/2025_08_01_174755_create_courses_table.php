@@ -25,22 +25,17 @@ return new class extends Migration
             // $table->integer('audience_id')->unsigned();
             $table->unsignedInteger('user_id')->unsigned(); // giáo viên dạy
 
-            $table->unsignedInteger('grade_level_id')->unsigned(); // Đối tượng học phù hợp
-            $table->unsignedInteger('subject_id')->unsigned(); // Môn học (Toán, lý, hóa, ...)
-            $table->unsignedInteger('category_id')->unsigned(); // Danh mục khóa học
+            $table->enum('grade_level', ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'])->default('lop-12'); // Lớp 10, 11, 12, ..
+            $table->enum('subject', ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'])->default('toan'); // Liên kết môn học
+            $table->enum('category', ['2k8-xuat-phat-som-lop-12', '2k9-xuat-phat-som-lop-11', '2k10-xuat-phat-som-lop-10', 'hoc-tot-sach-giao-khoa', 'khoa-hoc-trung-hoc-co-so'])->default('hoc-tot-sach-giao-khoa'); // Danh mục khóa học
 
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             // $table->integer('created_by')->unsigned(); // created_by là INT
             $table->boolean('status')->default(true);
             $table->timestamps();
-   
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('grade_level_id')->references('id')->on('grade_levels')->onDelete('cascade');
-            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-            // $table->foreign('audience_id')->references('id')->on('audiences')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('course_categories')->onDelete('cascade');
         });
     }
 

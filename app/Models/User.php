@@ -59,16 +59,15 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
-        'money' => 'float',
-        'password' => 'hashed',
+        'money'             => 'float',
+        'password'          => 'hashed',
         'email_verified_at' => 'datetime',
-        'current_balance' => 'float',
-        'total_deposit' => 'float',
-        'banned' => 'boolean',
+        'current_balance'   => 'float',
+        'total_deposit'     => 'float',
+        'banned'            => 'boolean',
         'google2fa_enabled' => 'boolean',
-        'birth_year' => 'integer',
+        'birth_year'        => 'integer',
     ];
-
 
     /**
      *  Trả về dạng boolean: Check quyền admin
@@ -94,7 +93,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->role === 'student';
     }
 
-
     /**
      * Trả về id của user để đưa vào token
      */
@@ -111,30 +109,16 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-
     // Cấu hình gửi Email
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
     }
 
-
-    // Lấy danh sách documents người này đã upload
-    public function createdDocuments()
-    {
-        return $this->hasMany(Document::class, 'created_by');
-    }
-
     // Lấy danh sách documents người này đã upload
     public function createdPosts()
     {
         return $this->hasMany(Post::class, 'created_by');
-    }
-
-    // Bảng invoices
-    public function invoices()
-    {
-        return $this->hasMany(Invoice::class);
     }
 
     // examAttempts
@@ -160,7 +144,6 @@ class User extends Authenticatable implements JWTSubject
         // Dựa vô bảng payments có chứa user_id, course_id, để get course người dùng đã mua
         return $this->hasManyThrough(Course::class, Payment::class, 'user_id', 'id', 'id', 'course_id')->where('payments.status', 'paid');
     }
-
 
     public function courses()
     {

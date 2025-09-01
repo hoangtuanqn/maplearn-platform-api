@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 #[ObservedBy([CourseLessonObserver::class])]
 class CourseLesson extends Model
 {
@@ -20,7 +19,7 @@ class CourseLesson extends Model
         'video_url',
         'position',
         'duration',
-        'is_free'
+        'is_free',
     ];
     protected $casts = [
         'is_free' => 'boolean',

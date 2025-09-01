@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Course;
 use App\Models\CourseChapter;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CourseChapterSeeder extends Seeder
@@ -22,8 +21,8 @@ class CourseChapterSeeder extends Seeder
             for ($i = 1; $i <= 8; $i++) {
                 CourseChapter::create([
                     'course_id' => $course->id,
-                    'title' => "Chương $i của khóa học {$course->title}",
-                    'position' => $i,
+                    'title'     => "Chương $i của khóa học {$course->title}",
+                    'position'  => $i,
                 ]);
             }
         }

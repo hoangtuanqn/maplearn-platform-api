@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 #[ObservedBy([PostObserver::class])]
 class Post extends Model
@@ -19,9 +18,9 @@ class Post extends Model
         'thumbnail',
         'content',
         'views',
-        'subject_id',
+        'subject',
         'created_by',
-        'status'
+        'status',
     ];
 
     protected $appends = [ 'creator']; // tự động thêm vào JSON
@@ -29,12 +28,12 @@ class Post extends Model
     // Không hiển thị các cột này khi in ra danh sách
     protected $hidden = [
         'created_by',
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $casts = [
-        'views' => 'integer',
-        'status' => 'boolean'
+        'views'  => 'integer',
+        'status' => 'boolean',
     ];
     // getRouteKeyName là phương thức để xác định trường nào sẽ được sử dụng làm khóa định tuyến
     // Mặc định Laravel sẽ dùng 'id', nhưng nếu bạn muốn dùng 'slug'
@@ -48,12 +47,6 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    //  Subjects
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
-
 
     public function getCreatedAtAttribute($value)
     {

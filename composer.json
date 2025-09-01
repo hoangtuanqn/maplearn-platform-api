@@ -21,11 +21,13 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.86",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5.3"
     },
     "autoload": {
@@ -44,6 +46,9 @@
         }
     },
     "scripts": {
+         "imports:check": "php artisan code:check-imports",
+        "imports:fix": "php artisan code:check-imports --fix",
+        "stan": "vendor/bin/phpstan analyse --configuration=phpstan.neon",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

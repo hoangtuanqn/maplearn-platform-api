@@ -2,10 +2,10 @@
 
 namespace App\Notifications;
 
-use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 class VerifyEmailNotification extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -27,7 +27,7 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
             ->subject('Xác minh tài khoản')
             ->greeting('Chào ' . $notifiable->full_name)
             ->line('Vui lòng nhấn vào nút bên dưới để xác minh email của bạn.')
-            ->action('Xác minh tài khoản',  env('APP_URL_FRONT_END', 'http://localhost:3000') . '/auth/verify/' . $this->token) // <-- dùng $this->token
+            ->action('Xác minh tài khoản', env('APP_URL_FRONT_END', 'http://localhost:3000') . '/auth/verify/' . $this->token) // <-- dùng $this->token
             ->line('Nếu bạn không đăng ký tài khoản, vui lòng bỏ qua email này.');
     }
 }

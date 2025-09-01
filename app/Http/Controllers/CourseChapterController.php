@@ -37,7 +37,6 @@ class CourseChapterController extends BaseApiController
         return $this->successResponse($course->chapters, 'Lấy danh sách chương thành công');
     }
 
-
     /**
      * Update the specified resource in storage.
      */

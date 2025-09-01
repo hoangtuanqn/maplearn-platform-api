@@ -129,12 +129,10 @@ class CourseController extends BaseApiController
         // if ($favCourseIds->isNotEmpty()) {
         //     $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
 
-
         //     // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
         //     $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
         //     $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
         //     $categoryIds = $favoriteCourses->pluck('category_id')->unique();
-
 
         //     // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
         //     $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');

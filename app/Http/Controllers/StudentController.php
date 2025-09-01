@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Support\Facades\DB;
 
 class StudentController extends BaseApiController
 {
@@ -36,14 +36,14 @@ class StudentController extends BaseApiController
     public function update(Request $request, User $student)
     {
         $student->update($request->validate([
-            'avatar' => 'sometimes|url|max:2048',
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'sometimes|string|max:20',
-            'gender' => 'sometimes|string|in:male,female,other',
-            'birth_year' => 'sometimes|nullable',
-            'school' => 'sometimes|string|max:255',
-            'city' => 'sometimes|string|max:255',
-            'banned' => 'sometimes|boolean',
+            'avatar'        => 'sometimes|url|max:2048',
+            'full_name'     => 'required|string|max:255',
+            'phone_number'  => 'sometimes|string|max:20',
+            'gender'        => 'sometimes|string|in:male,female,other',
+            'birth_year'    => 'sometimes|nullable',
+            'school'        => 'sometimes|string|max:255',
+            'city'          => 'sometimes|string|max:255',
+            'banned'        => 'sometimes|boolean',
             'facebook_link' => 'sometimes|string|max:255',
         ]));
 
@@ -66,7 +66,7 @@ class StudentController extends BaseApiController
     // Get lịch sử hoạt động
     public function activityHistory(Request $request, User $student)
     {
-        $limit = (int)($request->limit ?? 10);
+        $limit      = (int)($request->limit ?? 10);
         $activities = $student->activities()->orderBy('id', 'DESC')->paginate($limit);
         return $this->successResponse($activities, "Lấy lịch sử hoạt động thành công!");
     }
@@ -75,21 +75,21 @@ class StudentController extends BaseApiController
     public function imports(Request $request)
     {
         $data = $request->validate([
-            "error_handling" => "required|in:strict,partial",
-            'data' => 'required|array|min:1',
-            'data.*.username' => 'required|string|max:255',
-            'data.*.email' => 'required|email|max:255',
-            'data.*.password' => 'sometimes|min:6|max:255',
-            'data.*.full_name' => 'required|string|max:255',
-            'data.*.phone_number' => 'sometimes|string|max:20',
-            'data.*.gender' => 'sometimes|string|in:male,female,other',
-            'data.*.birth_year' => 'sometimes|nullable',
-            'data.*.school' => 'sometimes|string|max:255',
-            'data.*.city' => 'sometimes|string|max:255',
+            "error_handling"       => "required|in:strict,partial",
+            'data'                 => 'required|array|min:1',
+            'data.*.username'      => 'required|string|max:255',
+            'data.*.email'         => 'required|email|max:255',
+            'data.*.password'      => 'sometimes|min:6|max:255',
+            'data.*.full_name'     => 'required|string|max:255',
+            'data.*.phone_number'  => 'sometimes|string|max:20',
+            'data.*.gender'        => 'sometimes|string|in:male,female,other',
+            'data.*.birth_year'    => 'sometimes|nullable',
+            'data.*.school'        => 'sometimes|string|max:255',
+            'data.*.city'          => 'sometimes|string|max:255',
             'data.*.facebook_link' => 'sometimes|string|max:255',
         ]);
 
-        $errors = [];
+        $errors  = [];
         $success = [];
 
         if ($data['error_handling'] === 'strict') {
@@ -112,23 +112,23 @@ class StudentController extends BaseApiController
                 foreach ($data['data'] as $studentData) {
                     // Nếu mật khẩu để trống thì xài mk mặc định: FPTAptech@MapLearn@Edu
                     $studentData['password'] = $studentData['password'] ?? env("PASSWORD_DEFAULT_IMPORT", "FPTAptech@MapLearn@Edu");
-                    $student = User::create([
-                        'username' => $studentData['username'],
-                        'full_name' => $studentData['full_name'],
-                        'email' => $studentData['email'],
-                        'password' => Hash::make($studentData['password']),
-                        'avatar' => $studentData['avatar'] ?? null,
-                        'phone_number' => $studentData['phone_number'] ?? null,
-                        'gender' => $studentData['gender'] ?? null,
-                        'birth_year' => $studentData['birth_year'] ?? null,
-                        'school' => $studentData['school'] ?? null,
-                        'city' => $studentData['city'] ?? null,
+                    $student                 = User::create([
+                        'username'      => $studentData['username'],
+                        'full_name'     => $studentData['full_name'],
+                        'email'         => $studentData['email'],
+                        'password'      => Hash::make($studentData['password']),
+                        'avatar'        => $studentData['avatar']        ?? null,
+                        'phone_number'  => $studentData['phone_number']  ?? null,
+                        'gender'        => $studentData['gender']        ?? null,
+                        'birth_year'    => $studentData['birth_year']    ?? null,
+                        'school'        => $studentData['school']        ?? null,
+                        'city'          => $studentData['city']          ?? null,
                         'facebook_link' => $studentData['facebook_link'] ?? null,
-                        'role' => 'student',
+                        'role'          => 'student',
                     ]);
                     $success[] = [
-                        'data' => $student,
-                        'error' => ""
+                        'data'  => $student,
+                        'error' => "",
                     ];
                 }
                 DB::commit();
@@ -142,28 +142,28 @@ class StudentController extends BaseApiController
                 try {
                     // Nếu mật khẩu để trống thì xài mk mặc định: FPTAptech@MapLearn@Edu
                     $studentData['password'] = $studentData['password'] ?? 'FPTAptech@MapLearn@Edu';
-                    $student = User::create([
-                        'username' => $studentData['username'],
-                        'full_name' => $studentData['full_name'],
-                        'email' => $studentData['email'],
-                        'password' => Hash::make($studentData['password']),
-                        'avatar' => $studentData['avatar'] ?? null,
-                        'phone_number' => $studentData['phone_number'] ?? null,
-                        'gender' => $studentData['gender'] ?? null,
-                        'birth_year' => $studentData['birth_year'] ?? null,
-                        'school' => $studentData['school'] ?? null,
-                        'city' => $studentData['city'] ?? null,
+                    $student                 = User::create([
+                        'username'      => $studentData['username'],
+                        'full_name'     => $studentData['full_name'],
+                        'email'         => $studentData['email'],
+                        'password'      => Hash::make($studentData['password']),
+                        'avatar'        => $studentData['avatar']        ?? null,
+                        'phone_number'  => $studentData['phone_number']  ?? null,
+                        'gender'        => $studentData['gender']        ?? null,
+                        'birth_year'    => $studentData['birth_year']    ?? null,
+                        'school'        => $studentData['school']        ?? null,
+                        'city'          => $studentData['city']          ?? null,
                         'facebook_link' => $studentData['facebook_link'] ?? null,
-                        'role' => 'student',
+                        'role'          => 'student',
                     ]);
                     $success[] = [
-                        'data' => $student,
-                        'error' => ""
+                        'data'  => $student,
+                        'error' => "",
                     ];
                 } catch (\Exception $e) {
                     $errors[] = [
-                        'data' => $studentData,
-                        'error' => 'Email hoặc Username đã tồn tại trong hệ thống'
+                        'data'  => $studentData,
+                        'error' => 'Email hoặc Username đã tồn tại trong hệ thống',
                     ];
                 }
             }
@@ -171,7 +171,7 @@ class StudentController extends BaseApiController
         $message = count($success) > 0 ? "Đã thêm " . count($success) . " học sinh vào hệ thống thành công" : "Không có học sinh nào được thêm vào hệ thống";
         return $this->successResponse([
             'success' => $success,
-            'errors' => $errors,
+            'errors'  => $errors,
         ], $message);
     }
 }

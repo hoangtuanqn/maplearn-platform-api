@@ -94,10 +94,10 @@ class ExamPaperController extends BaseApiController
             // Chưa có bài làm nào, tạo mới
             ExamAttempt::create([
                 'exam_paper_id' => $exam->id,
-                'user_id' => $user->id,
-                'status' => 'in_progress',
-                'details' => (['answers' => [], 'start' => now()->timestamp, 'questionActive' => 0]), // Khởi tạo chi tiết bài làm là mảng rỗng
-                'started_at' => now(),
+                'user_id'       => $user->id,
+                'status'        => 'in_progress',
+                'details'       => (['answers' => [], 'start' => now()->timestamp, 'questionActive' => 0]), // Khởi tạo chi tiết bài làm là mảng rỗng
+                'started_at'    => now(),
             ]);
 
             return $this->successResponse(null, "Bắt đầu làm bài thi thành công!");
@@ -147,7 +147,7 @@ class ExamPaperController extends BaseApiController
 
         $answers = $data['data'];
 
-        $paper = $exam->load('questions');
+        $paper     = $exam->load('questions');
         $questions = $paper->questions;
 
         $scores = 0; // Điểm của người dùng
@@ -176,7 +176,7 @@ class ExamPaperController extends BaseApiController
                     }
 
                     $answers['answers'][$key] = [
-                        'value' => $userAnswer,
+                        'value'      => $userAnswer,
                         'is_correct' => $isCorrect,
                     ];
                     break;
@@ -198,7 +198,7 @@ class ExamPaperController extends BaseApiController
                     }
 
                     $answers['answers'][$key] = [
-                        'value' => $value,
+                        'value'      => $value,
                         'is_correct' => $isCorrect,
                     ];
                     break;
@@ -206,7 +206,7 @@ class ExamPaperController extends BaseApiController
                 case "DRAG_DROP":
                     $answersInCorrect = array_filter($question->correct, fn($item) => $item['is_correct']);
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
-                        $i = 0;
+                        $i          = 0;
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
                             if ($answerInCorrect['content'] != $value[$i++]) {
@@ -221,7 +221,7 @@ class ExamPaperController extends BaseApiController
                     }
 
                     $answers['answers'][$key] = [
-                        'value' => $value,
+                        'value'      => $value,
                         'is_correct' => $isCorrect,
                     ];
                     break;
@@ -232,8 +232,8 @@ class ExamPaperController extends BaseApiController
         unset($answers['questionActive']);
 
         // Cập nhật attempt
-        $attempt->status = 'submitted';
-        $attempt->score = $scores;
+        $attempt->status  = 'submitted';
+        $attempt->score   = $scores;
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
 

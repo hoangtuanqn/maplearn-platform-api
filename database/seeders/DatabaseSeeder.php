@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,14 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            SubjectSeeder::class,
-            CourseCategorySeeder::class,
             PostSeeder::class,
-            DocumentCatogorySeeder::class,
-            GradeLevelSeeder::class,
-            DocumentSeeder::class,
 
-            ExamCategorySeeder::class,
             ExamPaperSeeder::class,
             ExamQuestionSeeder::class,
 

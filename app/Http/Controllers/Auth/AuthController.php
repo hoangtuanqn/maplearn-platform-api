@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\User;
-use App\Traits\HandlesCookies;
-use Illuminate\Http\Request;
-
 use App\Notifications\VerifyEmailNotification;
 use App\Services\GoogleAuthenService;
+
+use App\Traits\HandlesCookies;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends BaseApiController
@@ -39,10 +38,10 @@ class AuthController extends BaseApiController
         // Xử lý nếu bật 2FA
         if ($user->google2fa_enabled) {
             return response()->json([
-                'success' => true,
-                'message' => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",
+                'success'      => true,
+                'message'      => "Vui lòng nhập mã xác thực 2Fa để tiếp tục!",
                 '2fa_required' => true,
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 // Thêm salt vào token
                 'token' => base64_encode(JWTAuth::fromUser($user) . env('T1_SECRET', "")),
             ]);
@@ -60,15 +59,14 @@ class AuthController extends BaseApiController
     {
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'username' => 'required|string|unique:users|max:255',
-            'password' => 'required|min:6|max:255',
+            'email'     => 'required|email|unique:users|max:255',
+            'username'  => 'required|string|unique:users|max:255',
+            'password'  => 'required|min:6|max:255',
         ]);
 
-
-        $data = $validator->safe()->toArray();
+        $data                       = $validator->safe()->toArray();
         $data['verification_token'] = bin2hex(random_bytes(50));
-        $user = User::create($data);
+        $user                       = User::create($data);
         $user->notify(new VerifyEmailNotification($user->verification_token));
 
         // Lưu lịch sử hoạt động
@@ -88,13 +86,12 @@ class AuthController extends BaseApiController
             return $this->errorResponse(null, 'Token xác minh không hợp lệ!', 404);
         }
         // Cập nhật trạng thái đã xác minh
-        $user->email_verified_at = now();
+        $user->email_verified_at  = now();
         $user->verification_token = null; // Xóa token sau khi xác minh
         $user->save();
         // Trả về thông báo thành công
         return $this->successResponse(null, 'Xác minh email thành công!', 200);
     }
-
 
     /**
      * Refresh token khi token cũ đã hết hạn
@@ -133,7 +130,6 @@ class AuthController extends BaseApiController
         return $this->successResponse($request->user(), 'Lấy thông tin người dùng thành công!');
     }
 
-
     /**
      * Xác thực mã 2Fa của người dùng
      */
@@ -141,9 +137,8 @@ class AuthController extends BaseApiController
     {
         $validator = Validator::make($request->all(), [
             'token' => 'required|string',
-            'otp' => 'required|digits:6',
+            'otp'   => 'required|digits:6',
         ]);
-
 
         $token = base64_decode($request->token);
         // Kiểm tra salt phải nằm trong token
@@ -168,7 +163,6 @@ class AuthController extends BaseApiController
         return $this->respondWithToken($user, 'Xác thực tài khoản thành công!');
     }
 
-
     /**
      * Đăng xuất: Xóa cookie
      */
@@ -176,7 +170,7 @@ class AuthController extends BaseApiController
     {
         return response()->json([
             'success' => true,
-            'message' => 'Đăng xuất thành công!'
+            'message' => 'Đăng xuất thành công!',
         ])->withCookie($this->clearCookie('jwt_token'))
             ->withCookie($this->clearCookie('jwt_refresh'));
     }

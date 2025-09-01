@@ -9,7 +9,7 @@ class ChatController extends Controller
 {
     public function chat(Request $request)
     {
-        $model = env('MODEL_AI', 'gemini-2.0-flash');
+        $model  = env('MODEL_AI', 'gemini-2.0-flash');
         $apiKey = env('GEMINI_API_KEY');
 
         // Kiểm tra đầu vào hợp lệ (tuỳ bạn có validate không)

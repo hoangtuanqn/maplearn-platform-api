@@ -55,7 +55,7 @@ class InvoiceController extends BaseApiController
 
         if ($hasInvalidCourse) {
             $invoice->status = 'failed';
-            $invoice->note = 'Hệ thống: Hóa đơn này đã bị hủy do có khóa học không còn khả dụng.';
+            $invoice->note   = 'Hệ thống: Hóa đơn này đã bị hủy do có khóa học không còn khả dụng.';
             $invoice->save();
             // Reload lại invoice để trả về trạng thái mới nhất
             $invoice->load(['items.course']);
@@ -79,7 +79,7 @@ class InvoiceController extends BaseApiController
 
                 if ($invoice->total_price - $totalDeducted == 0) {
                     $invoice->status = 'paid';
-                    $invoice->note = 'Hệ thống: Hóa đơn này đã được thanh toán tự động do bạn đã mua khóa học trước đó.';
+                    $invoice->note   = 'Hệ thống: Hóa đơn này đã được thanh toán tự động do bạn đã mua khóa học trước đó.';
                 } else {
                     $invoice->total_price -= $totalDeducted;
                 }

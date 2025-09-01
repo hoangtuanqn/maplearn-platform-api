@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\StudentController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::apiResource('users', UserController::class)->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::apiResource('students', StudentController::class)->middleware(['auth.jwt', 'check.role:admin']);

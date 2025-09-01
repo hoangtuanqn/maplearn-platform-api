@@ -18,16 +18,16 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(3),
+            'title'       => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
-            'thumbnail' => $this->faker->imageUrl(640, 480, 'education', true),
+            'thumbnail'   => $this->faker->imageUrl(640, 480, 'education', true),
             'intro_video' => $this->faker->imageUrl(800, 200, 'intro_video', true),
-            'subject_id' => rand(1, 6),
-            'user_id' => rand(1, 4),
+            'subject_id'  => rand(1, 6),
+            'user_id'     => rand(1, 4),
             'category_id' => rand(1, 5),
-            'start_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
-            'end_date' => $this->faker->dateTimeBetween('+2 months', '+6 months'),
-            'status' => 1,
+            'start_date'  => $this->faker->dateTimeBetween('-1 month', '+1 month'),
+            'end_date'    => $this->faker->dateTimeBetween('+2 months', '+6 months'),
+            'status'      => 1,
         ];
     }
 }
