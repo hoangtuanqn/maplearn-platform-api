@@ -35,7 +35,7 @@ class Course extends Model
         'deleted_at',
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['teacher', 'subject', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
+    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
     protected $casts   = [
         'price'         => 'double',
         'is_sequential' => 'boolean',
@@ -63,11 +63,6 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'payments', 'course_id', 'user_id')
             ->withPivot(['id', 'status', 'amount'])
             ->wherePivot('status', 'paid');
-    }
-
-    public function getSubjectAttribute()
-    {
-        return $this->subject()->select('id', 'name')->first();
     }
 
     // Danh sách chương học, sort theo vị trí

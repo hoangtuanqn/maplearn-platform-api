@@ -34,11 +34,11 @@ class CourseController extends BaseApiController
                 'name',
                 'description',
                 'slug',
-                'grade_level_id',
+                'grade_level',
                 'thumbnail',
                 'price',
-                'subject_id',
-                'category_id',
+                'subject',
+                'category',
                 'user_id',
             ])
             ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
@@ -46,13 +46,10 @@ class CourseController extends BaseApiController
                 'id',
                 'name',
                 'name',
-                'category_id',
-                AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
-                AllowedFilter::custom('category', new CategoryCourseSlugFilter),
-                AllowedFilter::custom('subject', new SubjectSlugFilter),
-                AllowedFilter::custom('rating', new CustomRatingFilter),
+                'category',
+                'grade_level',
+                'subject',
                 AllowedFilter::custom('price_range', new PriceFilter),
-                // AllowedFilter::custom('teachers', new TeacherFilter),
             ])
             ->where('status', true)
             // ->orderByDesc('id')

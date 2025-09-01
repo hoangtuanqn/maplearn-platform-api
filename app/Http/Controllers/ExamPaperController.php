@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Filters\PaperExam\CategoriesSlugFilter;
 use App\Filters\PaperExam\DifficultiesSlugFilter;
-use App\Filters\PaperExam\GradeLevelSlugFilter;
 use App\Filters\PaperExam\ProvincesSlugFilter;
-use App\Filters\PaperExam\SubjectSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
@@ -35,11 +33,11 @@ class ExamPaperController extends BaseApiController
             })
             ->allowedFilters([
                 'title',
+                'grade_level',
+                'subject',
                 AllowedFilter::custom('provinces', new ProvincesSlugFilter),
                 AllowedFilter::custom('categories', new CategoriesSlugFilter),
                 AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
-                AllowedFilter::custom('grade_level', new GradeLevelSlugFilter),
-                AllowedFilter::custom('subject', new SubjectSlugFilter),
             ])
             ->orderByDesc('id')
             ->paginate($limit);
