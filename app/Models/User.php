@@ -132,11 +132,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Payment::class);
     }
 
-    // // lịch sử hoạt động
-    // public function activities()
-    // {
-    //     return $this->hasMany(UserActivityLog::class);
-    // }
 
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()

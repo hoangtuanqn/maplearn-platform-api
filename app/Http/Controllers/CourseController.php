@@ -204,4 +204,22 @@ class CourseController extends BaseApiController
 
         return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
     }
+
+
+    // Lấy thông tin khóa học sau khi đã mua thành công
+    public function detailCourse(Request $request, string $slug)
+    {
+        $course = Course::where('slug', $slug)->firstOrFail();
+
+        $user = $request->user();
+        // Check người dùng đã mua khóa học này chưa
+        $hasPurchased = $user->purchasedCourses()->where('courses.id', $course->id)->exists();
+        if (!$hasPurchased) {
+            return $this->errorResponse(null, 'Bạn chưa mua khóa học này!', 403);
+        }
+
+        // Lấy chương khóa học (bên trong mỗi chương sẽ có lesson)
+        $course->load('chapters.lessons');
+        return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
+    }
 }

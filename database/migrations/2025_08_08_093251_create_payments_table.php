@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
 
             $table->enum('payment_method', ['transfer', 'vnpay', 'momo', 'zalopay'])->default('transfer'); // Phương thức thanh toán: 'transfer' (chuyển khoản), 'vnpay', 'momo', 'zalopay'
-            $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'canceled'])->default('pending');
 
             $table->timestamp('paid_at')->nullable(); // thời điểm thanh toán thành công
 

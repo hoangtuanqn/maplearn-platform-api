@@ -33,7 +33,7 @@ class PaymentController extends BaseApiController
             return $this->errorResponse(null, 'Khóa học không tồn tại', 404);
         }
         $payment = Payment::updateOrCreate(
-            ['user_id' => $user->id, 'course_id' => $data['course_id']],
+            ['user_id' => $user->id, 'course_id' => $data['course_id'], 'status' => 'pending'],
             [
                 'user_id'        => $user->id,
                 'amount'         => $course->price,
@@ -90,5 +90,19 @@ class PaymentController extends BaseApiController
     public function destroy(Payment $payment)
     {
         //
+    }
+
+    public function cancelPayment(Request $request, string $transaction_code)
+    {
+        $user = $request->user();
+        $payment = Payment::where(['user_id' => $user->id, 'transaction_code' => $transaction_code, 'status' => 'pending'])->first();
+        if (!$payment) {
+            return $this->errorResponse(null, 'Payment không tồn tại hoặc đã được xử lý', 404);
+        }
+
+        $payment->status = 'canceled';
+        $payment->save();
+
+        return $this->successResponse(null, 'Hủy payment thành công', 200);
     }
 }

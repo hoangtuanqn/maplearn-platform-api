@@ -13,4 +13,7 @@ Route::post('/courses/ai-data', [CourseController::class, 'aiDataByIds']);
 
 // Recommended courses
 Route::get('/courses/recommended', [CourseController::class, 'recommended']);
+Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
+    Route::get('/{slug}/study', [CourseController::class, 'detailCourse']);
+});
 Route::apiResource('courses', CourseController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');

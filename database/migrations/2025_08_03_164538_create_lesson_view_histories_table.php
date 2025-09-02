@@ -24,6 +24,9 @@ return new class extends Migration
             // Khóa ngoại
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('lesson_id')->references('id')->on('course_lessons')->onDelete('cascade');
+
+            // Ràng buộc unique cho cặp (user_id, lesson_id)
+            $table->unique(['user_id', 'lesson_id']);
         });
     }
 

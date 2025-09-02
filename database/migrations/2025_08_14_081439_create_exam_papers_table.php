@@ -17,6 +17,8 @@ return new class extends Migration
             $table->enum('exam_category', ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'])->default('tot-nghiep-thpt'); // Danh mục kỳ thi
             $table->enum('subject', ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'])->default('toan'); // Liên kết môn học
             $table->enum('grade_level', ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'])->default('lop-12'); // Lớp 10, 11, 12, ..
+            // user_id
+            $table->unsignedInteger('user_id');
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('province')->nullable(); // Tỉnh ra đề (Quảng ngãi, Bình Định, ...)
@@ -33,6 +35,9 @@ return new class extends Migration
             $table->timestamp('start_time')->default(now());
             $table->timestamp('end_time')->nullable(); // Null là ko giới hạn
             $table->timestamps();
+
+            // Khóa ngoại
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

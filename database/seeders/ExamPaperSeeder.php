@@ -60,6 +60,7 @@ class ExamPaperSeeder extends Seeder
         foreach ($examPapers as $paper) {
             ExamPaper::create([
                 'title'            => $paper,
+                'user_id'          => 8,
                 'max_score'        => 10,
                 'duration_minutes' => 120,
                 'exam_category'    => $categories[array_rand($categories)],

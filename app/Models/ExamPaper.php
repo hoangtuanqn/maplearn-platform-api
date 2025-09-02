@@ -15,6 +15,7 @@ class ExamPaper extends Model
         'exam_category',
         'subject',
         'grade_level',
+        'user_id',
         'title',
         'slug',
         'province',

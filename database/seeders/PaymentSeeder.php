@@ -20,7 +20,7 @@ class PaymentSeeder extends Seeder
                 'amount'           => rand(100000, 1000000),
                 'payment_method'   => ['transfer', 'vnpay', 'momo', 'zalopay'][array_rand(['transfer', 'vnpay', 'momo', 'zalopay'])],
                 'transaction_code' => 'TXN' . strtoupper(bin2hex(random_bytes(5))),
-                'status'           => ['pending', 'paid', 'failed'][array_rand(['pending', 'paid', 'failed'])],
+                'status'           => ['pending', 'paid', 'canceled'][array_rand(['pending', 'paid', 'canceled'])],
                 'paid_at'          => now()->subDays(rand(0, 30)),
             ]);
         }
