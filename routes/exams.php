@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Controllers\ExamAttemptController;
-use App\Http\Controllers\ExamCategoryController;
 use App\Http\Controllers\ExamPaperController;
 use App\Http\Controllers\ExamQuestionController;
 use Illuminate\Support\Facades\Route;
 
-Route::apiResource('exam-categories', ExamCategoryController::class)->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::apiResource('exams', ExamPaperController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::prefix('exams')->middleware('auth.jwt')->group(function () {
     // Lấy danh sách câu hỏi đề thi

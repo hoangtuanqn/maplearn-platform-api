@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Filters\Course\CategoryCourseSlugFilter;
-use App\Filters\Course\CustomRatingFilter;
 use App\Filters\Course\PriceFilter;
-use App\Filters\Course\TeacherFilter;
-use App\Filters\GradeLevelSlugFilter;
-use App\Filters\SubjectSlugFilter;
+
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
+use App\Models\CourseLesson;
+use App\Models\LessonViewHistory;
 use App\Sorts\Course\EnrollmentCountSort;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -217,9 +214,78 @@ class CourseController extends BaseApiController
         if (!$hasPurchased) {
             return $this->errorResponse(null, 'Bạn chưa mua khóa học này!', 403);
         }
+        // Người dùng đã học bao nhiêu bài
+        $course->completed_lessons = $course->chapters->sum(function ($chapter) use ($user) {
+            return LessonViewHistory::where('user_id', $user->id)
+                ->where('is_completed', true)
+                ->whereIn('lesson_id', $chapter->lessons->pluck('id'))
+                ->count();
+        });
+        $course->percent_completed = $course->completed_lessons / ($course->lesson_count ?? 1) * 100;
 
         // Lấy chương khóa học (bên trong mỗi chương sẽ có lesson)
         $course->load('chapters.lessons');
+
+        // Lặp qua từng lesson và check trong DB LessonViewHistory
+        $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get()->keyBy('lesson_id');
+        foreach ($course->chapters as $chapter) {
+            foreach ($chapter->lessons as $lesson) {
+                $lessonHistory = $lessonHistories->get($lesson->id);
+                // Kiểm tra đã hoàn thành chưa
+                $lesson->successed = $lessonHistory && $lessonHistory->is_completed;
+                // $lesson->viewed = $lessonHistory !== null;
+                // $lesson->progress = $lessonHistory ? $lessonHistory->progress : 0;
+            }
+        }
+
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
+    }
+
+    public function getLesson(Request $request, Course $course, CourseLesson $lesson)
+    {
+        $user = $request->user();
+
+        $hasPurchased = $user->purchasedCourses()->where('courses.id', $course->id)->exists();
+        if (!$hasPurchased) {
+            return $this->errorResponse(null, 'Bạn chưa mua khóa học này!', 403);
+        }
+        $lesson->load('chapter');
+        // Get next lesson in current chapter
+        $nextLessonInChapter = $lesson->chapter->lessons()->where('position', '>', $lesson->position)->first();
+
+        if ($nextLessonInChapter) {
+            $lesson->next_video = $nextLessonInChapter;
+        } else {
+            // If current lesson is last in chapter, get first lesson of next chapter
+            $nextChapter = $course->chapters()->where('position', '>', $lesson->chapter->position)->first();
+            if ($nextChapter) {
+                $lesson->next_video = $nextChapter->lessons()->orderBy('position')->first();
+            } else {
+                $lesson->next_video = null; // No more lessons in course
+            }
+        }
+
+        // Get previous lesson in current chapter
+        $prevLessonInChapter = $lesson->chapter
+            ->lessons()
+            ->where('position', '<', $lesson->position)
+            ->get()
+            ->last();
+
+        if ($prevLessonInChapter) {
+            $lesson->prev_video = $prevLessonInChapter;
+        } else {
+            // If current lesson is first in chapter, get last lesson of previous chapter
+            $prevChapter = $course->chapters()->where('position', '<', $lesson->chapter->position)->get()->last();
+            if ($prevChapter) {
+                $lesson->prev_video = $prevChapter->lessons()->get()->last();
+            } else {
+                $lesson->prev_video = null; // No previous lessons in course
+            }
+        }
+        $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get();
+        $lesson->viewed = $lessonHistories->contains('lesson_id', $lesson->id);
+        $lesson->progress = $lessonHistories->where('lesson_id', $lesson->id)->first()->progress ?? 0;
+        return $this->successResponse($lesson, 'Lấy thông tin bài học thành công!');
     }
 }

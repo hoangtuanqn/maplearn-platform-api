@@ -31,8 +31,6 @@ class Course extends Model
         'is_sequential',
     ];
     protected $hidden = [
-        'updated_at',
-        'deleted_at',
     ];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
     protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
