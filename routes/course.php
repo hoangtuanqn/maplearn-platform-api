@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CourseChapterController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonViewHistoryController;
 use Illuminate\Support\Facades\Route;
 
 // Lấy chương học theo slug
@@ -18,3 +19,8 @@ Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
 });
 Route::get('/courses/recommended', [CourseController::class, 'recommended']);
 Route::apiResource('courses', CourseController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
+Route::apiResource('lessons', LessonViewHistoryController::class)->middleware('auth.jwt');
+
+Route::prefix("/lessons")->middleware('auth.jwt')->group(function () {
+    Route::post('/{lesson}/complete', [CourseController::class, 'completeLesson']);
+});

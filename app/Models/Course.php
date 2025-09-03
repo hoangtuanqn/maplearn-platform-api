@@ -30,10 +30,9 @@ class Course extends Model
         'status',
         'is_sequential',
     ];
-    protected $hidden = [
-    ];
+    protected $hidden = [];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count']; // tự động thêm vào JSON
+    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count', 'current_lesson']; // tự động thêm vào JSON
     protected $casts   = [
         'price'         => 'double',
         'is_sequential' => 'boolean',
@@ -132,5 +131,45 @@ class Course extends Model
             return false;
         }
         return $user->payments()->where('course_id', $this->id)->where('status', 'paid')->exists();
+    }
+
+
+    // current_lesson
+    public function getCurrentLessonAttribute()
+    {
+        $user = Auth::user();
+
+        if ($user && $this->is_enrolled) {
+            $currentLessonHistory = LessonViewHistory::where('user_id', $user->id)
+                ->whereIn('lesson_id', function ($query) {
+                    $query->select('id')
+                        ->from('course_lessons')
+                        ->whereIn('chapter_id', function ($subQuery) {
+                            $subQuery->select('id')
+                                ->from('course_chapters')
+                                ->where('course_id', $this->id);
+                        });
+                })
+                ->orderByDesc('updated_at')
+                ->with('lesson')
+                ->first();
+
+            if ($currentLessonHistory) {
+                // Nếu có lịch sử học, trả về bài học đó
+                return $currentLessonHistory->lesson;
+            } else {
+                // Nếu không có lịch sử học, trả về bài học đầu tiên
+                return CourseLesson::whereIn('chapter_id', function ($query) {
+                    $query->select('id')
+                        ->from('course_chapters')
+                        ->where('course_id', $this->id);
+                })
+                    ->orderBy('chapter_id')
+                    ->orderBy('position')
+                    ->first();
+            }
+        }
+
+        return null;
     }
 }

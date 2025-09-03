@@ -76,8 +76,9 @@ class CourseController extends BaseApiController
     /**
      * Display the specified resource.
      */
-    public function show(Course $course)
+    public function show(Request $request, Course $course)
     {
+        $user = $request->user();
         // Dùng withCount trước
         // $course->loadCount('enrollments');
 
@@ -85,6 +86,9 @@ class CourseController extends BaseApiController
         $course->load([
             'teacher:id,full_name,avatar,bio,degree',
         ]);
+
+        // Nếu đã mua, thì lấy thông tin video đnagg học hiện tại
+
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
     }
@@ -229,12 +233,22 @@ class CourseController extends BaseApiController
         // Lặp qua từng lesson và check trong DB LessonViewHistory
         $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get()->keyBy('lesson_id');
         foreach ($course->chapters as $chapter) {
+
+            $count_successed = 0;
+            $duration = 0;
+            // lessons trong mỗi chapter
             foreach ($chapter->lessons as $lesson) {
                 $lessonHistory = $lessonHistories->get($lesson->id);
                 // Kiểm tra đã hoàn thành chưa
                 $lesson->successed = $lessonHistory && $lessonHistory->is_completed;
+                if ($lesson->successed) {
+                    $count_successed++;
+                }
+                $duration = $lesson->duration;
                 // $lesson->viewed = $lessonHistory !== null;
                 // $lesson->progress = $lessonHistory ? $lessonHistory->progress : 0;
+                $chapter->completed_lessons = $count_successed;
+                $chapter->duration = $duration;
             }
         }
 

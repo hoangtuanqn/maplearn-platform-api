@@ -16,7 +16,6 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('lesson_id');
-            $table->timestamp('watched_at')->nullable(); // Thời điểm xem
             $table->integer('progress')->default(0); // Giây đã xem
             $table->boolean('is_completed')->default(false);
             $table->timestamps();

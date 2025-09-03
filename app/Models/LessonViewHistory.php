@@ -9,4 +9,14 @@ class LessonViewHistory extends Model
 {
     /** @use HasFactory<\Database\Factories\LessonViewHistoryFactory> */
     use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'lesson_id',
+        'watched_at',
+    ];
+
+    public function lesson()
+    {
+        return $this->belongsTo(CourseLesson::class, 'lesson_id');
+    }
 }
