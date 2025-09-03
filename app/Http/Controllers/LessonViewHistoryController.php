@@ -24,10 +24,11 @@ class LessonViewHistoryController extends BaseApiController
     {
         $user = $request->user();
         $data = $request->validate([
-            'lesson_id' => 'required|exists:lessons,id',
+            'lesson_id' => 'required|exists:course_lessons,id',
+            'progress' => 'required|integer|min:0',
         ]);
 
-        // Kiểm tra người dùng đã mua khóa học này chưa
+        // // Kiểm tra người dùng đã mua khóa học này chưa
         $lesson = CourseLesson::where('id', $data['lesson_id'])->with('chapter.course')->first();
         if (!$lesson || !$lesson->chapter || !$lesson->chapter->course) {
             return $this->errorResponse(null, 'Không tìm thấy bài học hoặc khóa học!', 404);
@@ -38,15 +39,31 @@ class LessonViewHistoryController extends BaseApiController
         if (!$hasPurchased) {
             return $this->errorResponse(null, 'Bạn chưa mua khóa học này!', 403);
         }
-        // Tạo mới dữ liệu history
-        LessonViewHistory::create([
-            'user_id' => $user->id,
-            'lesson_id' => $data['lesson_id'],
-            'progress' => 0,
-            'is_completed' => false
-        ]);
+        $courseLesson = CourseLesson::find($lesson->id);
 
-        return $this->successResponse(null, 'Lịch sử xem bài học đã được tạo!', 201);
+
+        // Tạo mới dữ liệu history
+        $existingView = LessonViewHistory::where([
+            'user_id' => $user->id,
+            'lesson_id' => $data['lesson_id']
+        ])->first();
+
+        if ($existingView && $data['progress'] <= $existingView->progress) {
+            $lessonView = $existingView;
+        } else {
+            $lessonView = LessonViewHistory::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'lesson_id' => $data['lesson_id']
+                ],
+                [
+                    'progress' => $data['progress'],
+                    'is_completed' => ($courseLesson->duration - 60 <= $data['progress'])
+                ]
+            );
+        }
+
+        return $this->successResponse($lessonView, 'Thao tác thành công!', 201);
     }
 
     /**
@@ -66,11 +83,8 @@ class LessonViewHistoryController extends BaseApiController
         $data = $request->validate([
             'progress' => 'required|integer|min:0',
         ]);
-        $data['is_completed'] = false;
         $courseLesson = CourseLesson::find($lesson->lesson_id);
-        if ($courseLesson->duration - 60 > $data['progress']) {
-            $data['is_completed'] = true;
-        }
+        $data['is_completed'] = $courseLesson->duration - 60 <= $data['progress'];
 
         $lesson->update($data);
 

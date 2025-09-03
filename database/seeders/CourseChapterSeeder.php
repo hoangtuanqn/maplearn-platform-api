@@ -159,7 +159,7 @@ class CourseChapterSeeder extends Seeder
                             'content' => 'Học sinh được làm quen với khái niệm cực đại, cực tiểu của hàm số. Bài học trình bày cách dùng đạo hàm bậc nhất và đạo hàm bậc hai để tìm cực trị, cũng như ý nghĩa hình học của chúng. Đây là phần kiến thức quan trọng thường xuyên xuất hiện trong đề thi, có nhiều ứng dụng trong tối ưu hóa và giải quyết các bài toán thực tế.',
                             'position' => $lessonIndex + 1,
                             'video_url' => '/video.mp4',
-                            'duration' => rand(450, 2000)
+                            'duration' => 273
                         ]);
                     }
                 }
