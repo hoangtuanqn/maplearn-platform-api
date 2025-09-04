@@ -48,20 +48,16 @@ class LessonViewHistoryController extends BaseApiController
             'lesson_id' => $data['lesson_id']
         ])->first();
 
-        if ($existingView && $data['progress'] <= $existingView->progress) {
-            $lessonView = $existingView;
-        } else {
-            $lessonView = LessonViewHistory::updateOrCreate(
-                [
-                    'user_id' => $user->id,
-                    'lesson_id' => $data['lesson_id']
-                ],
-                [
-                    'progress' => $data['progress'],
-                    'is_completed' => ($courseLesson->duration - 60 <= $data['progress'])
-                ]
-            );
-        }
+        $lessonView = LessonViewHistory::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'lesson_id' => $data['lesson_id']
+            ],
+            [
+                'progress' => $data['progress'],
+                'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress'])
+            ]
+        );
 
         return $this->successResponse($lessonView, 'Thao tác thành công!', 201);
     }
@@ -84,7 +80,7 @@ class LessonViewHistoryController extends BaseApiController
             'progress' => 'required|integer|min:0',
         ]);
         $courseLesson = CourseLesson::find($lesson->lesson_id);
-        $data['is_completed'] = $courseLesson->duration - 60 <= $data['progress'];
+        $data['is_completed'] = $courseLesson->duration - 30 <= $data['progress'];
 
         $lesson->update($data);
 

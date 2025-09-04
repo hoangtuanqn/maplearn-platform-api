@@ -52,6 +52,7 @@ class CourseController extends BaseApiController
             // ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
+
             return $course->makeHidden(['lesson_count', 'duration']);
         });
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
@@ -299,7 +300,13 @@ class CourseController extends BaseApiController
         }
         $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get();
         $lesson->viewed = $lessonHistories->contains('lesson_id', $lesson->id);
-        $lesson->progress = $lessonHistories->where('lesson_id', $lesson->id)->first()->progress ?? 0;
+        $currentLessonHistory = $lessonHistories->where('lesson_id', $lesson->id)->first();
+        $lesson->progress = $currentLessonHistory->progress ?? 0;
+
+        $lesson->current_time = $currentLessonHistory->progress ?? 0;
+        if ($lesson->current_time >= $lesson->duration - 30) {
+            $lesson->current_time = 0;
+        }
         return $this->successResponse($lesson, 'Lấy thông tin bài học thành công!');
     }
 }
