@@ -725,7 +725,7 @@ class CourseSeeder extends Seeder
             ],
         ];
         $faker      = \Faker\Factory::create();
-        $subjects   = ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'];
+        $subjects   = ['toan', 'ly',  'sinh', 'tieng-anh', 'hoa', 'van'];
         $gradeLevel = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories = ['2k8-xuat-phat-som-lop-12', '2k9-xuat-phat-som-lop-11', '2k10-xuat-phat-som-lop-10', 'hoc-tot-sach-giao-khoa', 'khoa-hoc-trung-hoc-co-so'];
         foreach ($data as $item) {

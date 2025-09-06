@@ -25,7 +25,6 @@ class CourseController extends BaseApiController
         // dd($limit);
         // loại bỏ key lesson_count, duration
         $courses = QueryBuilder::for(Course::class)
-
             ->select([
                 'id',
                 'name',
@@ -49,12 +48,12 @@ class CourseController extends BaseApiController
                 AllowedFilter::custom('price_range', new PriceFilter),
             ])
             ->where('status', true)
-            // ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
-
-            return $course->makeHidden(['lesson_count', 'duration']);
+            return $course->makeHidden(['duration', 'current_lesson']);
         });
+
+
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
 
@@ -79,14 +78,15 @@ class CourseController extends BaseApiController
      */
     public function show(Request $request, Course $course)
     {
-        $user = $request->user();
-        // Dùng withCount trước
-        // $course->loadCount('enrollments');
-
         // Sau đó load các quan hệ khác
         $course->load([
             'teacher:id,full_name,avatar,bio,degree',
         ]);
+        $course->prerequisite_course = null;
+        if ($course->prerequisite_course_id) {
+            $course->prerequisite_course = Course::find($course->prerequisite_course_id);
+        }
+        $course->makeHidden(['prerequisite_course_id']);
 
         // Nếu đã mua, thì lấy thông tin video đnagg học hiện tại
 
@@ -245,12 +245,12 @@ class CourseController extends BaseApiController
                 if ($lesson->successed) {
                     $count_successed++;
                 }
-                $duration = $lesson->duration;
+                $duration += $lesson->duration;
                 // $lesson->viewed = $lessonHistory !== null;
                 // $lesson->progress = $lessonHistory ? $lessonHistory->progress : 0;
-                $chapter->completed_lessons = $count_successed;
-                $chapter->duration = $duration;
             }
+            $chapter->completed_lessons = $count_successed;
+            $chapter->duration = $duration;
         }
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');

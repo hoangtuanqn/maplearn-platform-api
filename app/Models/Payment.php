@@ -37,16 +37,8 @@ class Payment extends Model
         return $this->belongsTo(Course::class);
     }
 
-    // Quan hệ  hasManyThrough
-    public function users()
+    public function user()
     {
-        return $this->hasManyThrough(
-            User::class,     // Model đích
-            Invoice::class,  // Model trung gian
-            'payment_id',    // Khóa ngoại trên bảng invoices trỏ tới payment
-            'id',            // Khóa chính trên bảng users
-            'id',            // Khóa chính trên bảng payments
-            'user_id'        // Khóa ngoại trên bảng invoices trỏ tới user
-        );
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

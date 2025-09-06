@@ -28,7 +28,7 @@ class LessonViewHistoryController extends BaseApiController
             'progress' => 'required|integer|min:0',
         ]);
 
-        // // Kiểm tra người dùng đã mua khóa học này chưa
+        // Kiểm tra người dùng đã mua khóa học này chưa
         $lesson = CourseLesson::where('id', $data['lesson_id'])->with('chapter.course')->first();
         if (!$lesson || !$lesson->chapter || !$lesson->chapter->course) {
             return $this->errorResponse(null, 'Không tìm thấy bài học hoặc khóa học!', 404);

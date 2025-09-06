@@ -22,6 +22,7 @@ class Course extends Model
         'intro_video',
         'price',
         'user_id',
+        'prerequisite_course_id',
         'grade_level',
         'subject',
         'category',
@@ -32,7 +33,7 @@ class Course extends Model
     ];
     protected $hidden = [];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count', 'current_lesson']; // tự động thêm vào JSON
+    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count', 'current_lesson', 'lesson_successed']; // tự động thêm vào JSON
     protected $casts   = [
         'price'         => 'double',
         'is_sequential' => 'boolean',
@@ -171,5 +172,26 @@ class Course extends Model
         }
 
         return null;
+    }
+
+    // lesson_successed
+    public function getLessonSuccessedAttribute()
+    {
+        $user = Auth::user();
+        if ($user && $this->is_enrolled) {
+            return LessonViewHistory::where('user_id', $user->id)
+                ->whereIn('lesson_id', function ($query) {
+                    $query->select('id')
+                        ->from('course_lessons')
+                        ->whereIn('chapter_id', function ($subQuery) {
+                            $subQuery->select('id')
+                                ->from('course_chapters')
+                                ->where('course_id', $this->id);
+                        });
+                })
+                ->where('is_completed', true)
+                ->count();
+        }
+        return 0;
     }
 }

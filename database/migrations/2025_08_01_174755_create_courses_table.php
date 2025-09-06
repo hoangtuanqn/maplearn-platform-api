@@ -24,11 +24,11 @@ return new class extends Migration
             $table->boolean('is_sequential')->default(false); // true: tuần tự, false: có thể nhảy cóc
             // $table->integer('audience_id')->unsigned();
             $table->unsignedInteger('user_id')->unsigned(); // giáo viên dạy
+            $table->unsignedInteger('prerequisite_course_id')->nullable();
 
             $table->enum('grade_level', ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'])->default('lop-12'); // Lớp 10, 11, 12, ..
             $table->enum('subject', ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'])->default('toan'); // Liên kết môn học
             $table->enum('category', ['2k8-xuat-phat-som-lop-12', '2k9-xuat-phat-som-lop-11', '2k10-xuat-phat-som-lop-10', 'hoc-tot-sach-giao-khoa', 'khoa-hoc-trung-hoc-co-so'])->default('hoc-tot-sach-giao-khoa'); // Danh mục khóa học
-
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             // $table->integer('created_by')->unsigned(); // created_by là INT
@@ -36,6 +36,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('prerequisite_course_id')->references('id')->on('courses')->nullOnDelete(); // Nếu khóa gốc bị xóa thì set null
         });
     }
 
