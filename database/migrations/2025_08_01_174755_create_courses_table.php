@@ -32,7 +32,7 @@ return new class extends Migration
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             // $table->integer('created_by')->unsigned(); // created_by là INT
-            $table->boolean('status')->default(true);
+            $table->tinyInteger('status')->default(1); // 0: khóa, 1: mở
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

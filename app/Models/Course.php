@@ -37,7 +37,6 @@ class Course extends Model
     protected $casts   = [
         'price'         => 'double',
         'is_sequential' => 'boolean',
-        'status'        => 'boolean',
     ];
     public function getRouteKeyName()
     {

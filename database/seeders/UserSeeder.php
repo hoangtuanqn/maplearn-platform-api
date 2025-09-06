@@ -62,6 +62,7 @@ class UserSeeder extends Seeder
                 'image'  => "/assets/images/teachers/co-nguyen-thi-thanh-thuy.jpg",
                 'bio'    => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
                 "degree" => "Thạc sĩ Hóa học",
+                "role"   => "admin",
             ],
             [
                 'name'   => "Thầy Vũ Trọng Đạt",
@@ -120,7 +121,7 @@ class UserSeeder extends Seeder
                 'facebook_link' => 'https://www.facebook.com/thayhintavungocanh',
                 'full_name'     => $fullName,
                 'gender'        => $gender,
-                'role'          => 'teacher',
+                'role'          => $teacher['role'] ?? "teacher",
                 'bio'           => $teacher['bio'],
                 'degree'        => $teacher['degree'],
                 'avatar'        => $teacher['image'],

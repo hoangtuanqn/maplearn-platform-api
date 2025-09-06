@@ -9,13 +9,17 @@ use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
 use App\Sorts\Course\EnrollmentCountSort;
+use App\Traits\AuthorizesOwnerOrAdmin;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Facades\Gate;
 
 class CourseController extends BaseApiController
 {
+    use AuthorizesRequests, AuthorizesOwnerOrAdmin;
     /**
      * Display a listing of the resource.
      */
@@ -36,6 +40,9 @@ class CourseController extends BaseApiController
                 'subject',
                 'category',
                 'user_id',
+                'status',
+                'start_date',
+                'end_date',
             ])
             ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
@@ -47,7 +54,8 @@ class CourseController extends BaseApiController
                 'subject',
                 AllowedFilter::custom('price_range', new PriceFilter),
             ])
-            ->where('status', true)
+            // ->where('status', true)
+            ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
             return $course->makeHidden(['duration', 'current_lesson']);
@@ -57,20 +65,47 @@ class CourseController extends BaseApiController
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string|min:2',
+            'subject' => 'required|string|min:1',
+            'category' => 'required|string|min:1',
+            'gradeLevel' => 'required|string|min:1',
+            'instructor' => 'required|string|min:1',
+            'price' => 'required|numeric|min:0',
+            'startDate' => 'required|string|min:1',
+            'endDate' => 'nullable|string',
+            'prerequisiteCourse' => 'nullable|string',
+            'coverImage' => 'required|url',
+            'introVideo' => 'required|url',
+            'description' => 'required|string|min:10',
+        ]);
+
+        Gate::authorize('only-admin');
+        // Nếu start > now() thì status = 3, ngược lại = 2
+        $status = (strtotime($data['startDate']) > time()) ? 2 : 3;
+        $course = Course::create([
+            'name' => $data['name'],
+            'subject' => $data['subject'],
+            'category' => $data['category'],
+            'grade_level' => $data['gradeLevel'],
+            'user_id' => $data['instructor'],
+            'price' => $data['price'],
+            'start_date' => $data['startDate'],
+            'end_date' => $data['endDate'] ?? null,
+            'prerequisite_course_id' => $data['prerequisiteCourse'] ?? null,
+            'thumbnail' => $data['coverImage'],
+            'intro_video' => $data['introVideo'],
+            'description' => $data['description'],
+            'created_by' => $request->user()->id,
+            'status' => $status,
+        ]);
+        return $this->successResponse($course, 'Tạo khóa học thành công!', 201);
     }
 
     /**
@@ -97,10 +132,7 @@ class CourseController extends BaseApiController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Course $course)
-    {
-        //
-    }
+    public function edit(Course $course) {}
 
     /**
      * Update the specified resource in storage.
@@ -115,7 +147,13 @@ class CourseController extends BaseApiController
      */
     public function destroy(Course $course)
     {
-        //
+        Gate::authorize('only-admin', $course);
+        // Check xem có ai đăng ký khóa học chưa
+        if ($course->enrollments_count > 0) {
+            return $this->errorResponse(null, 'Khóa học đã có học viên đăng ký, không thể xóa!', 403);
+        }
+        $course->delete();
+        return $this->successResponse(null, 'Xóa khóa học thành công!');
     }
 
     // Lấy 8 khóa học
