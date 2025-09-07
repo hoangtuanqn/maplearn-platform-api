@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\CourseChapter;
+use App\Traits\AuthorizesOwnerOrAdmin;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class CourseChapterController extends BaseApiController
 {
+    use AuthorizesRequests, AuthorizesOwnerOrAdmin;
     /**
      * Display a listing of the resource.
      */
@@ -17,9 +21,22 @@ class CourseChapterController extends BaseApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, string $slug)
     {
-        //
+        $course = Course::where('slug', $slug)->firstOrFail();
+
+        Gate::authorize('admin-teacher');
+        // Thêm chương mới
+        $data = $request->validate([
+            'title'    => 'required|string|max:255',
+            'position' => 'required|integer|min:1',
+        ]);
+        $chapter = CourseChapter::create([
+            'course_id' => $course->id,
+            'title'     => $data['title'],
+            'position'  => $data['position'],
+        ]);
+        return $this->successResponse($chapter, 'Thêm chương cho khóa học thành công!');
     }
 
     /**
@@ -29,11 +46,14 @@ class CourseChapterController extends BaseApiController
     {
         // Lấy slug của chương học từ route
         // Eager load lessons qua quan hệ
-        $course = Course::with('chapters.lessons')->where('id', 1)->firstOrFail();
+        $course = Course::with(['chapters' => function ($query) {
+            $query->orderBy('position', 'desc')->orderBy('created_at', 'desc');
+        }, 'chapters.lessons'])->where('slug', $slug)->firstOrFail();
 
         $course->chapters->each(function ($chapter) {
             $chapter->lessons->each->makeHidden(['video_url', 'content', 'created_at', 'updated_at']);
         });
+
         return $this->successResponse($course->chapters, 'Lấy danh sách chương thành công');
     }
 

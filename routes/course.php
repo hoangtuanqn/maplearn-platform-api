@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 // Lấy chương học theo slug
 Route::get('/chapters/{slug}', [CourseChapterController::class, 'show']);
-
+Route::post('/chapters/{slug}', [CourseChapterController::class, 'store'])->middleware('auth.jwt');
 // Data được cắt gọn để gửi cho AI
 Route::get('/courses/ai-data', [CourseController::class, 'aiData']);
 Route::post('/courses/ai-data', [CourseController::class, 'aiDataByIds']);
