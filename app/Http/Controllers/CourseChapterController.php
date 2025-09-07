@@ -21,9 +21,12 @@ class CourseChapterController extends BaseApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, string $slug)
+    public function store(Request $request)
     {
-        $course = Course::where('slug', $slug)->firstOrFail();
+        $data = $request->validate([
+            'course_slug' => 'required|string|exists:courses,slug',
+        ]);
+        $course = Course::where('slug', $data['course_slug'])->firstOrFail();
 
         Gate::authorize('admin-teacher');
         // Thêm chương mới
@@ -68,8 +71,12 @@ class CourseChapterController extends BaseApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CourseChapter $courseChapter)
+    public function destroy(CourseChapter $chapter)
     {
-        //
+        Gate::authorize('admin-teacher');
+
+        $chapter->delete();
+
+        return $this->successResponse(null, 'Xóa chương học thành công!', 200);
     }
 }
