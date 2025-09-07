@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
+use App\Models\CourseReview;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,9 +19,10 @@ class DatabaseSeeder extends Seeder
 
             ExamPaperSeeder::class,
             ExamQuestionSeeder::class,
-
             CourseSeeder::class,
+            CourseReviewSeeder::class,
             CourseChapterSeeder::class,
+
             PaymentSeeder::class,
 
         ]);

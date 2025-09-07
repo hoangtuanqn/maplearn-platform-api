@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\Filters\Filter;
 
-class CustomRatingFilter implements Filter
+class RatingFilter implements Filter
 {
     public function __invoke(Builder $query, $value, string $property)
     {

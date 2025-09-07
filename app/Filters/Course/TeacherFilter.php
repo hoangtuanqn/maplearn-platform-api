@@ -12,8 +12,6 @@ class TeacherFilter implements Filter
         // Convert CSV string "1,3,7" → array [1, 3, 7]
         $teacherIds = is_array($value) ? $value : explode(',', $value);
 
-        return $query->whereHas('teachers', function (Builder $q) use ($teacherIds) {
-            $q->whereIn('teachers.id', $teacherIds);
-        });
+        return $query->whereIn('user_id', $teacherIds);
     }
 }

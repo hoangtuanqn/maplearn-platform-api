@@ -33,7 +33,7 @@ class Course extends Model
     ];
     protected $hidden = [];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
-    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count', 'current_lesson', 'lesson_successed']; // tự động thêm vào JSON
+    protected $appends = ['teacher', 'is_enrolled', 'lesson_count', 'duration', 'is_best_seller', 'enrollments_count', 'current_lesson', 'lesson_successed', 'rating']; // tự động thêm vào JSON
     protected $casts   = [
         'price'         => 'double',
         'is_sequential' => 'boolean',
@@ -192,5 +192,18 @@ class Course extends Model
                 ->count();
         }
         return 0;
+    }
+    // Reviews
+    public function reviews()
+    {
+        return $this->hasMany(CourseReview::class, 'course_id');
+    }
+    // Tính điểm đánh giá trung bình
+    public function getRatingAttribute()
+    {
+        return [
+            'average_rating' => round($this->reviews()->avg('rating'), 1),
+            'total_reviews' => $this->reviews()->count(),
+        ]; // Làm tròn 1 chữ số sau dấu phẩy
     }
 }

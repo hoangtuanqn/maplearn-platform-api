@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Filters\Course\PriceFilter;
-
+use App\Filters\Course\RatingFilter;
+use App\Filters\Course\TeacherFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\CourseLesson;
@@ -53,6 +54,8 @@ class CourseController extends BaseApiController
                 'grade_level',
                 'subject',
                 AllowedFilter::custom('price_range', new PriceFilter),
+                AllowedFilter::custom('teachers', new TeacherFilter),
+                AllowedFilter::custom('rating', new RatingFilter),
             ])
             // ->where('status', true)
             ->orderByDesc('id')
