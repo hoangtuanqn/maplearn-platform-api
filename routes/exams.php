@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\ExamAttemptController;
 use App\Http\Controllers\ExamPaperController;
 use App\Http\Controllers\ExamQuestionController;
@@ -38,3 +39,7 @@ Route::prefix('exams')->group(function () {
     // Bảng ranking (Xếp hạng)
     Route::get("/{exam}/ranking", [ExamAttemptController::class, 'ranking']);
 });
+
+
+// Route exam cho admin
+Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

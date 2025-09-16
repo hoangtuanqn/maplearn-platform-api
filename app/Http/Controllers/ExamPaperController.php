@@ -35,6 +35,7 @@ class ExamPaperController extends BaseApiController
                 'title',
                 'grade_level',
                 'subject',
+                "difficulty",
                 AllowedFilter::custom('provinces', new ProvincesSlugFilter),
                 AllowedFilter::custom('categories', new CategoriesSlugFilter),
                 AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
