@@ -11,6 +11,7 @@ use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
 use App\Sorts\Course\EnrollmentCountSort;
 use App\Traits\AuthorizesOwnerOrAdmin;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -133,16 +134,29 @@ class CourseController extends BaseApiController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Course $course) {}
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Course $course)
     {
-        //
+        Gate::authorize('only-admin', $course);
+
+        $data = $request->validate([
+            'name' => 'sometimes|required|string|min:2',
+            'subject' => 'sometimes|required|string|min:1',
+            'category' => 'sometimes|required|string|min:1',
+            'grade_level' => 'sometimes|required|string|min:1',
+            'user_id' => 'sometimes|required|string|min:1', // giáo viên dạy
+            'price' => 'sometimes|required|numeric|min:0',
+            'prerequisite_course_id' => 'nullable|integer|exists:courses,id',
+            'thumbnail' => 'sometimes|required|url',
+            'intro_video' => 'sometimes|required|url',
+            'description' => 'sometimes|required|string|min:10',
+        ]);
+
+
+        $course->update($data);
+
+        return $this->successResponse($course, 'Cập nhật khóa học thành công!');
     }
 
     /**
@@ -349,5 +363,32 @@ class CourseController extends BaseApiController
             $lesson->current_time = 0;
         }
         return $this->successResponse($lesson, 'Lấy thông tin bài học thành công!');
+    }
+
+    // Trả thông tin thống kê số học sinh đăng ký trong 7 ngày gần nhất
+    public function statsEnrollmentsLast7Days(Course $course)
+    {
+        // Lấy dữ liệu đăng ký trong 7 ngày gần nhất.
+
+        /**
+         * Mô tả logic: Group by trong bảng payments theo status = paid
+         * Hiển thị thêm số lượng Cao  thì lớn hơn bao nhiêu đó, thấp thì bao nhiêu, trung bình thì bao nhiêu, ...
+         * Hiển thị doanh thu hôm nay, doanh thu so với ngày hôm qua
+        */
+        $data = $course->payments()
+            ->where('status', 'paid')
+            ->where('paid_at', '>=', Carbon::now()->subDays(7))
+            ->selectRaw('DATE(paid_at) as date, COUNT(*) as student_count')
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        // Format date
+        $data->transform(function ($item) {
+            $item->date = Carbon::parse($item->date)->format('d-m');
+            return $item;
+        });
+
+        return $this->successResponse($data, 'Lấy dữ liệu thống kê học viên đăng ký trong 7 ngày gần nhất thành công!');
     }
 }
