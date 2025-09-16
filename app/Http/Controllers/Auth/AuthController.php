@@ -66,6 +66,7 @@ class AuthController extends BaseApiController
 
         $data                       = $validator->safe()->toArray();
         $data['verification_token'] = bin2hex(random_bytes(50));
+        $data['avatar']             = 'https://res.cloudinary.com/dbu1zfbhv/image/upload/v1755729796/avatars/ccrlg1hkjtc6dyeervsv.jpg';
         $user                       = User::create($data);
         $user->notify(new VerifyEmailNotification($user->verification_token));
 
