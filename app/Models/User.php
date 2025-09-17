@@ -85,6 +85,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->role === 'teacher';
     }
 
+    public function hasRole($roles): bool
+    {
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        return $this->role === $roles;
+    }
+
     /**
      *  Trả về dạng boolean: Check quyền student
      */

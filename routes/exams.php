@@ -40,6 +40,12 @@ Route::prefix('exams')->group(function () {
     Route::get("/{exam}/ranking", [ExamAttemptController::class, 'ranking']);
 });
 
+// Route exam cho admin, teacher
+Route::prefix('exams-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'])->group(function () {
+    // Lấy tất cả lịch sử làm bài thi
+    Route::get('/all-history', [ExamController::class, 'allHistory']);
 
-// Route exam cho admin
+     // Lấy lịch sử làm bài thi
+    Route::get('/{exam}/history', [ExamController::class, 'history']);
+});
 Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

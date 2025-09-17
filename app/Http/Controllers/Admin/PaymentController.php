@@ -6,15 +6,27 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PaymentController extends BaseApiController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $limit = (int)($request->limit ?? 20);
 
+        $payments = QueryBuilder::for(Payment::class)
+            ->allowedFilters([
+                // Add allowed filters here, e.g. 'status', 'user_id', 'course_id'
+            ])
+            ->where('status', 'paid') // Example: only show completed or canceled payments
+            ->with(['user:id,full_name,username', 'course:id,name,slug']) // Eager load relationships if needed
+            ->orderByDesc('id')
+            ->paginate($limit);
+
+        return $this->successResponse($payments, 'Lấy danh sách thanh toán thành công!');
     }
 
     /**
