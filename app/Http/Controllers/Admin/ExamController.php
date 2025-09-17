@@ -32,10 +32,12 @@ class ExamController extends BaseApiController
                 'grade_level',
                 'subject',
                 "difficulty",
+                "exam_category",
                 AllowedFilter::custom('provinces', new ProvincesSlugFilter),
                 AllowedFilter::custom('categories', new CategoriesSlugFilter),
                 AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
             ])
+            ->allowedSorts(['start_time'])
             ->orderByDesc('id')
             ->paginate($limit);
         // ẩn thuộc tính này khi hiển thị
@@ -137,11 +139,12 @@ class ExamController extends BaseApiController
         $histories = QueryBuilder::for(ExamAttempt::class)
             ->allowedFilters([
                 "started_at",
-
+                "score",
                 "status",
                 "time_spent",
                 AllowedFilter::custom('violation_count', new ViolationsCountFilter),
                 AllowedFilter::partial('search', 'paper.title'),
+                AllowedFilter::partial('full_name', 'user.full_name'),
                 AllowedFilter::callback('min_score', function ($query, $value) {
                     if ($value !== null && $value !== '') {
                         $query->where('score', '>=', (float) $value);
@@ -153,6 +156,7 @@ class ExamController extends BaseApiController
                     }
                 }),
             ])
+            ->allowedSorts(['score', 'started_at', 'time_spent'])
             ->with(['paper', 'user:id,full_name,username'])
             ->orderByDesc('id')
             ->paginate($limit);

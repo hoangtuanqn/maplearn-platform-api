@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PaymentController extends BaseApiController
@@ -19,7 +20,32 @@ class PaymentController extends BaseApiController
 
         $payments = QueryBuilder::for(Payment::class)
             ->allowedFilters([
-                // Add allowed filters here, e.g. 'status', 'user_id', 'course_id'
+                "search",
+                "payment_method",
+                "status",
+                // "date_from",
+                // "date_to",
+                AllowedFilter::partial('search', 'username.full_name'),
+                AllowedFilter::callback('amount_min', function ($query, $value) {
+                    if ($value !== null && $value !== '') {
+                        $query->where('amount', '>=', (float) $value);
+                    }
+                }),
+                AllowedFilter::callback('amount_max', function ($query, $value) {
+                    if ($value !== null && $value !== '') {
+                        $query->where('amount', '<=', (float) $value);
+                    }
+                }),
+                AllowedFilter::callback('date_from', function ($query, $value) {
+                    if ($value !== null && $value !== '') {
+                        $query->whereDate('paid_at', '>=', $value);
+                    }
+                }),
+                AllowedFilter::callback('date_to', function ($query, $value) {
+                    if ($value !== null && $value !== '') {
+                        $query->whereDate('paid_at', '<=', $value);
+                    }
+                }),
             ])
             ->where('status', 'paid') // Example: only show completed or canceled payments
             ->with(['user:id,full_name,username', 'course:id,name,slug']) // Eager load relationships if needed

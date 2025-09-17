@@ -187,13 +187,13 @@ class ExamAttemptController extends BaseApiController
         if ($user->hasRole(['admin', 'teacher'])) {
             $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
                 ->where('id', $id)
-                ->where('status', 'submitted')
+                ->whereIn('status', ['submitted', 'detected'])
                 ->first();
         } else {
             $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
                 ->where('user_id', $user->id)
                 ->where('id', $id)
-                ->where('status', 'submitted')
+                ->whereIn('status', ['submitted', 'detected'])
                 ->first();
         }
         if (!$attempt) {
