@@ -62,6 +62,12 @@ class Course extends Model
             ->wherePivot('status', 'paid');
     }
 
+    // get tất cả lesson của khóa học thông qua bảng trung gian course_chaptersq
+    public function lessons()
+    {
+        return $this->hasManyThrough(CourseLesson::class, CourseChapter::class, 'course_id', 'chapter_id');
+    }
+
     // Danh sách chương học, sort theo vị trí
     public function chapters()
     {

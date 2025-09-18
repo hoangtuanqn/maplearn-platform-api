@@ -374,7 +374,7 @@ class CourseController extends BaseApiController
          * Mô tả logic: Group by trong bảng payments theo status = paid
          * Hiển thị thêm số lượng Cao  thì lớn hơn bao nhiêu đó, thấp thì bao nhiêu, trung bình thì bao nhiêu, ...
          * Hiển thị doanh thu hôm nay, doanh thu so với ngày hôm qua
-        */
+         */
         $data = $course->payments()
             ->where('status', 'paid')
             ->where('paid_at', '>=', Carbon::now()->subDays(7))
@@ -390,5 +390,35 @@ class CourseController extends BaseApiController
         });
 
         return $this->successResponse($data, 'Lấy dữ liệu thống kê học viên đăng ký trong 7 ngày gần nhất thành công!');
+    }
+
+    public function getCertificateInfo(Request $request, Course $course)
+    {
+        $user = $request->user();
+
+        $hasPurchased = $user->purchasedCourses()->where('courses.id', $course->id)->exists();
+        if (!$hasPurchased) {
+            return $this->errorResponse(null, 'Bạn chưa mua khóa học này!', 403);
+        }
+        // Kiểm tra đã hoàn thành khóa học chưa
+        $completedLessonsCount = $course->chapters->sum(function ($chapter) use ($user) {
+            return LessonViewHistory::where('user_id', $user->id)
+                ->where('is_completed', true)
+                ->whereIn('lesson_id', $chapter->lessons->pluck('id'))
+                ->count();
+        });
+        if ($completedLessonsCount < $course->lesson_count) {
+            return $this->errorResponse(null, 'Bạn chưa hoàn thành khóa học này!', 403);
+        }
+
+        // Trả về thông tin chứng chỉ
+        $certificateInfo = [
+            'student_name' => $user->full_name,
+            'course_name' => $course->name,
+            'completion_date' => now()->format('d-m-Y'),
+            'certificate_id' => strtoupper(uniqid('CERT-')),
+        ];
+
+        return $this->successResponse($certificateInfo, 'Lấy thông tin chứng chỉ thành công!');
     }
 }

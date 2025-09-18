@@ -6,6 +6,8 @@ use App\Observers\CourseLessonObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CourseChapter;
+use App\Models\LessonViewHistory;
 
 #[ObservedBy([CourseLessonObserver::class])]
 class CourseLesson extends Model
@@ -31,5 +33,10 @@ class CourseLesson extends Model
     public function chapter()
     {
         return $this->belongsTo(CourseChapter::class, 'chapter_id');
+    }
+
+    public function completions()
+    {
+        return $this->hasMany(LessonViewHistory::class, 'lesson_id')->where('is_completed', true);
     }
 }
