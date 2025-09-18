@@ -25,6 +25,10 @@ Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
 
     // get thông tin chứng chỉ sau khi hoàn thành khóa học
     Route::get('/{course}/certificate', [CourseController::class, 'getCertificateInfo']);
+
+
+    // Admin: Lấy thông tin những người hoàn thành khóa học
+    Route::get('/{course}/completions', [CourseController::class, 'listStudentsWithCertificates']);
 });
 Route::get('/courses/recommended', [CourseController::class, 'recommended']);
 Route::apiResource('courses', CourseController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');

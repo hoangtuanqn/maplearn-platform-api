@@ -140,6 +140,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Payment::class);
     }
 
+    // Liên kết với bảng lesson_view_histories để lấy lịch sử xem bài học
+
 
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()
