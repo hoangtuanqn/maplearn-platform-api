@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class PaymentController extends BaseApiController
 {
@@ -95,7 +94,7 @@ class PaymentController extends BaseApiController
 
     public function cancelPayment(Request $request, string $transaction_code)
     {
-        $user = $request->user();
+        $user    = $request->user();
         $payment = Payment::where(['user_id' => $user->id, 'transaction_code' => $transaction_code, 'status' => 'pending'])->first();
         if (!$payment) {
             return $this->errorResponse(null, 'Payment không tồn tại hoặc đã được xử lý', 404);

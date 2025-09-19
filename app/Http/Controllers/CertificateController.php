@@ -13,7 +13,7 @@ class CertificateController extends BaseApiController
     {
         // Check
         $course = Course::where('slug', $slugCourse)->firstOrFail();
-        $user = $course->students()->where('email', $email)->first();
+        $user   = $course->students()->where('email', $email)->first();
         // Check khóa học này xem người dùng đã học xong hết chưa
         $completedLessons = $course->lessons()->whereHas('completions', function ($query) use ($user) {
             $query->where('user_id', $user->id);
@@ -28,14 +28,14 @@ class CertificateController extends BaseApiController
         })->orderByDesc('id')->first();
         // Get thời gian hoàn thành video này
         $completionRecord = $lastCompletedLesson->completions()->where('user_id', $user->id)->first();
-        $certificateData = [
-            'course_title' => $course->name,
-            'lesson_count' => $totalLessons,
-            'full_name' => $user->full_name,
-            'email' => $user->email,
-            'lecturer_name' => $course->teacher->full_name,
+        $certificateData  = [
+            'course_title'    => $course->name,
+            'lesson_count'    => $totalLessons,
+            'full_name'       => $user->full_name,
+            'email'           => $user->email,
+            'lecturer_name'   => $course->teacher->full_name,
             'completion_date' => Carbon::parse($completionRecord->updated_at)->format('d/m/Y'),
-            'duration_hours' => ceil($course->lessons()->sum('duration') / 3600),
+            'duration_hours'  => ceil($course->lessons()->sum('duration') / 3600),
         ];
         return $this->successResponse($certificateData, "Lấy thông tin chứng chỉ thành công");
     }

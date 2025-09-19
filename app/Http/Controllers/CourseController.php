@@ -14,10 +14,10 @@ use App\Traits\AuthorizesOwnerOrAdmin;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Support\Facades\Gate;
 
 class CourseController extends BaseApiController
 {
@@ -65,10 +65,8 @@ class CourseController extends BaseApiController
             return $course->makeHidden(['duration', 'current_lesson']);
         });
 
-
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -76,38 +74,38 @@ class CourseController extends BaseApiController
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|min:2',
-            'subject' => 'required|string|min:1',
-            'category' => 'required|string|min:1',
-            'gradeLevel' => 'required|string|min:1',
-            'instructor' => 'required|string|min:1',
-            'price' => 'required|numeric|min:0',
-            'startDate' => 'required|string|min:1',
-            'endDate' => 'nullable|string',
+            'name'               => 'required|string|min:2',
+            'subject'            => 'required|string|min:1',
+            'category'           => 'required|string|min:1',
+            'gradeLevel'         => 'required|string|min:1',
+            'instructor'         => 'required|string|min:1',
+            'price'              => 'required|numeric|min:0',
+            'startDate'          => 'required|string|min:1',
+            'endDate'            => 'nullable|string',
             'prerequisiteCourse' => 'nullable|string',
-            'coverImage' => 'required|url',
-            'introVideo' => 'required|url',
-            'description' => 'required|string|min:10',
+            'coverImage'         => 'required|url',
+            'introVideo'         => 'required|url',
+            'description'        => 'required|string|min:10',
         ]);
 
         Gate::authorize('only-admin');
         // Nếu start > now() thì status = 3, ngược lại = 2
         $status = (strtotime($data['startDate']) > time()) ? 2 : 3;
         $course = Course::create([
-            'name' => $data['name'],
-            'subject' => $data['subject'],
-            'category' => $data['category'],
-            'grade_level' => $data['gradeLevel'],
-            'user_id' => $data['instructor'],
-            'price' => $data['price'],
-            'start_date' => $data['startDate'],
-            'end_date' => $data['endDate'] ?? null,
+            'name'                   => $data['name'],
+            'subject'                => $data['subject'],
+            'category'               => $data['category'],
+            'grade_level'            => $data['gradeLevel'],
+            'user_id'                => $data['instructor'],
+            'price'                  => $data['price'],
+            'start_date'             => $data['startDate'],
+            'end_date'               => $data['endDate']                          ?? null,
             'prerequisite_course_id' => $data['prerequisiteCourse'] ?? null,
-            'thumbnail' => $data['coverImage'],
-            'intro_video' => $data['introVideo'],
-            'description' => $data['description'],
-            'created_by' => $request->user()->id,
-            'status' => $status,
+            'thumbnail'              => $data['coverImage'],
+            'intro_video'            => $data['introVideo'],
+            'description'            => $data['description'],
+            'created_by'             => $request->user()->id,
+            'status'                 => $status,
         ]);
         return $this->successResponse($course, 'Tạo khóa học thành công!', 201);
     }
@@ -129,7 +127,6 @@ class CourseController extends BaseApiController
 
         // Nếu đã mua, thì lấy thông tin video đnagg học hiện tại
 
-
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
     }
 
@@ -141,18 +138,17 @@ class CourseController extends BaseApiController
         Gate::authorize('only-admin', $course);
 
         $data = $request->validate([
-            'name' => 'sometimes|required|string|min:2',
-            'subject' => 'sometimes|required|string|min:1',
-            'category' => 'sometimes|required|string|min:1',
-            'grade_level' => 'sometimes|required|string|min:1',
-            'user_id' => 'sometimes|required|string|min:1', // giáo viên dạy
-            'price' => 'sometimes|required|numeric|min:0',
+            'name'                   => 'sometimes|required|string|min:2',
+            'subject'                => 'sometimes|required|string|min:1',
+            'category'               => 'sometimes|required|string|min:1',
+            'grade_level'            => 'sometimes|required|string|min:1',
+            'user_id'                => 'sometimes|required|string|min:1', // giáo viên dạy
+            'price'                  => 'sometimes|required|numeric|min:0',
             'prerequisite_course_id' => 'nullable|integer|exists:courses,id',
-            'thumbnail' => 'sometimes|required|url',
-            'intro_video' => 'sometimes|required|url',
-            'description' => 'sometimes|required|string|min:10',
+            'thumbnail'              => 'sometimes|required|url',
+            'intro_video'            => 'sometimes|required|url',
+            'description'            => 'sometimes|required|string|min:10',
         ]);
-
 
         $course->update($data);
 
@@ -262,7 +258,6 @@ class CourseController extends BaseApiController
         return $this->successResponse($courses, 'Lấy dữ liệu khóa học thành công!');
     }
 
-
     // Lấy thông tin khóa học sau khi đã mua thành công
     public function detailCourse(Request $request, string $slug)
     {
@@ -291,7 +286,7 @@ class CourseController extends BaseApiController
         foreach ($course->chapters as $chapter) {
 
             $count_successed = 0;
-            $duration = 0;
+            $duration        = 0;
             // lessons trong mỗi chapter
             foreach ($chapter->lessons as $lesson) {
                 $lessonHistory = $lessonHistories->get($lesson->id);
@@ -305,7 +300,7 @@ class CourseController extends BaseApiController
                 // $lesson->progress = $lessonHistory ? $lessonHistory->progress : 0;
             }
             $chapter->completed_lessons = $count_successed;
-            $chapter->duration = $duration;
+            $chapter->duration          = $duration;
         }
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
@@ -353,10 +348,10 @@ class CourseController extends BaseApiController
                 $lesson->prev_video = null; // No previous lessons in course
             }
         }
-        $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get();
-        $lesson->viewed = $lessonHistories->contains('lesson_id', $lesson->id);
+        $lessonHistories      = LessonViewHistory::where('user_id', $user->id)->get();
+        $lesson->viewed       = $lessonHistories->contains('lesson_id', $lesson->id);
         $currentLessonHistory = $lessonHistories->where('lesson_id', $lesson->id)->first();
-        $lesson->progress = $currentLessonHistory->progress ?? 0;
+        $lesson->progress     = $currentLessonHistory->progress ?? 0;
 
         $lesson->current_time = $currentLessonHistory->progress ?? 0;
         if ($lesson->current_time >= $lesson->duration - 30) {
@@ -413,10 +408,10 @@ class CourseController extends BaseApiController
 
         // Trả về thông tin chứng chỉ
         $certificateInfo = [
-            'student_name' => $user->full_name,
-            'course_name' => $course->name,
+            'student_name'    => $user->full_name,
+            'course_name'     => $course->name,
             'completion_date' => now()->format('d-m-Y'),
-            'certificate_id' => strtoupper(uniqid('CERT-')),
+            'certificate_id'  => strtoupper(uniqid('CERT-')),
         ];
 
         return $this->successResponse($certificateInfo, 'Lấy thông tin chứng chỉ thành công!');
@@ -462,16 +457,16 @@ class CourseController extends BaseApiController
                         ->first();
 
                     $studentsWithCompletion->push([
-                        'id' => $student->id,
-                        'full_name' => $student->full_name,
-                        'email' => $student->email,
-                        'avatar' => $student->avatar,
-                        'phone' => $student->phone,
+                        'id'              => $student->id,
+                        'full_name'       => $student->full_name,
+                        'email'           => $student->email,
+                        'avatar'          => $student->avatar,
+                        'phone'           => $student->phone,
                         'completion_date' => $lastCompletionDate
                             ? Carbon::parse($lastCompletionDate->updated_at)->format('d/m/Y')
                             : null,
                         'completed_lessons' => $completedLessonsCount,
-                        'total_lessons' => $totalLessons,
+                        'total_lessons'     => $totalLessons,
 
                     ]);
                 }
@@ -479,9 +474,9 @@ class CourseController extends BaseApiController
         });
 
         // Phân trang thủ công cho collection
-        $page = $request->get('page', 1);
+        $page   = $request->get('page', 1);
         $offset = ($page - 1) * $limit;
-        $items = $studentsWithCompletion->slice($offset, $limit)->values();
+        $items  = $studentsWithCompletion->slice($offset, $limit)->values();
 
         $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
             $items,
@@ -489,8 +484,8 @@ class CourseController extends BaseApiController
             $limit,
             $page,
             [
-                'path' => $request->url(),
-                'pageName' => 'page'
+                'path'     => $request->url(),
+                'pageName' => 'page',
             ]
         );
 

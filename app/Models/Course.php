@@ -139,7 +139,6 @@ class Course extends Model
         return $user->payments()->where('course_id', $this->id)->where('status', 'paid')->exists();
     }
 
-
     // current_lesson
     public function getCurrentLessonAttribute()
     {
@@ -209,7 +208,7 @@ class Course extends Model
     {
         return [
             'average_rating' => round($this->reviews()->avg('rating'), 1),
-            'total_reviews' => $this->reviews()->count(),
+            'total_reviews'  => $this->reviews()->count(),
         ]; // Làm tròn 1 chữ số sau dấu phẩy
     }
 }

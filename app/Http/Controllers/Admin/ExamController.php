@@ -10,9 +10,9 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Traits\AuthorizesOwnerOrAdmin;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -60,25 +60,25 @@ class ExamController extends BaseApiController
         $user = $request->user();
         Gate::authorize('admin-teacher');
         $data = $request->validate([
-            'exam_category'        => 'required|string|max:255',
-            'subject'              => 'required|string|max:255',
-            'grade_level'          => 'required|string|max:255',
-            'title'                => 'required|string|max:255',
-            'province'             => 'nullable|string|max:255',
-            'difficulty'           => 'nullable|string|max:255',
-            'exam_type'            => 'nullable|string|max:255',
-            'max_score'            => 'required|numeric|min:0',
-            'pass_score'           => 'required|numeric|min:0',
-            'duration_minutes'     => 'required|integer|min:1',
-            'anti_cheat_enabled'   => 'nullable|boolean',
+            'exam_category'          => 'required|string|max:255',
+            'subject'                => 'required|string|max:255',
+            'grade_level'            => 'required|string|max:255',
+            'title'                  => 'required|string|max:255',
+            'province'               => 'nullable|string|max:255',
+            'difficulty'             => 'nullable|string|max:255',
+            'exam_type'              => 'nullable|string|max:255',
+            'max_score'              => 'required|numeric|min:0',
+            'pass_score'             => 'required|numeric|min:0',
+            'duration_minutes'       => 'required|integer|min:1',
+            'anti_cheat_enabled'     => 'nullable|boolean',
             'max_violation_attempts' => 'nullable|integer|min:0',
-            'status'               => 'nullable|boolean',
-            'start_time'           => 'nullable|date',
-            'end_time'             => 'nullable|date|after:start_time',
+            'status'                 => 'nullable|boolean',
+            'start_time'             => 'nullable|date',
+            'end_time'               => 'nullable|date|after:start_time',
         ]);
 
         $data['user_id'] = $user->id;
-        $exam = ExamPaper::create($data);
+        $exam            = ExamPaper::create($data);
         return $this->successResponse($exam, 'Tạo đề thi thành công!');
     }
 
@@ -97,21 +97,21 @@ class ExamController extends BaseApiController
     {
         Gate::authorize('admin-teacher-owner', $exams_admin);
         $data = $request->validate([
-            'exam_category'        => 'nullable|string|max:255',
-            'subject'              => 'nullable|string|max:255',
-            'grade_level'          => 'nullable|string|max:255',
-            'title'                => 'nullable|string|max:255',
-            'province'             => 'nullable|string|max:255',
-            'difficulty'           => 'nullable|string|max:255',
-            'exam_type'            => 'nullable|string|max:255',
-            'max_score'            => 'nullable|numeric|min:0',
-            'pass_score'           => 'nullable|numeric|min:0',
-            'duration_minutes'     => 'nullable|integer|min:1',
-            'anti_cheat_enabled'   => 'nullable|boolean',
+            'exam_category'          => 'nullable|string|max:255',
+            'subject'                => 'nullable|string|max:255',
+            'grade_level'            => 'nullable|string|max:255',
+            'title'                  => 'nullable|string|max:255',
+            'province'               => 'nullable|string|max:255',
+            'difficulty'             => 'nullable|string|max:255',
+            'exam_type'              => 'nullable|string|max:255',
+            'max_score'              => 'nullable|numeric|min:0',
+            'pass_score'             => 'nullable|numeric|min:0',
+            'duration_minutes'       => 'nullable|integer|min:1',
+            'anti_cheat_enabled'     => 'nullable|boolean',
             'max_violation_attempts' => 'nullable|integer|min:0',
-            'status'               => 'nullable|boolean',
-            'start_time'           => 'nullable|date',
-            'end_time'             => 'nullable|date|after:start_time',
+            'status'                 => 'nullable|boolean',
+            'start_time'             => 'nullable|date',
+            'end_time'               => 'nullable|date|after:start_time',
         ]);
 
         $exams_admin->update($data);
@@ -135,7 +135,7 @@ class ExamController extends BaseApiController
     public function allHistory(Request $request)
     {
         Gate::authorize('admin-teacher');
-        $limit = (int)($request->limit ?? 20);
+        $limit     = (int)($request->limit ?? 20);
         $histories = QueryBuilder::for(ExamAttempt::class)
             ->allowedFilters([
                 "started_at",
@@ -168,7 +168,7 @@ class ExamController extends BaseApiController
     public function history(Request $request, ExamPaper $exams_admin)
     {
         Gate::authorize('admin-teacher-owner', $exams_admin);
-        $limit = (int)($request->limit ?? 20);
+        $limit   = (int)($request->limit ?? 20);
         $history = $exams_admin->examAttempts()
             ->with('user:id,full_name,username')
             ->orderByDesc('id')

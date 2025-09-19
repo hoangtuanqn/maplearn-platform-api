@@ -26,7 +26,6 @@ Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
     // get thông tin chứng chỉ sau khi hoàn thành khóa học
     Route::get('/{course}/certificate', [CourseController::class, 'getCertificateInfo']);
 
-
     // Admin: Lấy thông tin những người hoàn thành khóa học
     Route::get('/{course}/completions', [CourseController::class, 'listStudentsWithCertificates']);
 });

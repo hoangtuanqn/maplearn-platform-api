@@ -15,18 +15,18 @@ class DashboardController extends BaseApiController
     public function getDashboardData(Request $request)
     {
         $data = [
-            'total' => $this->getTotal(),
-            'total_in_12_months' => $this->getTotalIn12Months(),
-            'total_last_month' => $this->getTotalLastMonth(),
-            'total_in_this_year' => $this->getTotalInThisYear(),
-            'total_courses' => $this->getTotalCourses(),
-            'total_exams' => $this->getTotalExams(),
-            'total_users' => $this->getTotalUsers(),
-            'payment_methods' => $this->getPaymentMethods(),
+            'total'               => $this->getTotal(),
+            'total_in_12_months'  => $this->getTotalIn12Months(),
+            'total_last_month'    => $this->getTotalLastMonth(),
+            'total_in_this_year'  => $this->getTotalInThisYear(),
+            'total_courses'       => $this->getTotalCourses(),
+            'total_exams'         => $this->getTotalExams(),
+            'total_users'         => $this->getTotalUsers(),
+            'payment_methods'     => $this->getPaymentMethods(),
             'courses_by_category' => $this->getCoursesByCategory(),
-            'new_users' => $this->getNewUsers(),
-            'new_payments' => $this->getNewPayments(),
-            'top_courses' => $this->getTopCourses(),
+            'new_users'           => $this->getNewUsers(),
+            'new_payments'        => $this->getNewPayments(),
+            'top_courses'         => $this->getTopCourses(),
             'activity_in_4_weeks' => $this->getActivityIn4Weeks(),
         ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
@@ -34,20 +34,20 @@ class DashboardController extends BaseApiController
     // tính tổng doanh thu
     public function getTotal(): int
     {
-        $total = Payment::sum('amount');
+        $total = Payment::where('status', 'paid')->sum('amount');
         return $total;
     }
     // tỉnh tổng doanh thu trong 12 tháng
     public function getTotalIn12Months(): int
     {
-        $total = Payment::whereYear('paid_at', now()->year)->sum('amount');
+        $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)->sum('amount');
         return $total;
     }
 
     // tỉnh doanh thu tháng trước
     public function getTotalLastMonth(): int
     {
-        $total = Payment::whereYear('paid_at', now()->year)
+        $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)
             ->whereMonth('paid_at', now()->subMonth()->month)
             ->sum('amount');
         return $total;
@@ -57,7 +57,7 @@ class DashboardController extends BaseApiController
     {
         $totals = [];
         for ($month = 1; $month <= 12; $month++) {
-            $total = Payment::whereYear('paid_at', now()->year)
+            $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)
                 ->whereMonth('paid_at', $month)
                 ->sum('amount');
             $totals[] = (int)$total;
@@ -89,7 +89,7 @@ class DashboardController extends BaseApiController
     // tính số lần thanh toán (theo phương thức thanh toán). VD: VNPAY: 10, MOMO: 5
     public function getPaymentMethods(): array
     {
-        $methods = Payment::select('payment_method')
+        $methods = Payment::where('status', 'paid')->select('payment_method')
             ->selectRaw('COUNT(*) as count')
             ->groupBy('payment_method')
             ->get()
@@ -126,15 +126,15 @@ class DashboardController extends BaseApiController
     // get 4 hóa đơn được thanh toán mới nhất
     public function getNewPayments(): array
     {
-        $payments = Payment::with(['user:id,full_name', 'course:id,name'])
+        $payments = Payment::where('status', 'paid')->with(['user:id,full_name', 'course:id,name'])
             ->orderBy('paid_at', 'desc')
             ->limit(4)
             ->get()
             ->map(function ($payment) {
                 return [
-                    'full_name' => $payment->user->full_name ?? null,
-                    'course_name' => $payment->course->name ?? null,
-                    'amount' => $payment->amount
+                    'full_name'   => $payment->user->full_name ?? null,
+                    'course_name' => $payment->course->name  ?? null,
+                    'amount'      => $payment->amount,
                 ];
             })
             ->toArray();
@@ -152,9 +152,9 @@ class DashboardController extends BaseApiController
             ->get(['id', 'name'])
             ->map(function ($course) {
                 return [
-                    'name' => $course->name,
+                    'name'           => $course->name,
                     'students_count' => $course->students_count,
-                    'revenue' => $course->payments_sum_amount ?? 0
+                    'revenue'        => (int)$course->payments_sum_amount ?? 0,
                 ];
             })
             ->toArray();
@@ -167,17 +167,17 @@ class DashboardController extends BaseApiController
         $activities = [];
         for ($week = 0; $week < 4; $week++) {
             $startOfWeek = now()->subWeeks($week)->startOfWeek();
-            $endOfWeek = now()->subWeeks($week)->endOfWeek();
+            $endOfWeek   = now()->subWeeks($week)->endOfWeek();
 
             $newCourses = Course::whereBetween('start_date', [$startOfWeek, $endOfWeek])->count();
-            $newUsers = User::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('role', 'student')->count();
-            $newExams = ExamPaper::whereBetween('start_time', [$startOfWeek, $endOfWeek])->count();
+            $newUsers   = User::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('role', 'student')->count();
+            $newExams   = ExamPaper::whereBetween('start_time', [$startOfWeek, $endOfWeek])->count();
 
             $activities[] = [
-                'week' => "Tuần " . (4 - $week),
+                'week'        => "Tuần " . (4 - $week),
                 'new_courses' => $newCourses,
-                'new_users' => $newUsers,
-                'new_exams' => $newExams,
+                'new_users'   => $newUsers,
+                'new_exams'   => $newExams,
             ];
         }
         return array_reverse($activities);

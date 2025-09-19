@@ -6,8 +6,6 @@ use App\Observers\CourseLessonObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CourseChapter;
-use App\Models\LessonViewHistory;
 
 #[ObservedBy([CourseLessonObserver::class])]
 class CourseLesson extends Model

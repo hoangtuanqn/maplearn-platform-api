@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
