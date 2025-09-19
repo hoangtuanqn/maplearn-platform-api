@@ -14,6 +14,13 @@ class CertificateController extends BaseApiController
         // Check
         $course = Course::where('slug', $slugCourse)->firstOrFail();
         $user   = $course->students()->where('email', $email)->first();
+        if (!$user) {
+            return $this->errorResponse('Người dùng chưa đăng ký khóa học này.', 404);
+        }
+        // người dùng chưa xác minh
+        if (!$user->hasVerifiedEmail()) {
+            return $this->errorResponse('Người dùng chưa xác minh email, nên không có chứng chỉ.', 400);
+        }
         // Check khóa học này xem người dùng đã học xong hết chưa
         $completedLessons = $course->lessons()->whereHas('completions', function ($query) use ($user) {
             $query->where('user_id', $user->id);
