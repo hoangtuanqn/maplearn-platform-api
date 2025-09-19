@@ -15,9 +15,10 @@ class PaymentController extends BaseApiController
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $limit = (int)($request->limit ?? 20);
 
-        $payments = QueryBuilder::for(Payment::class)
+        $paymentsQuery = QueryBuilder::for(Payment::class)
             ->allowedFilters([
                 "search",
                 "payment_method",
@@ -46,7 +47,16 @@ class PaymentController extends BaseApiController
                     }
                 }),
             ])
-            ->where('status', 'paid') // Example: only show completed or canceled payments
+            ->where('status', 'paid'); // Example: only show completed or canceled payments
+
+        // Nếu là teacher thì chỉ được xem thanh toán của khóa học do mình tạo
+        if ($user->role === 'teacher') {
+            $teacherCourseIds = \App\Models\Course::where('user_id', $user->id)->pluck('id');
+            $paymentsQuery->whereIn('course_id', $teacherCourseIds);
+        }
+        // Nếu là admin thì xem được tất cả thanh toán
+
+        $payments = $paymentsQuery
             ->with(['user:id,full_name,username', 'course:id,name,slug']) // Eager load relationships if needed
             ->orderByDesc('id')
             ->paginate($limit);
@@ -94,6 +104,8 @@ class PaymentController extends BaseApiController
 
     public function getStatsPayment(Request $request)
     {
+        $user = $request->user();
+
         $dateFrom = $request->input('date_from');
         $dateTo = $request->input('date_to');
 
@@ -105,6 +117,14 @@ class PaymentController extends BaseApiController
 
         $query = Payment::query()
             ->where('status', 'paid');
+
+        // Nếu là teacher thì chỉ được xem thống kê của khóa học do mình tạo
+        if ($user->role === 'teacher') {
+            // Lấy danh sách course_id do teacher này tạo
+            $teacherCourseIds = \App\Models\Course::where('user_id', $user->id)->pluck('id');
+            $query->whereIn('course_id', $teacherCourseIds);
+        }
+        // Nếu là admin thì xem được tất cả thống kê
 
         if ($dateFrom) {
             $query->whereDate('paid_at', '>=', $dateFrom);
@@ -128,6 +148,7 @@ class PaymentController extends BaseApiController
             'total_courses_sold' => $uniqueCourses,
             'date_from' => $dateFrom,
             'date_to' => $dateTo,
+            'role' => $user->role, // Thêm role để frontend biết đang xem thống kê của ai
         ], 'Thống kê thanh toán thành công!');
     }
 }

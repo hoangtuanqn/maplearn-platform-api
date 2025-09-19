@@ -22,9 +22,11 @@ class ExamController extends BaseApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
         $limit = (int)($request->limit ?? 20);
+
         // Filter môn học, phân loại học, độ khóa
         $exams = QueryBuilder::for(ExamPaper::class)
             ->allowedFilters([
@@ -37,9 +39,14 @@ class ExamController extends BaseApiController
                 AllowedFilter::custom('categories', new CategoriesSlugFilter),
                 AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
             ])
+            // thêm cái where, nếu quyền là teacher thì chỉ lấy đề thi của mình
+            ->when($user->role === 'teacher', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->allowedSorts(['start_time'])
             ->orderByDesc('id')
             ->paginate($limit);
+
         // ẩn thuộc tính này khi hiển thị
         $exams->makeHidden(['is_in_progress', 'question_count', 'total_attempt_count', 'attempt_count']);
 
@@ -135,7 +142,10 @@ class ExamController extends BaseApiController
     public function allHistory(Request $request)
     {
         Gate::authorize('admin-teacher');
-        $limit     = (int)($request->limit ?? 20);
+
+        $user = $request->user();
+        $limit = (int)($request->limit ?? 20);
+
         $histories = QueryBuilder::for(ExamAttempt::class)
             ->allowedFilters([
                 "started_at",
@@ -157,9 +167,17 @@ class ExamController extends BaseApiController
                 }),
             ])
             ->allowedSorts(['score', 'started_at', 'time_spent'])
-            ->with(['paper', 'user:id,full_name,username'])
-            ->orderByDesc('id')
-            ->paginate($limit);
+            ->with(['paper', 'user:id,full_name,username']);
+
+        // Nếu là teacher thì chỉ được xem lịch sử làm bài thi của các đề thi do mình tạo
+        if ($user->role === 'teacher') {
+            $teacherExamIds = ExamPaper::where('user_id', $user->id)->pluck('id');
+            $histories->whereIn('exam_paper_id', $teacherExamIds);
+        }
+        // Nếu là admin thì xem được tất cả lịch sử
+
+        $histories = $histories->orderByDesc('id')->paginate($limit);
+
         $histories->makeHidden(['details']);
         return $this->successResponse($histories, 'Lấy tất cả lịch sử làm bài thi thành công!');
     }
