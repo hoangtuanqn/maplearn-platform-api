@@ -16,10 +16,8 @@ Route::prefix('exams')->middleware('auth.jwt')->group(function () {
     // Url nộp bài
     Route::post('/{exam}/submit', [ExamPaperController::class, 'submitExam']);
 
-    // Url lấy kết quả thi
-    Route::get('/{exam}/results', [ExamPaperController::class, 'detailResultExam']);
     // Lấy kết quả thi dựa trên id attempts
-    Route::get('/{exam}/{id?}/results', [ExamPaperController::class, 'detailResultExam']);
+    Route::get('/{exam}/{id}/results', [ExamPaperController::class, 'detailResultExam']);
 
     // Đánh dấu bài thi gian lận
     Route::post('/{exam}/detect-cheat', [ExamAttemptController::class, 'detectedCheat']);
@@ -45,7 +43,7 @@ Route::prefix('exams-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'
     // Lấy tất cả lịch sử làm bài thi
     Route::get('/all-history', [ExamController::class, 'allHistory']);
 
-     // Lấy lịch sử làm bài thi
+    // Lấy lịch sử làm bài thi
     Route::get('/{exam}/history', [ExamController::class, 'history']);
 });
 Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

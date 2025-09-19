@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
+use App\Notifications\CourseCompletedNotification;
 use Illuminate\Http\Request;
 
 class LessonViewHistoryController extends BaseApiController
@@ -46,6 +48,13 @@ class LessonViewHistoryController extends BaseApiController
             'user_id'   => $user->id,
             'lesson_id' => $data['lesson_id'],
         ])->first();
+        $totalLessons = CourseLesson::whereHas('chapter', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })->count();
+        // đếm số video đã hoàn thành
+        $completedLessons = LessonViewHistory::where('user_id', $user->id)->whereHas('lesson.chapter', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })->where('is_completed', true)->count();
 
         $lessonView = LessonViewHistory::updateOrCreate(
             [
@@ -57,8 +66,27 @@ class LessonViewHistoryController extends BaseApiController
                 'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress']),
             ]
         );
-
+        if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed) {
+            // Gửi email thông báo hoàn thành khóa học
+            $this->sendCourseCompletionEmail($request, $courseLesson);
+        }
         return $this->successResponse($lessonView, 'Thao tác thành công!', 201);
+    }
+    // gửi email khi hoàn thành khóa học
+    private function sendCourseCompletionEmail(Request $request, CourseLesson $lesson)
+    {
+        $user = $request->user();
+        // Kiểm tra xem người dùng đã hoàn thành tất cả các bài học trong khóa học chưa
+        $course       = $lesson->chapter->course;
+        $totalLessons = $course->lessons()->count();
+        $completedLessons = LessonViewHistory::where('user_id', $user->id)
+            ->whereIn('lesson_id', $course->lessons->pluck('id'))
+            ->where('is_completed', true)
+            ->count();
+        if ($totalLessons > 0 && $completedLessons >= $totalLessons) {
+            // Gửi thông báo hoàn thành khóa học
+            $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
+        }
     }
 
     /**

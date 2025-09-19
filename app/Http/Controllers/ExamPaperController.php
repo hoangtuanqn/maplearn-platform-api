@@ -237,6 +237,7 @@ class ExamPaperController extends BaseApiController
         $attempt->save();
 
         return $this->successResponse([
+            'id_attempt' => $attempt->id,
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
     }
