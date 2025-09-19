@@ -113,7 +113,7 @@ class DashboardController extends BaseApiController
     // get thông tin 4 người dùng mới (full_name, email)
     public function getNewUsers(): array
     {
-        $users = User::select('id', 'full_name', 'email', 'role', 'created_at')
+        $users = User::select('id', 'full_name', 'avatar', 'email', 'role', 'created_at')
             ->orderBy('created_at', 'desc')
             ->where('role', 'student')
             ->limit(4)
@@ -154,6 +154,7 @@ class DashboardController extends BaseApiController
                 return [
                     'name'           => $course->name,
                     'students_count' => $course->students_count,
+                    'slug'           => $course->slug,
                     'revenue'        => (int)$course->payments_sum_amount ?? 0,
                 ];
             })
