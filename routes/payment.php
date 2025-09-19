@@ -21,3 +21,7 @@ Route::prefix('/payments')->middleware('auth.jwt')->group(function () {
 });
 Route::apiResource('/payments', PaymentController::class)->middleware('auth.jwt');
 Route::apiResource('/payments-admin', AdminPaymentController::class)->middleware(['auth.jwt', 'check.role:admin']);
+
+Route::prefix("admin")->group(function () {
+    Route::get('/payments/stats', [AdminPaymentController::class, 'getStatsPayment'])->middleware(['auth.jwt', 'check.role:admin']);
+});

@@ -91,4 +91,43 @@ class PaymentController extends BaseApiController
     {
         //
     }
+
+    public function getStatsPayment(Request $request)
+    {
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        // Mặc định lấy 7 ngày gần nhất nếu không truyền gì
+        if (!$dateFrom && !$dateTo) {
+            $dateFrom = now()->subDays(6)->format('Y-m-d');
+            $dateTo = now()->format('Y-m-d');
+        }
+
+        $query = Payment::query()
+            ->where('status', 'paid');
+
+        if ($dateFrom) {
+            $query->whereDate('paid_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $query->whereDate('paid_at', '<=', $dateTo);
+        }
+
+        $totalPayments = $query->count();
+        $totalRevenue = $query->sum('amount');
+        $uniqueStudents = $query->distinct('user_id')->count('user_id');
+        $averageOrderValue = $totalPayments > 0 ? $totalRevenue / $totalPayments : 0;
+        $uniqueCourses = $query->distinct('course_id')->count('course_id');
+
+        return $this->successResponse([
+            'total_payments' => $totalPayments,
+            'total_revenue' => (int)$totalRevenue,
+            'total_students' => $uniqueStudents,
+            'average_order_value' => round($averageOrderValue, 2),
+            'total_courses_sold' => $uniqueCourses,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+        ], 'Thống kê thanh toán thành công!');
+    }
 }
