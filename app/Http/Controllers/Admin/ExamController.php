@@ -9,9 +9,11 @@ use App\Filters\PaperExam\ProvincesSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
+use App\Models\ExamQuestion;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -66,27 +68,96 @@ class ExamController extends BaseApiController
     {
         $user = $request->user();
         Gate::authorize('admin-teacher');
-        $data = $request->validate([
+
+        // Validate dữ liệu đề thi
+        $examData = $request->validate([
+            'title'                  => 'required|string|max:255',
             'exam_category'          => 'required|string|max:255',
             'subject'                => 'required|string|max:255',
             'grade_level'            => 'required|string|max:255',
-            'title'                  => 'required|string|max:255',
             'province'               => 'nullable|string|max:255',
             'difficulty'             => 'nullable|string|max:255',
-            'exam_type'              => 'nullable|string|max:255',
             'max_score'              => 'required|numeric|min:0',
             'pass_score'             => 'required|numeric|min:0',
             'duration_minutes'       => 'required|integer|min:1',
-            'anti_cheat_enabled'     => 'nullable|boolean',
-            'max_violation_attempts' => 'nullable|integer|min:0',
-            'status'                 => 'nullable|boolean',
             'start_time'             => 'nullable|date',
             'end_time'               => 'nullable|date|after:start_time',
+            'description'            => 'nullable|string',
+            'instructions'           => 'nullable|string',
+            'is_active'              => 'nullable|boolean',
+            'is_shuffle_questions'   => 'nullable|boolean',
+            'is_shuffle_answers'     => 'nullable|boolean',
+            'is_show_result'         => 'nullable|boolean',
+            'is_retakeable'          => 'nullable|boolean',
+            'max_attempts'           => 'nullable|integer|min:1',
+            'anti_cheat_enabled'     => 'nullable|boolean',
+            'max_violation_attempts' => 'nullable|integer|min:0',
         ]);
 
-        $data['user_id'] = $user->id;
-        $exam            = ExamPaper::create($data);
-        return $this->successResponse($exam, 'Tạo đề thi thành công!');
+        // Validate câu hỏi
+        $questionsData = $request->validate([
+            'questions'                        => 'required|array|min:1',
+            'questions.*.type'                 => 'required|string|in:SINGLE_CHOICE,MULTIPLE_CHOICE,TRUE_FALSE,NUMERIC_INPUT,ESSAY',
+            'questions.*.content'              => 'required|string',
+            'questions.*.score'                => 'required|numeric|min:0',
+            'questions.*.options'              => 'nullable|array',
+            'questions.*.options.*.content'    => 'required_with:questions.*.options|string',
+            'questions.*.options.*.is_correct' => 'required_with:questions.*.options|boolean',
+            'questions.*.correct_answer'       => 'required|array',
+            'questions.*.explanation'          => 'nullable|string',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Chuẩn bị dữ liệu để tạo ExamPaper
+            $examCreateData = [
+                'title'                  => $examData['title'],
+                'exam_category'          => $examData['exam_category'],
+                'subject'                => $examData['subject'],
+                'grade_level'            => $examData['grade_level'],
+                'province'               => $examData['province'] ?? null,
+                'difficulty'             => $examData['difficulty'] ?? 'normal',
+                'max_score'              => $examData['max_score'],
+                'pass_score'             => $examData['pass_score'],
+                'duration_minutes'       => $examData['duration_minutes'],
+                'start_time'             => $examData['start_time'] ?? null,
+                'end_time'               => $examData['end_time'] ?? null,
+                'status'                 => $examData['is_active'] ?? true,
+                'anti_cheat_enabled'     => $examData['anti_cheat_enabled'] ?? false,
+                'max_violation_attempts' => $examData['max_violation_attempts'] ?? 3,
+                'max_attempts'          => $examData['max_attempts'] ?? 1,
+                'user_id'                => $user->id,
+            ];
+
+            // Tạo ExamPaper
+            $exam = ExamPaper::create($examCreateData);
+
+            // Tạo các câu hỏi
+            foreach ($questionsData['questions'] as $questionData) {
+                $questionCreateData = [
+                    'exam_paper_id' => $exam->id,
+                    'type'          => $questionData['type'],
+                    'content'       => $questionData['content'],
+                    'marks'         => $questionData['score'],
+                    'explanation'   => $questionData['explanation'] ?? null,
+                    'options'       => $questionData['options'] ?? [],
+                    'correct'       => $questionData['correct_answer'],
+                ];
+
+                ExamQuestion::create($questionCreateData);
+            }
+
+            DB::commit();
+
+            // Load lại exam với questions
+            $exam->load('questions');
+
+            return $this->successResponse($exam, 'Tạo đề thi và câu hỏi thành công!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->errorResponse(null, 'Có lỗi xảy ra khi tạo đề thi: ' . $e->getMessage(), 500);
+        }
     }
 
     /**
@@ -94,7 +165,9 @@ class ExamController extends BaseApiController
      */
     public function show(ExamPaper $exams_admin)
     {
-        return $this->successResponse($exams_admin, 'Lấy thông tin đề thi thành công!');
+        Gate::authorize('admin-teacher-owner', $exams_admin);
+        $exam = $exams_admin->load('questions');
+        return $this->successResponse($exam, 'Lấy thông tin đề thi thành công!');
     }
 
     /**
