@@ -417,8 +417,8 @@ class CourseController extends BaseApiController
         return $this->successResponse($certificateInfo, 'Lấy thông tin chứng chỉ thành công!');
     }
 
-    // Hiển thị danh sách những người đã hoàn thành khóa học và nhận chứng chỉ
-    public function listStudentsWithCertificates(Request $request, Course $course)
+    // Hiển thị danh sách tất cả học viên đã đăng ký khóa học với trạng thái hoàn thành
+    public function getRegistrations(Request $request, Course $course)
     {
         Gate::authorize('admin-teacher-owner', $course);
 
@@ -436,59 +436,55 @@ class CourseController extends BaseApiController
             ->pluck('id')
             ->toArray();
 
-        // Lọc những học viên đã hoàn thành tất cả bài học
-        $studentsWithCompletion = collect();
+        // Lấy tất cả học viên đã đăng ký khóa học với thông tin đăng ký
+        $students = $course->students()
+            ->select(['users.id', 'users.full_name', 'users.email', 'users.avatar', 'users.phone_number', 'payments.paid_at as enrolled_at'])
+            ->paginate($limit);
 
-        $course->students()->chunk(100, function ($students) use ($lessonIds, $totalLessons, &$studentsWithCompletion) {
-            foreach ($students as $student) {
-                // Đếm số bài học đã hoàn thành của học viên này
-                $completedLessonsCount = LessonViewHistory::where('user_id', $student->id)
+        // Transform dữ liệu để thêm thông tin hoàn thành
+        $students->getCollection()->transform(function ($student) use ($lessonIds, $totalLessons) {
+            // Đếm số bài học đã hoàn thành của học viên này
+            $completedLessonsCount = LessonViewHistory::where('user_id', $student->id)
+                ->where('is_completed', true)
+                ->whereIn('lesson_id', $lessonIds)
+                ->count();
+
+            // Kiểm tra đã hoàn thành khóa học chưa
+            $isCompleted = $completedLessonsCount >= $totalLessons;
+
+            // Lấy ngày hoàn thành bài học cuối cùng nếu đã hoàn thành
+            $lastCompletionDate = null;
+            if ($isCompleted) {
+                $lastCompletion = LessonViewHistory::where('user_id', $student->id)
                     ->where('is_completed', true)
                     ->whereIn('lesson_id', $lessonIds)
-                    ->count();
+                    ->latest('updated_at')
+                    ->first();
 
-                // Nếu đã hoàn thành tất cả bài học
-                if ($completedLessonsCount >= $totalLessons) {
-                    // Lấy ngày hoàn thành bài học cuối cùng
-                    $lastCompletionDate = LessonViewHistory::where('user_id', $student->id)
-                        ->where('is_completed', true)
-                        ->whereIn('lesson_id', $lessonIds)
-                        ->latest('updated_at')
-                        ->first();
-
-                    $studentsWithCompletion->push([
-                        'id'              => $student->id,
-                        'full_name'       => $student->full_name,
-                        'email'           => $student->email,
-                        'avatar'          => $student->avatar,
-                        'phone'           => $student->phone,
-                        'completion_date' => $lastCompletionDate
-                            ? Carbon::parse($lastCompletionDate->updated_at)->format('d/m/Y')
-                            : null,
-                        'completed_lessons' => $completedLessonsCount,
-                        'total_lessons'     => $totalLessons,
-
-                    ]);
+                if ($lastCompletion) {
+                    $lastCompletionDate = $lastCompletion->updated_at;
                 }
             }
+
+            // Tính phần trăm hoàn thành
+            $completionPercentage = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100, 2) : 0;
+
+            return [
+                'id' => $student->id,
+                'full_name' => $student->full_name,
+                'email' => $student->email,
+                'avatar' => $student->avatar,
+                'phone_number' => $student->phone_number,
+                'enrolled_at' => $student->enrolled_at,
+                'is_completed' => $isCompleted,
+                'completion_date' => $lastCompletionDate,
+                'completed_lessons' => $completedLessonsCount,
+                'total_lessons' => $totalLessons,
+                'completion_percentage' => $completionPercentage,
+                'status' => $isCompleted ? 'Đã hoàn thành' : 'Đang học'
+            ];
         });
 
-        // Phân trang thủ công cho collection
-        $page   = $request->get('page', 1);
-        $offset = ($page - 1) * $limit;
-        $items  = $studentsWithCompletion->slice($offset, $limit)->values();
-
-        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items,
-            $studentsWithCompletion->count(),
-            $limit,
-            $page,
-            [
-                'path'     => $request->url(),
-                'pageName' => 'page',
-            ]
-        );
-
-        return $this->successResponse($paginated, 'Lấy danh sách học viên hoàn thành khóa học thành công!');
+        return $this->successResponse($students, 'Lấy danh sách học viên đăng ký khóa học thành công!');
     }
 }
