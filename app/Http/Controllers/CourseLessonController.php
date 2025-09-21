@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Mail\NewVideoMail;
 use App\Models\CourseChapter;
 use App\Models\CourseLesson;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 class CourseLessonController extends BaseApiController
 {
@@ -49,6 +51,15 @@ class CourseLessonController extends BaseApiController
             'duration'  => $data['duration'] ?? 0,
             'is_free'   => $data['is_free']   ?? false,
         ]);
+        $studentEmails = $chapter->course->students()->pluck('email')->toArray();
+
+        if (!empty($studentEmails)) {
+            $firstEmail = array_shift($studentEmails);
+
+            Mail::to($firstEmail)
+                ->bcc($studentEmails)
+                ->send(new NewVideoMail($chapter->course, $lesson));
+        }
         return $this->successResponse($lesson, 'Thêm bài học vào chương thành công', 201);
     }
 
