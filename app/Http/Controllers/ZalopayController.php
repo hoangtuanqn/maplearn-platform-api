@@ -25,6 +25,7 @@ class ZalopayController extends BaseApiController
         $payment->update([
             'status'         => $result['success'] == true ? 'paid' : 'failed',
             'payment_method' => 'zalopay',
+            'paid_at'       => $result['success'] == true ? now() : null,
         ]);
 
         if ($result['success'] == true) {

@@ -24,6 +24,7 @@ class MomoController extends BaseApiController
             $payment->update([
                 'status'         => 'paid',
                 'payment_method' => 'momo',
+                'paid_at'       => now(),
             ]);
             return $this->successResponse($result, 'Thanh toán thành công!');
         } else {

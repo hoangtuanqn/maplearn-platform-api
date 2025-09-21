@@ -26,6 +26,7 @@ class VnpayController extends BaseApiController
             $payment->update([
                 'status'         => 'paid',
                 'payment_method' => 'vnpay',
+                'paid_at'       => now(),
             ]);
             $user = $payment->user;
             $user->notify(new InvoiceNotification($payment, 'paid'));
