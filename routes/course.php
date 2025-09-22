@@ -39,5 +39,5 @@ Route::apiResource('lessons', CourseLessonController::class)->middleware('auth.j
 
 Route::apiResource('lesson-history', LessonViewHistoryController::class)->middleware('auth.jwt');
 
-Route::get("/certificates/{slugCourse}/{email}", [CertificateController::class, 'getInfoCertificate']);
+Route::get("/certificates/{certificate}/", [CertificateController::class, 'getInfoCertificate']);
 Route::apiResource('courses-admin', AdminCourseController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

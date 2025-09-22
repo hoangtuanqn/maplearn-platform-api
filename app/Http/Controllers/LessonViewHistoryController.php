@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
@@ -66,7 +67,16 @@ class LessonViewHistoryController extends BaseApiController
                 'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress']),
             ]
         );
-        if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed) {
+        // Check xem người dùng đã có chứng chỉ chưa
+        $isCertificateExist = Certificate::where('user_id', $user->id)->where('course_id', $courseId)->exists();
+        if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed && !$isCertificateExist) {
+            // Tạo chứng chỉ cho người học
+            Certificate::create([
+                'user_id'   => $user->id,
+                'full_name' => $user->full_name,
+                'course_id' => $courseId,
+            ]);
+
             // Gửi email thông báo hoàn thành khóa học
             $this->sendCourseCompletionEmail($request, $courseLesson);
         }
