@@ -71,13 +71,6 @@ class LessonViewHistoryController extends BaseApiController
         // Check xem người dùng đã có chứng chỉ chưa
         $isCertificateExist = Certificate::where('user_id', $user->id)->where('course_id', $courseId)->exists();
         if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed && !$isCertificateExist) {
-            // Tạo chứng chỉ cho người học
-            Certificate::create([
-                'user_id'   => $user->id,
-                'full_name' => $user->full_name,
-                'course_id' => $courseId,
-            ]);
-
             // Gửi email thông báo hoàn thành khóa học
             $this->sendCourseCompletionEmail($request, $courseLesson);
         }
