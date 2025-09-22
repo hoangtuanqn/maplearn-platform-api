@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class CertificateController extends BaseApiController
 {
-    public function getInfoCertificate(Request $request, Certificate $certificate)
+    public function getInfoCertificate(Certificate $certificate)
     {
         $course = $certificate->course;
         $user   = $certificate->user;
@@ -27,8 +27,8 @@ class CertificateController extends BaseApiController
         $certificateData  = [
             'course_title'    => $course->name,
             'lesson_count'    => $totalLessons,
-            'full_name'       => $user->full_name,
-            'email'           => $user->email,
+            'full_name'       => $certificate->full_name,
+            'email'           => $certificate->email,
             'lecturer_name'   => $course->teacher->full_name,
             'completion_date' => Carbon::parse($certificate->issued_at)->format('d/m/Y'),
             'duration_hours'  => ceil($course->lessons()->sum('duration') / 3600),

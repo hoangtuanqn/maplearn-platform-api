@@ -6,6 +6,7 @@ use App\Filters\Course\PriceFilter;
 use App\Filters\Course\RatingFilter;
 use App\Filters\Course\TeacherFilter;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
@@ -302,6 +303,9 @@ class CourseController extends BaseApiController
             $chapter->completed_lessons = $count_successed;
             $chapter->duration          = $duration;
         }
+        $course->code_certificate = Certificate::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->value('code') ?? null;
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
     }
