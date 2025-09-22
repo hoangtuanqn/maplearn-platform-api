@@ -28,7 +28,7 @@ class CertificateController extends BaseApiController
             'course_title'    => $course->name,
             'lesson_count'    => $totalLessons,
             'full_name'       => $certificate->full_name,
-            'email'           => $certificate->email,
+            'email'           => $user->email,
             'lecturer_name'   => $course->teacher->full_name,
             'completion_date' => Carbon::parse($certificate->issued_at)->format('d/m/Y'),
             'duration_hours'  => ceil($course->lessons()->sum('duration') / 3600),
