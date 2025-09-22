@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
 use App\Notifications\CourseCompletedNotification;
+use App\Notifications\CourseCompletionExamRequiredNotification;
 use Illuminate\Http\Request;
 
 class LessonViewHistoryController extends BaseApiController
@@ -94,8 +95,10 @@ class LessonViewHistoryController extends BaseApiController
             ->where('is_completed', true)
             ->count();
         if ($totalLessons > 0 && $completedLessons >= $totalLessons) {
-            // Gửi thông báo hoàn thành khóa học
-            $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
+            // Gửi thông báo cần
+            $exam = $course->exam;
+            $user->notify(new CourseCompletionExamRequiredNotification($user, $course, $exam));
+            // $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
         }
     }
 

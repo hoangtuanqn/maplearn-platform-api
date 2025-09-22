@@ -281,6 +281,16 @@ class CourseController extends BaseApiController
 
         // Lấy chương khóa học (bên trong mỗi chương sẽ có lesson)
         $course->load('chapters.lessons');
+        $course->load('exam:id,slug,title,pass_score,duration_minutes');
+        // get điểm thi cao nhất của người dùng trong Exam attemps
+        $course->user_highest_exam_score = null;
+        if ($course->exam) {
+            $highestScore = $course->exam->examAttempts()
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['submitted', 'detected'])
+            ->max('score');
+            $course->exam->user_highest_exam_score = $highestScore !== null ? (float)$highestScore : null;
+        }
 
         // Lặp qua từng lesson và check trong DB LessonViewHistory
         $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get()->keyBy('lesson_id');
@@ -303,6 +313,7 @@ class CourseController extends BaseApiController
             $chapter->completed_lessons = $count_successed;
             $chapter->duration          = $duration;
         }
+
         $course->code_certificate = Certificate::where('user_id', $user->id)
             ->where('course_id', $course->id)
             ->value('code') ?? null;
