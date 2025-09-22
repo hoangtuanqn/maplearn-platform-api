@@ -238,7 +238,8 @@ class ExamPaperController extends BaseApiController
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
 
-        // Kiểm tra các khóa học của người dùng, xem khóa học nào đã hoàn thành rồi (chưa nhận chứng chỉ mà đã hoàn thành video). exam_paper_id = $exam->id thì gửi email hoàn thành khóa học (chỉ gửi lần đầu tiên)
+        // Kiểm tra các khóa học của người dùng, xem khóa học nào đã hoàn thành rồi (chưa nhận chứng chỉ mà đã hoàn thành video). 
+        // exam_paper_id = $exam->id thì gửi email hoàn thành khóa học (chỉ gửi lần đầu tiên)
         if ($scores > $exam->pass_score) {
             $user->completedCourses();
             foreach ($user->completedCourses() as $course) {
@@ -265,9 +266,4 @@ class ExamPaperController extends BaseApiController
         ], 'Bài làm đã được nộp thành công');
     }
 
-    public function getOK(Request $request)
-    {
-        $user = $request->user();
-        return $this->successResponse($user->completedCourses(), 'Lấy thông tin user thành công!');
-    }
 }

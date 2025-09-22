@@ -6,7 +6,6 @@ use App\Http\Controllers\ExamPaperController;
 use App\Http\Controllers\ExamQuestionController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/getOK', [ExamPaperController::class, 'getOK'])->middleware('auth.jwt');
 Route::apiResource('exams', ExamPaperController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 Route::prefix('exams')->middleware('auth.jwt')->group(function () {
     // Lấy danh sách câu hỏi đề thi
