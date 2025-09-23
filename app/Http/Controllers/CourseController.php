@@ -10,6 +10,7 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
+use App\Notifications\TeacherAddedToCourseNotification;
 use App\Sorts\Course\EnrollmentCountSort;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Carbon\Carbon;
@@ -84,8 +85,8 @@ class CourseController extends BaseApiController
             'startDate'          => 'required|string|min:1',
             'endDate'            => 'nullable|string',
             'prerequisiteCourse' => 'nullable|string',
-            'coverImage'         => 'required|url',
-            'introVideo'         => 'required|url',
+            'coverImageUrl'         => 'required',
+            'introVideoUrl'         => 'required',
             'description'        => 'required|string|min:10',
         ]);
 
@@ -102,12 +103,14 @@ class CourseController extends BaseApiController
             'start_date'             => $data['startDate'],
             'end_date'               => $data['endDate']                          ?? null,
             'prerequisite_course_id' => $data['prerequisiteCourse'] ?? null,
-            'thumbnail'              => $data['coverImage'],
-            'intro_video'            => $data['introVideo'],
+            'thumbnail'              => $data['coverImageUrl'],
+            'intro_video'            => $data['introVideoUrl'],
             'description'            => $data['description'],
             'created_by'             => $request->user()->id,
             'status'                 => $status,
         ]);
+        // gửi email thông báo cho giảng viên được add vào
+        $course->teacher->notify(new TeacherAddedToCourseNotification($course));
         return $this->successResponse($course, 'Tạo khóa học thành công!', 201);
     }
 
@@ -281,7 +284,7 @@ class CourseController extends BaseApiController
 
         // Lấy chương khóa học (bên trong mỗi chương sẽ có lesson)
         $course->load('chapters.lessons');
-        $course->load('exam:id,slug,title,pass_score,duration_minutes,max_score');
+        $course->load('exam:id,slug,title,pass_score,duration_minutes,max_score,max_attempts');
         // get điểm thi cao nhất của người dùng trong Exam attemps
         $course->user_highest_exam_score = null;
         if ($course->exam) {
