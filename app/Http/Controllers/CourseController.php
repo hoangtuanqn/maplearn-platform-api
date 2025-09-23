@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\Course\PriceFilter;
 use App\Filters\Course\RatingFilter;
 use App\Filters\Course\TeacherFilter;
+use App\Filters\Course\IsActiveFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -47,6 +48,7 @@ class CourseController extends BaseApiController
                 'status',
                 'start_date',
                 'end_date',
+                'updated_at',
             ])
             ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
@@ -58,9 +60,17 @@ class CourseController extends BaseApiController
                 'subject',
                 AllowedFilter::custom('price_range', new PriceFilter),
                 AllowedFilter::custom('teachers', new TeacherFilter),
-                AllowedFilter::custom('rating', new RatingFilter),
+                AllowedFilter::custom('is_active', new IsActiveFilter),
+
             ])
-            // ->where('status', true)
+            ->where(function ($query) {
+                $query->whereNull('end_date')
+                    ->orWhere('end_date', '>=', Carbon::now());
+            })
+            // chỉ hiển thị khóa học có video
+            ->whereHas('lessons', function ($query) {
+                $query->whereNotNull('video_url');
+            })
             ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
@@ -91,8 +101,6 @@ class CourseController extends BaseApiController
         ]);
 
         Gate::authorize('only-admin');
-        // Nếu start > now() thì status = 3, ngược lại = 2
-        $status = (strtotime($data['startDate']) > time()) ? 2 : 3;
         $course = Course::create([
             'name'                   => $data['name'],
             'subject'                => $data['subject'],
@@ -101,13 +109,13 @@ class CourseController extends BaseApiController
             'user_id'                => $data['instructor'],
             'price'                  => $data['price'],
             'start_date'             => $data['startDate'],
-            'end_date'               => $data['endDate']                          ?? null,
+            'end_date'               => $data['endDate'] ?? null,
             'prerequisite_course_id' => $data['prerequisiteCourse'] ?? null,
             'thumbnail'              => $data['coverImageUrl'],
             'intro_video'            => $data['introVideoUrl'],
             'description'            => $data['description'],
             'created_by'             => $request->user()->id,
-            'status'                 => $status,
+            'status'                 => 1,
         ]);
         // gửi email thông báo cho giảng viên được add vào
         $course->teacher->notify(new TeacherAddedToCourseNotification($course));

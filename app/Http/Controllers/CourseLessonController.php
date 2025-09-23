@@ -51,7 +51,9 @@ class CourseLessonController extends BaseApiController
             'duration'  => $data['duration'] ?? 0,
             'is_free'   => $data['is_free']   ?? false,
         ]);
-        $studentEmails = $chapter->course->students()->pluck('email')->toArray();
+
+        // Gửi cho 500 người 1 lần
+        $studentEmails = $chapter->course->students()->limit(500)->pluck('email')->toArray();
 
         if (!empty($studentEmails)) {
             $firstEmail = array_shift($studentEmails);
