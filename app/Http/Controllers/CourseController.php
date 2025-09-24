@@ -185,46 +185,39 @@ class CourseController extends BaseApiController
     }
 
     // Lấy 8 khóa học
-    public function recommended()
+    public function recommended(Request $request)
     {
-        // $userId = Auth::id();
-        // $favCourseIds = CourseUserFavorite::where('user_id', $userId)
-        //     ->pluck('course_id');
+        $viewedIds = $request->input('viewed_course_ids', []);
 
-        // if ($favCourseIds->isNotEmpty()) {
-        //     $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
+        // Nếu không có khóa học đã xem, trả về ngẫu nhiên 8 khóa học bất kỳ
+        if (empty($viewedIds)) {
+            $courses = Course::where('status', true)
+                ->where('price', '>', 0)
+                ->where('start_date', '<=', Carbon::now())
+                ->inRandomOrder()
+                ->limit(8)
+                ->get();
 
-        //     // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
-        //     $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
-        //     $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
-        //     $categoryIds = $favoriteCourses->pluck('category_id')->unique();
+            return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
+        }
 
-        //     // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
-        //     $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');
+        // Lấy danh mục của các khóa học đã xem
+        $categories = Course::whereIn('id', $viewedIds)
+            ->pluck('category')
+            ->unique()
+            ->toArray();
 
-        //     // Đề xuất các khóa học tương tự nhưng chưa yêu thích (và người dùng chưa mua khóa học đó)
-        //     $recommendCourses = Course::whereNotIn('id', $favCourseIds)->whereNotIn('id', $purchasedCourseIds)
-        //         ->where('status', true)
-        //         ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
-        //             $query->whereIn('subject_id', $subjectIds)
-        //                 ->orWhereIn('grade_level_id', $gradeLevels)
-        //                 ->orWhereIn('category_id', $categoryIds);
-        //         })
-        //         ->inRandomOrder()
-        //         ->limit(8)
-        //         ->get();
-        // } else {
-        //     // Nếu chưa có khóa yêu thích → đề xuất ngẫu nhiên
-        //     $recommendCourses = Course::where('status', true)
-        //         ->inRandomOrder()
-        //         ->limit(8)
-        //         ->get();
-        // }
-        $recommendCourses = Course::where('status', true)
+        // Lấy ngẫu nhiên 8 khóa học cùng danh mục với các khóa đã xem, loại trừ các khóa đã xem
+        $courses = Course::where('status', true)
+            ->where('price', '>', 0)
+            ->where('start_date', '<=', Carbon::now())
+            ->whereIn('category', $categories)
+            ->whereNotIn('id', $viewedIds)
             ->inRandomOrder()
             ->limit(8)
             ->get();
-        return $this->successResponse($recommendCourses, 'Lấy danh sách khóa học đề xuất thành công!');
+
+        return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
     }
 
     // Data được cắt gọn để gửi cho AI
