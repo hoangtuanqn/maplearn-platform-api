@@ -490,6 +490,8 @@ class ExamQuestionSeeder extends Seeder
                 $question['correct'] = array_values($correct);
                 $question['exam_paper_id'] = $i;
 
+
+
                 ExamQuestion::create($question);
             }
         }

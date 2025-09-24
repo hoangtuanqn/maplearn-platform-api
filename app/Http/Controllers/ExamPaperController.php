@@ -59,10 +59,17 @@ class ExamPaperController extends BaseApiController
     /**
      * Display the specified resource.
      */
-    public function show(ExamPaper $exam)
+    public function show(Request $request, ExamPaper $exam)
     {
+        $user = $request->user();
         if ($exam->end_time && $exam->end_time < now()) {
             return $this->errorResponse(null, 'Đề thi đã kết thúc!', 400);
+        }
+        if ($exam->status == false) {
+            // check người dùng đã mua khóa học có đề thi này chưa
+            if (!$user || !$user->purchasedCourses()->where('exam_paper_id', $exam->id)->exists()) {
+                return $this->errorResponse(null, 'Đề thi không tồn tại!', 404);
+            }
         }
 
         return $this->successResponse($exam, 'Lấy thông tin đề thi thành công!');

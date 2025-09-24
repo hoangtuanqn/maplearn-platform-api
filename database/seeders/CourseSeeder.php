@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\ExamPaper;
 use Illuminate\Database\Seeder;
 
 class CourseSeeder extends Seeder
@@ -728,7 +729,7 @@ class CourseSeeder extends Seeder
         $subjects   = ['toan', 'ly',  'sinh', 'tieng-anh', 'hoa', 'van'];
         $gradeLevel = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories = ['2k8-xuat-phat-som-lop-12', '2k9-xuat-phat-som-lop-11', '2k10-xuat-phat-som-lop-10', 'hoc-tot-sach-giao-khoa', 'khoa-hoc-trung-hoc-co-so'];
-        foreach ($data as $item) {
+        foreach ($data as $key => $item) {
             Course::create([
                 'name'        => $item['name'],
                 'thumbnail'   => $item['thumbnail'],
@@ -742,7 +743,9 @@ class CourseSeeder extends Seeder
                 'start_date'  => $faker->dateTimeBetween('-1 month', '+1 month'),
                 'end_date'    => $faker->dateTimeBetween('+2 months', '+6 months'),
                 'status'      => 1,
-                'exam_paper_id' => 39
+                'prerequisite_course_id' => $key > 0 ? $key : null,
+                // ran dom ngẫu nhiên paper status = 0 và ko dc trùng với các khóa đã tạo
+                'exam_paper_id' =>  ExamPaper::where('status', 0)->whereNotIn('id', Course::pluck('exam_paper_id'))->inRandomOrder()->first()->id,
             ]);
         }
     }
