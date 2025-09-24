@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'phone_number'  => fake()->unique()->numerify('0##########'),
             'gender'        => fake()->randomElement(['male', 'female', 'other']),
             'avatar'        => 'https://res.cloudinary.com/dbu1zfbhv/image/upload/v1755729796/avatars/ccrlg1hkjtc6dyeervsv.jpg',
-            'birth_year'    => fake()->optional()->numberBetween(1970, now()->year - 10),
+            'birth_year'    => fake()->optional()->numberBetween(1995, 2013),
             'facebook_link' => fake()->optional()->url(),
             'school'        => fake()->optional()->company(),
             'city'          => fake()->optional()->city(),

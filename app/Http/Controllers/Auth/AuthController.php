@@ -148,7 +148,7 @@ class AuthController extends BaseApiController
         $user->learning_courses = $course;
         // số bài học đã học trong tuần này
         $user->lessons_in_week = $hours->count();
-        $user->hours_in_week = round($hours->sum('progress') / 60, 2); // Quy đổi ra giờ và làm tròn 2 chữ số
+        $user->hours_in_week = round($hours->sum('progress') / 60); // Quy đổi ra giờ và làm tròn
 
         return $this->successResponse($user, 'Lấy thông tin người dùng thành công!');
     }

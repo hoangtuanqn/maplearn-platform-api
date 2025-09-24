@@ -155,10 +155,18 @@ class ExamPaperController extends BaseApiController
 
         // Duyệt qua câu trả lời của user
         foreach ($answers['answers'] as $key => $value) {
-            $question = $questions[$key - 1] ?? null;
+            foreach ($questions as $index =>  $question) {
+                if ($question->id == $key) {
+                    $questionIndex = $index;
+                    break;
+                }
+            }
+
+            $question = $questions[$questionIndex] ?? null;
             if (!$question) {
                 continue;
             }
+            // return $question;
 
             $isCorrect = false;
 
@@ -169,7 +177,7 @@ class ExamPaperController extends BaseApiController
                     // $value có thể là mảng -> lấy phần tử đầu tiên
                     $userAnswer = is_array($value) ? $value[0] : $value;
 
-                    $isCheck = array_filter($question->correct, fn($item) => $item['content'] === $userAnswer && $item['is_correct']);
+                    $isCheck = array_filter($question->correct, fn($item) => $item === $userAnswer);
 
                     if ($isCheck) {
                         $isCorrect = true;
@@ -183,11 +191,11 @@ class ExamPaperController extends BaseApiController
                     break;
 
                 case "MULTIPLE_CHOICE":
-                    $answersInCorrect = array_filter($question->correct, fn($item) => $item['is_correct']);
+                    $answersInCorrect = $question->correct;
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
-                            if (!in_array($answerInCorrect['content'], $value)) {
+                            if (!in_array($answerInCorrect, $value)) {
                                 $allCorrect = false;
                                 break;
                             }
@@ -205,12 +213,12 @@ class ExamPaperController extends BaseApiController
                     break;
 
                 case "DRAG_DROP":
-                    $answersInCorrect = array_filter($question->correct, fn($item) => $item['is_correct']);
+                    $answersInCorrect = $question->correct;
                     if (is_array($value) && count($value) === count($answersInCorrect)) {
                         $i          = 0;
                         $allCorrect = true;
                         foreach ($answersInCorrect as $answerInCorrect) {
-                            if ($answerInCorrect['content'] != $value[$i++]) {
+                            if ($answerInCorrect != $value[$i++]) {
                                 $allCorrect = false;
                                 break;
                             }
@@ -238,7 +246,7 @@ class ExamPaperController extends BaseApiController
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
 
-        // Kiểm tra các khóa học của người dùng, xem khóa học nào đã hoàn thành rồi (chưa nhận chứng chỉ mà đã hoàn thành video). 
+        // Kiểm tra các khóa học của người dùng, xem khóa học nào đã hoàn thành rồi (chưa nhận chứng chỉ mà đã hoàn thành video).
         // exam_paper_id = $exam->id thì gửi email hoàn thành khóa học (chỉ gửi lần đầu tiên)
         if ($scores > $exam->pass_score) {
             $user->completedCourses();
@@ -265,5 +273,4 @@ class ExamPaperController extends BaseApiController
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
     }
-
 }
