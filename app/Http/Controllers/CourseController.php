@@ -7,6 +7,7 @@ use App\Filters\Course\PriceFilter;
 use App\Filters\Course\TeacherFilter;
 use App\Filters\Course\IsActiveFilter;
 use App\Filters\Course\ProgressRangeFilter;
+use App\Filters\Course\RatingFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -64,6 +65,7 @@ class CourseController extends BaseApiController
                 AllowedFilter::custom('price_range', new PriceFilter),
                 AllowedFilter::custom('teachers', new TeacherFilter),
                 AllowedFilter::custom('is_active', new IsActiveFilter),
+                AllowedFilter::custom('rating', new RatingFilter),
 
             ])
             ->where(function ($query) {
