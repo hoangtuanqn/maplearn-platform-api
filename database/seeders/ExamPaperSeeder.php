@@ -110,6 +110,7 @@ class ExamPaperSeeder extends Seeder
                 'province'         => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
                 'exam_type'        => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
                 'status'           => $status,
+                'start_time'       => now()->subDays(rand(0, 28)),
             ]);
         }
     }
