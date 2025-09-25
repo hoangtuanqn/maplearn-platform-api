@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\Course\CompletionStatusPersonFilter;
+use App\Filters\Course\ProgressRangePersonFilter;
 use App\Filters\Invoice\DateFilter;
 use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
@@ -67,7 +69,11 @@ class ProfileController extends BaseApiController
         $limit = $request->input('limit', 10); // số item mỗi trang, mặc định 10
 
         $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('payments.id', 'desc'))
-            ->allowedFilters(['title']) // lọc theo title nếu cần
+            ->allowedFilters([
+                'name',
+                AllowedFilter::custom('progress_range', new ProgressRangePersonFilter),
+                AllowedFilter::custom('completion_status', new CompletionStatusPersonFilter)
+            ])
 
             // ->latest('created_at')
             ->paginate($limit)

@@ -28,6 +28,7 @@ class DashboardController extends BaseApiController
             'new_payments'        => $this->getNewPayments(),
             'top_courses'         => $this->getTopCourses(),
             'activity_in_4_weeks' => $this->getActivityIn4Weeks(),
+            'recent_activity'     => $this->getRecentActivity(),
         ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
     }
@@ -173,9 +174,10 @@ class DashboardController extends BaseApiController
             $startOfWeek = now()->subWeeks($week)->startOfWeek();
             $endOfWeek   = now()->subWeeks($week)->endOfWeek();
 
-            $newCourses = Course::whereBetween('start_date', [$startOfWeek, $endOfWeek])->count();
+
+            $newCourses = Course::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
             $newUsers   = User::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('role', 'student')->count();
-            $newExams   = ExamPaper::whereBetween('start_time', [$startOfWeek, $endOfWeek])->count();
+            $newExams   = ExamPaper::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
 
             $activities[] = [
                 'week'        => "Tuần " . (4 - $week),
@@ -185,5 +187,22 @@ class DashboardController extends BaseApiController
             ];
         }
         return array_reverse($activities);
+    }
+
+    // get thông tin người dùng mới, khóa học mới, đề thi mới trong 1 tháng vừa qua
+    public function getRecentActivity(): array
+    {
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth   = now()->endOfMonth();
+
+        $newCourses = Course::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+        $newUsers   = User::whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('role', 'student')->count();
+        $newExams   = ExamPaper::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+
+        return [
+            'new_courses' => $newCourses,
+            'new_users'   => $newUsers,
+            'new_exams'   => $newExams,
+        ];
     }
 }

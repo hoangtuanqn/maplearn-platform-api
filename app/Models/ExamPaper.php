@@ -29,6 +29,7 @@ class ExamPaper extends Model
         'status',
         'start_time',
         'end_time',
+        'created_at'
     ];
     protected $casts = [
         'max_score'              => 'float',
