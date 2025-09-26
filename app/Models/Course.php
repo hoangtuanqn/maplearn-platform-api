@@ -31,6 +31,7 @@ class Course extends Model
         'status',
         'is_sequential',
         'exam_paper_id',
+        'created_at'
     ];
     protected $hidden = [];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập

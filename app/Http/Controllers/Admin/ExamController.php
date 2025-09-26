@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Models\ExamQuestion;
+use App\Services\GoogleAuthenService;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -51,6 +52,7 @@ class ExamController extends BaseApiController
 
         // ẩn thuộc tính này khi hiển thị
         $exams->makeHidden(['is_in_progress', 'question_count', 'total_attempt_count', 'attempt_count']);
+
 
         // Thêm thuộc tính: Số người đã làm bài
         $exams->getCollection()->transform(function ($item) {
@@ -167,6 +169,7 @@ class ExamController extends BaseApiController
     {
         Gate::authorize('admin-teacher-owner', $exams_admin);
         $exam = $exams_admin->load('questions');
+        $exam->url_qr_code_password = $exam->password ? GoogleAuthenService::getQRCodeBase64("Đề thi: " . $exam->title, $exam->password) : null;
         return $this->successResponse($exam, 'Lấy thông tin đề thi thành công!');
     }
 
