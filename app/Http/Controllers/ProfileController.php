@@ -138,7 +138,7 @@ class ProfileController extends BaseApiController
         $user = $request->user();
 
         // Generate new 2FA secret and QR code
-        $google2fa = GoogleAuthenService::generateSecret2FA($user->email);
+        $google2fa = GoogleAuthenService::generateSecret2FA("MapLearn - " . $user->email);
 
         if (!$google2fa || empty($google2fa['secret']) || empty($google2fa['qr_base64'])) {
             return $this->errorResponse(null, "Không thể tạo mã 2FA. Vui lòng thử lại.", 500);

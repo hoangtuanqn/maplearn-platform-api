@@ -10,6 +10,7 @@ use App\Models\Certificate;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Notifications\CourseCompletedNotification;
+use App\Services\GoogleAuthenService;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -97,6 +98,17 @@ class ExamPaperController extends BaseApiController
         // Check số lần đã thi
         if ($exam->max_attempts && $exam->attempt_count >= $exam->max_attempts) {
             return $this->errorResponse(null, 'Bạn đã vượt quá số lần làm bài thi cho phép!');
+        }
+
+        if ($exam->getIsPasswordProtectedAttribute()) {
+            // Validate input
+            $data = $request->validate([
+                'password' => 'required|string',
+            ]);
+            $isValid = GoogleAuthenService::verify2FA($exam->password, $data['password']);
+            if (!$isValid) {
+                return $this->errorResponse(null, 'Mật khẩu đề thi không đúng!');
+            }
         }
         if (!ExamAttempt::where('exam_paper_id', $exam->id)->where('user_id', $user->id)->where('status', 'in_progress')->exists()) {
             // Chưa có bài làm nào, tạo mới

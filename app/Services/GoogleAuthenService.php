@@ -9,7 +9,7 @@ use PragmaRX\Google2FA\Google2FA;
 abstract class GoogleAuthenService
 {
     // Tạo mã 2FA
-    public static function generateSecret2FA($email)
+    public static function generateSecret2FA($companyName)
     {
         $google2fa = new Google2FA();
 
@@ -17,14 +17,13 @@ abstract class GoogleAuthenService
         $secret = $google2fa->generateSecretKey();
 
         // 2. Tạo otpauth URL
-        $companyName = 'MapLearn - ' . $email;
-        $otpauthUrl  = $google2fa->getQRCodeUrl(
+        $otpauthUrl = $google2fa->getQRCodeUrl(
             $companyName,
-            $email,
+            '', // Không truyền email, chỉ truyền companyName
             $secret
         );
 
-        // 3. Tạo QR code PNG (bản mới không dùng create())
+        // 3. Tạo QR code PNG
         $qrCode    = new QrCode($otpauthUrl);
         $writer    = new PngWriter();
         $imageData = $writer->write($qrCode)->getString();
