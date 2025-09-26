@@ -28,12 +28,13 @@ class StudentController extends BaseApiController
                 'full_name',
                 'email',
                 'phone_number',
-                'gender',
+
                 'birth_year',
                 'city',
                 'school',
                 'banned',
                 'email_verified_at',
+                AllowedFilter::exact('gender'), // tìm chính xác giá trị. Tránh tìm male mà vẫn ra fe"male"
                 AllowedFilter::callback('email_verified', function ($query, $value) {
                     if ($value === 'verified') {
                         $query->whereNotNull('email_verified_at');
