@@ -292,4 +292,16 @@ class ExamPaperController extends BaseApiController
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
     }
+
+    // get đáp án bài thi (làm tính năng demo để bảo vệ đồ án)
+    public function getAnswersExam(Request $request, ExamPaper $exam)
+    {
+
+        // lấy đáp án đề thi
+        $answers = [];
+        foreach ($exam->questions as $question) {
+            $answers[$question->id] =  $question->correct;
+        }
+        return $this->successResponse($answers, 'Lấy đáp án đề thi thành công!');
+    }
 }
