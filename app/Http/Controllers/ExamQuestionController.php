@@ -59,8 +59,9 @@ class ExamQuestionController extends BaseApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ExamQuestion $question)
+    public function destroy(ExamQuestion $exam_question)
     {
-        //
+        $exam_question->delete();
+        return $this->successResponse(null, 'Xoá câu hỏi thành công');
     }
 }

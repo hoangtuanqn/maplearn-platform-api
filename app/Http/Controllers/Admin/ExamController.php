@@ -94,20 +94,23 @@ class ExamController extends BaseApiController
             'max_attempts'           => 'nullable|integer|min:1',
             'anti_cheat_enabled'     => 'nullable|boolean',
             'max_violation_attempts' => 'nullable|integer|min:0',
+            'questions'              => 'required|array|min:1',
+            'is_password_protected'  => 'nullable|boolean',
         ]);
 
-        // Validate câu hỏi
-        $questionsData = $request->validate([
-            'questions'                        => 'required|array|min:1',
-            'questions.*.type'                 => 'required|string|in:SINGLE_CHOICE,MULTIPLE_CHOICE,TRUE_FALSE,NUMERIC_INPUT,ESSAY',
-            'questions.*.content'              => 'required|string',
-            'questions.*.score'                => 'required|numeric|min:0',
-            'questions.*.options'              => 'nullable|array',
-            'questions.*.options.*.content'    => 'required_with:questions.*.options|string',
-            'questions.*.options.*.is_correct' => 'required_with:questions.*.options|boolean',
-            'questions.*.correct_answer'       => 'required|array',
-            'questions.*.explanation'          => 'nullable|string',
-        ]);
+        // Validate từng câu hỏi
+        foreach ($examData['questions'] as $idx => $question) {
+            $request->validate([
+                "questions.$idx.type"                 => 'required|string|in:SINGLE_CHOICE,MULTIPLE_CHOICE,TRUE_FALSE,NUMERIC_INPUT,ESSAY',
+                "questions.$idx.content"              => 'required|string',
+                "questions.$idx.score"                => 'required|numeric|min:0',
+                "questions.$idx.options"              => 'nullable|array',
+                "questions.$idx.options.*.content"    => 'required_with:questions.*.options|string',
+                "questions.$idx.options.*.is_correct" => 'required_with:questions.*.options|boolean',
+                "questions.$idx.correct_answer"       => 'required|array',
+                "questions.$idx.explanation"          => 'nullable|string',
+            ]);
+        }
 
         try {
             DB::beginTransaction();
@@ -125,26 +128,48 @@ class ExamController extends BaseApiController
                 'duration_minutes'       => $examData['duration_minutes'],
                 'start_time'             => $examData['start_time'] ?? null,
                 'end_time'               => $examData['end_time'] ?? null,
+                'description'            => $examData['description'] ?? null,
+                'instructions'           => $examData['instructions'] ?? null,
                 'status'                 => $examData['is_active'] ?? true,
+                'is_shuffle_questions'   => $examData['is_shuffle_questions'] ?? false,
+                'is_shuffle_answers'     => $examData['is_shuffle_answers'] ?? false,
+                'is_show_result'         => $examData['is_show_result'] ?? false,
+                'is_retakeable'          => $examData['is_retakeable'] ?? false,
+                'max_attempts'           => $examData['max_attempts'] === 999 ? null : $examData['max_attempts'], // = null là không giới hạn số lần thi
                 'anti_cheat_enabled'     => $examData['anti_cheat_enabled'] ?? false,
                 'max_violation_attempts' => $examData['max_violation_attempts'] ?? 3,
-                'max_attempts'          => $examData['max_attempts'] ?? 1,
                 'user_id'                => $user->id,
+                'password'               => ($examData['is_password_protected'] ?? false) ? GoogleAuthenService::generateSecret2FA($examData['title'])['secret'] : null,
             ];
+
 
             // Tạo ExamPaper
             $exam = ExamPaper::create($examCreateData);
 
             // Tạo các câu hỏi
-            foreach ($questionsData['questions'] as $questionData) {
+            foreach ($examData['questions'] as $questionData) {
+                // Xử lý đáp án đúng cho từng loại câu hỏi
+                $correctAnswers = $questionData['correct_answer'] ?? [];
+
+                // Xử lý options nếu có
+                $options = [];
+                if (!empty($questionData['options'])) {
+                    foreach ($questionData['options'] as $option) {
+                        $opt = [
+                            'content' => $option['content'],
+                        ];
+                        $options[] = $opt;
+                    }
+                }
+
                 $questionCreateData = [
                     'exam_paper_id' => $exam->id,
                     'type'          => $questionData['type'],
                     'content'       => $questionData['content'],
                     'marks'         => $questionData['score'],
                     'explanation'   => $questionData['explanation'] ?? null,
-                    'options'       => $questionData['options'] ?? [],
-                    'correct'       => $questionData['correct_answer'],
+                    'options'       => $options,
+                    'correct'       => $correctAnswers,
                 ];
 
                 ExamQuestion::create($questionCreateData);

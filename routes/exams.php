@@ -50,3 +50,4 @@ Route::prefix('exams-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'
     Route::get('/{exam}/history', [ExamController::class, 'history']);
 });
 Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
+Route::apiResource('exam-questions', ExamQuestionController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
