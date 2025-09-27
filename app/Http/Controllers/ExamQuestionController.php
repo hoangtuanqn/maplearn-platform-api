@@ -40,7 +40,40 @@ class ExamQuestionController extends BaseApiController
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'exam_paper_id' => 'required|exists:exam_papers,id',
+            'type'        => 'required|string',
+            'content'     => 'required|string',
+            'marks'       => 'required|numeric|min:0',
+            'options'     => 'nullable|array',
+            'options.*.content' => 'required_with:options|string',
+            'options.*.is_correct' => 'required_with:options|boolean',
+            'correct'     => 'required|array',
+            'explanation' => 'nullable|string',
+        ]);
+
+        // Chuẩn hóa options
+        $options = [];
+        if (!empty($data['options'])) {
+            foreach ($data['options'] as $option) {
+                $options[] = [
+                    'content' => $option['content'],
+                    'is_correct' => $option['is_correct'],
+                ];
+            }
+        }
+
+        $examQuestion = ExamQuestion::create([
+            'exam_paper_id' => $data['exam_paper_id'],
+            'type'        => $data['type'],
+            'content'     => $data['content'],
+            'marks'       => $data['marks'],
+            'options'     => $options,
+            'correct'     => $data['correct'],
+            'explanation' => $data['explanation'] ?? null,
+        ]);
+
+        return $this->successResponse($examQuestion, 'Tạo câu hỏi thành công!');
     }
 
     /**

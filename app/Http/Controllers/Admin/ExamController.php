@@ -124,7 +124,8 @@ class ExamController extends BaseApiController
                 'province'               => $examData['province'] ?? null,
                 'difficulty'             => $examData['difficulty'] ?? 'normal',
                 'max_score'              => $examData['max_score'],
-                'pass_score'             => $examData['pass_score'],
+                // pass_score sẽ ở định dạng 3,4,5 tương ứng 30%,40%,50% của max_score
+                'pass_score'             => $examData['pass_score'] * 10 * $examData['max_score'] / 100,
                 'duration_minutes'       => $examData['duration_minutes'],
                 'start_time'             => $examData['start_time'] ?? null,
                 'end_time'               => $examData['end_time'] ?? null,
@@ -214,6 +215,7 @@ class ExamController extends BaseApiController
             'max_score'              => 'nullable|numeric|min:0',
             'pass_score'             => 'nullable|numeric|min:0',
             'duration_minutes'       => 'nullable|integer|min:1',
+            'anti_cheat_enabled'     => 'nullable|boolean',
             'is_active'              => 'nullable|boolean',
             'max_attempts'           => 'nullable|integer|min:1',
             'is_password_protected'  => 'nullable|boolean',
@@ -227,6 +229,7 @@ class ExamController extends BaseApiController
         } else {
             $data['password'] = null;
         }
+        $data['pass_score'] = isset($data['pass_score']) ? $data['pass_score'] * 10 * ($data['max_score'] ?? $exams_admin->max_score) / 100 : $exams_admin->pass_score;
         $exams_admin->update($data);
         return $this->successResponse($exams_admin, 'Cập nhật đề thi thành công!');
     }
