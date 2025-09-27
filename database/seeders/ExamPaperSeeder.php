@@ -106,7 +106,7 @@ class ExamPaperSeeder extends Seeder
                 'subject'                   => $subjects[array_rand($subjects)],
                 'grade_level'               => $gradeLevels[array_rand($gradeLevels)],
                 'difficulty'                => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
-                'province'                  => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
+                'province'                  => collect(['Quảng Ngãi', 'Phú Thọ', 'Thành phố Hà Nội', 'Thành phố Hồ Chí Minh'])->random(),
                 'exam_type'                 => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
                 'status'                    => $status,
                 'anti_cheat_enabled'        => !$status,

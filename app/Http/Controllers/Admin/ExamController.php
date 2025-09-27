@@ -205,23 +205,28 @@ class ExamController extends BaseApiController
     {
         Gate::authorize('admin-teacher-owner', $exams_admin);
         $data = $request->validate([
+            'title'                  => 'nullable|string|max:255',
             'exam_category'          => 'nullable|string|max:255',
             'subject'                => 'nullable|string|max:255',
             'grade_level'            => 'nullable|string|max:255',
-            'title'                  => 'nullable|string|max:255',
             'province'               => 'nullable|string|max:255',
             'difficulty'             => 'nullable|string|max:255',
-            'exam_type'              => 'nullable|string|max:255',
             'max_score'              => 'nullable|numeric|min:0',
             'pass_score'             => 'nullable|numeric|min:0',
             'duration_minutes'       => 'nullable|integer|min:1',
-            'anti_cheat_enabled'     => 'nullable|boolean',
-            'max_violation_attempts' => 'nullable|integer|min:0',
-            'status'                 => 'nullable|boolean',
+            'is_active'              => 'nullable|boolean',
+            'max_attempts'           => 'nullable|integer|min:1',
+            'is_password_protected'  => 'nullable|boolean',
             'start_time'             => 'nullable|date',
             'end_time'               => 'nullable|date|after:start_time',
         ]);
-
+        if ($data['is_password_protected']) {
+            if (!$exams_admin->password) {
+                $data['password'] = GoogleAuthenService::generateSecret2FA($data['title'] ?? $exams_admin->title)['secret'];
+            }
+        } else {
+            $data['password'] = null;
+        }
         $exams_admin->update($data);
         return $this->successResponse($exams_admin, 'Cập nhật đề thi thành công!');
     }
