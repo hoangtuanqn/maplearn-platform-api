@@ -51,9 +51,40 @@ class ExamQuestionController extends BaseApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ExamQuestion $question)
+    public function update(Request $request, ExamQuestion $exam_question)
     {
-        //
+        $data = $request->validate([
+            'type'        => 'required|string|in:SINGLE_CHOICE,MULTIPLE_CHOICE,TRUE_FALSE,NUMERIC_INPUT,ESSAY',
+            'content'     => 'required|string',
+            'marks'       => 'required|numeric|min:0',
+            'options'     => 'nullable|array',
+            'options.*.content' => 'required_with:options|string',
+            'options.*.is_correct' => 'required_with:options|boolean',
+            'correct'     => 'required|array',
+            'explanation' => 'nullable|string',
+        ]);
+
+        // Chuẩn hóa options
+        $options = [];
+        if (!empty($data['options'])) {
+            foreach ($data['options'] as $option) {
+                $options[] = [
+                    'content' => $option['content'],
+                ];
+            }
+        }
+
+        // Cập nhật câu hỏi
+        $exam_question->update([
+            'type'        => $data['type'],
+            'content'     => $data['content'],
+            'marks'       => $data['marks'],
+            'options'     => $options,
+            'correct'     => $data['correct'],
+            'explanation' => $data['explanation'] ?? null,
+        ]);
+
+        return $this->successResponse($exam_question, 'Cập nhật câu hỏi thành công!');
     }
 
     /**
