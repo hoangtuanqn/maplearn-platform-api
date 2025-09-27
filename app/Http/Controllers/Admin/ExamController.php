@@ -54,11 +54,13 @@ class ExamController extends BaseApiController
         $exams->makeHidden(['is_in_progress', 'question_count', 'total_attempt_count', 'attempt_count']);
 
 
+
         // Thêm thuộc tính: Số người đã làm bài
         $exams->getCollection()->transform(function ($item) {
             $item->registered_count = $item->examAttempts()->count();
             return $item;
         });
+       
 
         return $this->successResponse($exams, 'Lấy danh sách đề thi thành công!');
     }

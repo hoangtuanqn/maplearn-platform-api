@@ -28,7 +28,7 @@ class ExamPaperController extends BaseApiController
     {
         $limit = (int)($request->limit ?? 20);
         // Filter môn học, phân loại học, độ khóa
-        $posts = QueryBuilder::for(ExamPaper::class)
+        $exams = QueryBuilder::for(ExamPaper::class)
             ->where('status', true)
             ->where(function ($query) {
                 $query->whereNull('end_time')
@@ -45,8 +45,13 @@ class ExamPaperController extends BaseApiController
             ])
             ->orderByDesc('id')
             ->paginate($limit);
+        // loại bỏ những đề thi nếu tổng số câu hỏi != max_score
+        $filtered = $exams->getCollection()->filter(function ($exam) {
+            return $exam->questions()->count() > 0 && $exam->questions()->sum('marks') == $exam->max_score;
+        })->values();
+        $exams->setCollection($filtered);
 
-        return $this->successResponse($posts, 'Lấy danh sách đề thi thành công!');
+        return $this->successResponse($exams, 'Lấy danh sách đề thi thành công!');
     }
 
     /**

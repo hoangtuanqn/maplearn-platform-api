@@ -16,7 +16,7 @@ class ExamQuestionSeeder extends Seeder
         $questions = [
             // Câu 1: SINGLE_CHOICE
             [
-                'content'       => 'Xét ba mệnh đề: \( A \): "Nếu trời mưa, tôi mang ô", \( B \): "Trời mưa", \( C \): "Tôi mang ô". Mệnh đề nào luôn đúng bất kể giá trị chân lý của \( A \), \( B \), và \( C \)?',
+                'content'       => 'Xét ba mệnh đề: \( A \): "Nếu trời mưa, tôi ở nhà", \( B \): "Trời mưa", \( C \): "Tôi ở nhà". Mệnh đề nào luôn đúng bất kể giá trị chân lý của \( A \), \( B \), và \( C \)?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
                     ['content' => "\( A \land B \implies C \)", 'is_correct' => true],
@@ -32,27 +32,28 @@ class ExamQuestionSeeder extends Seeder
                 'content'       => 'Chọn các mệnh đề đúng về số nguyên \( n \).',
                 'type'          => 'MULTIPLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Nếu \( n \) chia hết cho 4 thì \( n \) chia hết cho 2", 'is_correct' => true],
-                    ['content' => "Mọi số nguyên tố đều lẻ", 'is_correct' => false],
+                    ['content' => "Nếu \( n \) chia hết cho 6 thì \( n \) chia hết cho 2", 'is_correct' => true],
+                    ['content' => "Mọi số nguyên tố đều lớn hơn 1", 'is_correct' => true],
                     ['content' => "Có số nguyên \( n \) sao cho \( n^2 \) là số lẻ", 'is_correct' => true],
-                    ['content' => "Nếu \( n \) là số lẻ thì \( n \) không chia hết cho 2", 'is_correct' => true],
+                    ['content' => "Mọi số chẵn đều là số nguyên tố", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Mệnh đề 1 đúng vì 4 chia hết cho 2. Mệnh đề 2 sai vì 2 là số nguyên tố chẵn. Mệnh đề 3 đúng vì \( n = 3 \implies n^2 = 9 \) lẻ. Mệnh đề 4 đúng vì số lẻ không chia hết cho 2.',
+                'explanation' => 'Mệnh đề 1 đúng vì 6 chia hết cho 2. Mệnh đề 2 đúng vì số nguyên tố lớn hơn 1. Mệnh đề 3 đúng vì \( n = 3 \implies n^2 = 9 \) lẻ. Mệnh đề 4 sai vì 4 chẵn nhưng không phải số nguyên tố.',
             ],
             // Câu 3: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu \( x \) là số thực và \( x > 2 \), thì \( x^2 > 4 \)" có đúng với mọi số thực \( x \)?',
+                'content'       => 'Mệnh đề: "Nếu \( x \) là số thực và \( x > 2 \), thì \( x^2 > 4 \)" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Hàm \( f(x) = x^2 \) tăng trên \( (2, +\infty) \), nên nếu \( x > 2 \), thì \( x^2 > 4 \). Mệnh đề luôn đúng.',
             ],
             // Câu 4: DRAG_DROP
             [
-                'content'       => 'Cho \( P \): "Hôm nay là thứ Bảy", \( Q \): "Tôi đi chơi". Giá trị của \( P \implies Q \) khi \( P \) sai và \( Q \) đúng là <-Drag->.',
+                'content'       => 'Cho \( P \): "Hôm nay là thứ Ba", \( Q \): "Tôi đi học". Giá trị của \( P \implies Q \) khi \( P \) sai và \( Q \) đúng là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
@@ -64,54 +65,55 @@ class ExamQuestionSeeder extends Seeder
             ],
             // Câu 5: SINGLE_CHOICE
             [
-                'content'       => 'Phủ định của mệnh đề: "Mọi số nguyên \( n \) chia hết cho 6 thì chia hết cho 3" là gì?',
+                'content'       => 'Phủ định của mệnh đề: "Mọi số nguyên \( n \) chia hết cho 10 thì chia hết cho 5" là gì?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Có số nguyên \( n \) chia hết cho 6 nhưng không chia hết cho 3", 'is_correct' => true],
-                    ['content' => "Mọi số nguyên \( n \) chia hết cho 3 thì chia hết cho 6", 'is_correct' => false],
-                    ['content' => "Có số nguyên \( n \) chia hết cho 3 nhưng không chia hết cho 6", 'is_correct' => false],
-                    ['content' => "Mọi số nguyên \( n \) không chia hết cho 6 thì không chia hết cho 3", 'is_correct' => false],
+                    ['content' => "Có số nguyên \( n \) chia hết cho 10 nhưng không chia hết cho 5", 'is_correct' => true],
+                    ['content' => "Mọi số nguyên \( n \) chia hết cho 5 thì chia hết cho 10", 'is_correct' => false],
+                    ['content' => "Có số nguyên \( n \) chia hết cho 5 nhưng không chia hết cho 10", 'is_correct' => false],
+                    ['content' => "Mọi số nguyên \( n \) không chia hết cho 10 thì không chia hết cho 5", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Phủ định của \( \forall x (P(x) \implies Q(x)) \) là \( \exists x (P(x) \land \neg Q(x)) \). Ở đây, \( P(n) \): \( n \) chia hết cho 6, \( Q(n) \): \( n \) chia hết cho 3.',
+                'explanation' => 'Phủ định của \( \forall x (P(x) \implies Q(x)) \) là \( \exists x (P(x) \land \neg Q(x)) \). Ở đây, \( P(n) \): \( n \) chia hết cho 10, \( Q(n) \): \( n \) chia hết cho 5.',
             ],
             // Câu 6: MULTIPLE_CHOICE
             [
                 'content'       => 'Chọn các mệnh đề đúng về hình học.',
                 'type'          => 'MULTIPLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Mọi hình vuông đều là hình chữ nhật", 'is_correct' => true],
-                    ['content' => "Mọi hình chữ nhật đều là hình vuông", 'is_correct' => false],
-                    ['content' => "Có hình chữ nhật không phải là hình vuông", 'is_correct' => true],
-                    ['content' => "Nếu một hình là hình vuông thì nó có bốn góc vuông", 'is_correct' => true],
+                    ['content' => "Mọi hình vuông đều là hình thoi", 'is_correct' => true],
+                    ['content' => "Mọi hình thoi đều là hình vuông", 'is_correct' => false],
+                    ['content' => "Có hình thoi không phải là hình vuông", 'is_correct' => true],
+                    ['content' => "Nếu một hình là hình thoi thì nó có bốn cạnh bằng nhau", 'is_correct' => true],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Hình vuông là trường hợp đặc biệt của hình chữ nhật, nhưng ngược lại thì không. Mọi hình vuông có bốn góc vuông.',
+                'explanation' => 'Hình vuông là trường hợp đặc biệt của hình thoi, nhưng ngược lại thì không. Hình thoi có bốn cạnh bằng nhau.',
             ],
             // Câu 7: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu \( x^2 = 25 \), thì \( x = 5 \)" có đúng không?',
+                'content'       => 'Mệnh đề: "Nếu \( x^2 = 16 \), thì \( x = 4 \)" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Sai", 'is_correct' => true],
+                    ['content' => "Đúng", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( x^2 = 25 \implies x = 5 \) hoặc \( x = -5 \), nên mệnh đề sai vì không xét \( x = -5 \).',
+                'explanation' => '\( x^2 = 16 \implies x = 4 \) hoặc \( x = -4 \), nên mệnh đề sai vì không xét \( x = -4 \).',
             ],
             // Câu 8: DRAG_DROP
             [
-                'content'       => 'Cho \( A \): "Tôi học bài", \( B \): "Tôi thi đậu". Giá trị của \( \neg (A \land B) \) khi \( A \) sai và \( B \) đúng là <-Drag->.',
+                'content'       => 'Cho \( A \): "Tôi học toán", \( B \): "Tôi hiểu bài". Giá trị của \( \neg (A \land B) \) khi \( A \) đúng và \( B \) sai là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( A = \text{false}, B = \text{true} \): \( A \land B = \text{false}, \neg (A \land B) = \text{true} \).',
+                'explanation' => '\( A = \text{true}, B = \text{false} \): \( A \land B = \text{false}, \neg (A \land B) = \text{true} \).',
             ],
             // Câu 9: SINGLE_CHOICE
             [
-                'content'       => 'Mệnh đề nào tương đương với \( P \implies Q \), trong đó \( P \): "Tôi chăm chỉ", \( Q \): "Tôi thành công"?',
+                'content'       => 'Mệnh đề nào tương đương với \( P \implies Q \), trong đó \( P \): "Tôi nỗ lực", \( Q \): "Tôi đạt được mục tiêu"?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
                     ['content' => "\( \neg Q \implies \neg P \)", 'is_correct' => true],
@@ -124,37 +126,38 @@ class ExamQuestionSeeder extends Seeder
             ],
             // Câu 10: MULTIPLE_CHOICE
             [
-                'content'       => 'Chọn các mệnh đề đúng khi \( P \): "Hôm nay là thứ Hai", \( Q \): "Tôi đi làm", \( R \): "Tôi bận rộn", và \( P \) đúng, \( Q \) sai, \( R \) đúng.',
+                'content'       => 'Chọn các mệnh đề đúng khi \( P \): "Hôm nay là thứ Tư", \( Q \): "Tôi làm việc", \( R \): "Tôi bận rộn", và \( P \) sai, \( Q \) đúng, \( R \) sai.',
                 'type'          => 'MULTIPLE_CHOICE',
                 'answers'       => [
-                    ['content' => "\( P \lor R \)", 'is_correct' => true],
-                    ['content' => "\( \neg Q \)", 'is_correct' => true],
+                    ['content' => "\( \neg P \)", 'is_correct' => true],
+                    ['content' => "\( Q \lor R \)", 'is_correct' => true],
                     ['content' => "\( P \land Q \)", 'is_correct' => false],
-                    ['content' => "\( Q \implies R \)", 'is_correct' => true],
+                    ['content' => "\( R \implies Q \)", 'is_correct' => true],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( P = \text{true}, Q = \text{false}, R = \text{true} \): \( P \lor R = \text{true}, \neg Q = \text{true}, P \land Q = \text{false}, Q \implies R = \text{true} \).',
+                'explanation' => '\( P = \text{false}, Q = \text{true}, R = \text{false} \): \( \neg P = \text{true}, Q \lor R = \text{true}, P \land Q = \text{false}, R \implies Q = \text{true} \).',
             ],
             // Câu 11: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Mọi số thực \( x \) đều thỏa mãn \( x^2 \geq 0 \)" có đúng không?',
+                'content'       => 'Mệnh đề: "Mọi số thực \( x \) đều thỏa mãn \( x^2 + 1 > 0 \)" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Bình phương của bất kỳ số thực nào cũng không âm.',
+                'explanation' => '\( x^2 + 1 \geq 1 > 0 \) với mọi \( x \) thực, nên mệnh đề đúng.',
             ],
             // Câu 12: DRAG_DROP
             [
-                'content'       => 'Cho \( C \): "Tôi đi ngủ sớm", \( D \): "Tôi thức dậy sớm". Giá trị của \( (C \lor D) \land \neg C \) khi \( C \) sai và \( D \) đúng là <-Drag->.',
+                'content'       => 'Cho \( D \): "Tôi đi ngủ sớm", \( E \): "Tôi thức dậy sớm". Giá trị của \( (D \lor E) \land \neg D \) khi \( D \) sai và \( E \) đúng là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( C = \text{false}, D = \text{true} \): \( (C \lor D) \land \neg C = (\text{false} \lor \text{true}) \land \text{true} = \text{true} \land \text{true} = \text{true} \).',
+                'explanation' => '\( D = \text{false}, E = \text{true} \): \( (D \lor E) \land \neg D = (\text{false} \lor \text{true}) \land \text{true} = \text{true} \land \text{true} = \text{true} \).',
             ],
             // Câu 13: SINGLE_CHOICE
             [
@@ -176,60 +179,59 @@ class ExamQuestionSeeder extends Seeder
                 'answers'       => [
                     ['content' => "Tập rỗng là tập con của mọi tập hợp", 'is_correct' => true],
                     ['content' => "Mọi tập hợp đều là tập con của chính nó", 'is_correct' => true],
-                    ['content' => "Tập hợp \( \{1, 2\} \) là tập con của \( \{1, 2, 3\} \)", 'is_correct' => true],
-                    ['content' => "Mọi tập hợp đều có số phần tử vô hạn", 'is_correct' => false],
+                    ['content' => "Tập hợp \( \{1, 3\} \) là tập con của \( \{1, 2, 3\} \)", 'is_correct' => true],
+                    ['content' => "Mọi tập hợp đều có số phần tử hữu hạn", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Tập rỗng và tập hợp là tập con của chính nó là đúng. \( \{1, 2\} \subset \{1, 2, 3\} \). Không phải tập nào cũng vô hạn.',
+                'explanation' => 'Tập rỗng và tập hợp là tập con của chính nó là đúng. \( \{1, 3\} \subset \{1, 2, 3\} \). Không phải tập nào cũng hữu hạn (ví dụ: tập số tự nhiên).',
             ],
             // Câu 15: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu \( n \) là số nguyên thì \( n + 1 \) là số nguyên" có đúng không?',
+                'content'       => 'Mệnh đề: "Nếu \( n \) là số nguyên thì \( n + 2 \) là số nguyên" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Tổng của số nguyên với số nguyên là số nguyên.',
             ],
             // Câu 16: DRAG_DROP
             [
-                'content'       => 'Cho \( E \): "Tôi tập thể dục", \( F \): "Tôi khỏe mạnh", \( G \): "Tôi vui vẻ". Khi \( E \) đúng, \( F \) sai, \( G \) đúng, thì \( E \land G \) là <-Drag-> và \( F \lor G \) là <-Drag->.',
+                'content'       => 'Cho \( F \): "Tôi tập thể dục", \( G \): "Tôi khỏe mạnh". Giá trị của \( F \iff G \) khi \( F \) đúng và \( G \) sai là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
-                    ['content' => "Đúng", 'is_correct' => true],
-                    ['content' => "Đúng", 'is_correct' => true],
-                    ['content' => "Sai", 'is_correct' => false],
-                    ['content' => "Sai", 'is_correct' => false],
+                    ['content' => "Sai", 'is_correct' => true],
+                    ['content' => "Đúng", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( E = \text{true}, F = \text{false}, G = \text{true} \): \( E \land G = \text{true}, F \lor G = \text{true} \).',
+                'explanation' => '\( F \iff G = (F \implies G) \land (G \implies F) \). Với \( F = \text{true}, G = \text{false} \): \( F \implies G = \text{false} \), nên \( F \iff G = \text{false} \).',
             ],
             // Câu 17: SINGLE_CHOICE
             [
-                'content'       => 'Phủ định của mệnh đề: "Có số thực \( x \) sao cho \( x^2 = 16 \)" là gì?',
+                'content'       => 'Phủ định của mệnh đề: "Có số thực \( x \) sao cho \( x^2 = 25 \)" là gì?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Mọi số thực \( x \) đều thỏa \( x^2 \neq 16 \)", 'is_correct' => true],
-                    ['content' => "Có số thực \( x \) sao cho \( x^2 = 16 \)", 'is_correct' => false],
-                    ['content' => "Mọi số thực \( x \) đều thỏa \( x^2 = 16 \)", 'is_correct' => false],
-                    ['content' => "Không có số thực \( x \) nào thỏa \( x^2 \neq 16 \)", 'is_correct' => false],
+                    ['content' => "Mọi số thực \( x \) đều thỏa \( x^2 \neq 25 \)", 'is_correct' => true],
+                    ['content' => "Có số thực \( x \) sao cho \( x^2 = 25 \)", 'is_correct' => false],
+                    ['content' => "Mọi số thực \( x \) đều thỏa \( x^2 = 25 \)", 'is_correct' => false],
+                    ['content' => "Không có số thực \( x \) nào thỏa \( x^2 \neq 25 \)", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Phủ định của \( \exists x P(x) \) là \( \forall x \neg P(x) \).',
             ],
             // Câu 18: MULTIPLE_CHOICE
             [
-                'content'       => 'Chọn các mệnh đề đúng khi \( H \): "Tôi đi học", \( I \): "Tôi mang sách", \( J \): "Tôi ghi chép", và \( H \) sai, \( I \) đúng, \( J \) sai.',
+                'content'       => 'Chọn các mệnh đề đúng khi \( H \): "Tôi đi chợ", \( I \): "Tôi mua rau", \( J \): "Tôi nấu ăn", và \( H \) đúng, \( I \) sai, \( J \) đúng.',
                 'type'          => 'MULTIPLE_CHOICE',
                 'answers'       => [
-                    ['content' => "\( \neg H \)", 'is_correct' => true],
-                    ['content' => "\( I \lor J \)", 'is_correct' => true],
+                    ['content' => "\( H \lor J \)", 'is_correct' => true],
+                    ['content' => "\( \neg I \)", 'is_correct' => true],
                     ['content' => "\( H \land I \)", 'is_correct' => false],
-                    ['content' => "\( J \implies H \)", 'is_correct' => true],
+                    ['content' => "\( I \implies J \)", 'is_correct' => true],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( H = \text{false}, I = \text{true}, J = \text{false} \): \( \neg H = \text{true}, I \lor J = \text{true}, H \land I = \text{false}, J \implies H = \text{true} \).',
+                'explanation' => '\( H = \text{true}, I = \text{false}, J = \text{true} \): \( H \lor J = \text{true}, \neg I = \text{true}, H \land I = \text{false}, I \implies J = \text{true} \).',
             ],
             // Câu 19: TRUE_FALSE
             [
@@ -237,13 +239,14 @@ class ExamQuestionSeeder extends Seeder
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Sai", 'is_correct' => true],
+                    ['content' => "Đúng", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Không tồn tại số nguyên âm lớn hơn mọi số dương.',
             ],
             // Câu 20: DRAG_DROP
             [
-                'content'       => 'Cho \( K \): "Hôm nay trời nắng", \( L \): "Tôi đi dạo". Nếu \( K \land L \) sai và \( K \) đúng, thì \( L \) là <-Drag->.',
+                'content'       => 'Cho \( K \): "Hôm nay trời đẹp", \( L \): "Tôi đi picnic". Nếu \( K \land L \) sai và \( K \) đúng, thì \( L \) là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Sai", 'is_correct' => true],
@@ -273,34 +276,34 @@ class ExamQuestionSeeder extends Seeder
                 'answers'       => [
                     ['content' => "Mọi số nguyên tố lớn hơn 2 đều lẻ", 'is_correct' => true],
                     ['content' => "Có số nguyên tố là số chẵn", 'is_correct' => true],
-                    ['content' => "Mọi số lẻ đều là số nguyên tố", 'is_correct' => false],
-                    ['content' => "Số 1 không phải là số nguyên tố", 'is_correct' => true],
+                    ['content' => "Số 1 là số nguyên tố", 'is_correct' => false],
+                    ['content' => "Mọi số lớn hơn 1 đều là số nguyên tố", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '2 là số nguyên tố chẵn. Số 1 không phải nguyên tố. Không phải số lẻ nào cũng là nguyên tố (ví dụ: 9).',
+                'explanation' => '2 là số nguyên tố chẵn. Số 1 không phải nguyên tố. Không phải số lớn hơn 1 nào cũng là nguyên tố (ví dụ: 4).',
             ],
             // Câu 23: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu \( x \) là số thực dương thì \( x^2 > 0 \)" có đúng không?',
+                'content'       => 'Mệnh đề: "Nếu \( x \) là số thực dương thì \( x^3 > 0 \)" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
-                    ['content' => "Đúng", 'is_correct' => true],
-                ],
-                'marks'       => 0.25,
-                'explanation' => 'Bình phương số thực dương luôn dương.',
-            ],
-            // Câu 24: DRAG_DROP
-            [
-                'content'       => 'Cho \( O \): "Tôi đi học", \( P \): "Tôi mang sách", \( Q \): "Tôi ghi chép". Khi \( O \) sai, \( P \) đúng, \( Q \) sai, thì \( O \land P \) là <-Drag->, \( P \lor Q \) là <-Drag->, và \( \neg O \) là <-Drag->.',
-                'type'          => 'DRAG_DROP',
-                'answers'       => [
-                    ['content' => "Sai", 'is_correct' => true],
-                    ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( O = \text{false}, P = \text{true}, Q = \text{false} \): \( O \land P = \text{false}, P \lor Q = \text{true}, \neg O = \text{true} \).',
+                'explanation' => 'Lũy thừa ba của số thực dương luôn dương.',
+            ],
+            // Câu 24: DRAG_DROP
+            [
+                'content'       => 'Cho \( O \): "Tôi đi học", \( P \): "Tôi mang vở", \( Q \): "Tôi ghi bài". Khi \( O \) sai, \( P \) đúng, \( Q \) sai, thì \( O \land P \) là <-Drag->, \( P \lor Q \) là <-Drag->.',
+                'type'          => 'DRAG_DROP',
+                'answers'       => [
+                    ['content' => "Sai", 'is_correct' => true],
+                    ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Không xác định", 'is_correct' => false],
+                ],
+                'marks'       => 0.25,
+                'explanation' => '\( O = \text{false}, P = \text{true}, Q = \text{false} \): \( O \land P = \text{false}, P \lor Q = \text{true} \).',
             ],
             // Câu 25: SINGLE_CHOICE
             [
@@ -330,34 +333,35 @@ class ExamQuestionSeeder extends Seeder
             ],
             // Câu 27: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Mọi số nguyên \( n \) đều thỏa mãn \( n + 3 > n \)" có đúng không?',
+                'content'       => 'Mệnh đề: "Mọi số nguyên \( n \) đều thỏa mãn \( n + 4 > n \)" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Với mọi \( n \), \( n + 3 > n \) vì \( 3 > 0 \).',
+                'explanation' => 'Với mọi \( n \), \( n + 4 > n \) vì \( 4 > 0 \).',
             ],
             // Câu 28: DRAG_DROP
             [
-                'content'       => 'Cho \( V \): "Tôi ăn sáng", \( W \): "Tôi no bụng". Giá trị của \( V \iff W \) khi \( V \) đúng và \( W \) sai là <-Drag->.',
+                'content'       => 'Cho \( V \): "Tôi ăn sáng", \( W \): "Tôi no bụng". Giá trị của \( V \lor W \) khi \( V \) sai và \( W \) đúng là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
-                    ['content' => "Sai", 'is_correct' => true],
-                    ['content' => "Đúng", 'is_correct' => false],
+                    ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( V \iff W = (V \implies W) \land (W \implies V) \). Với \( V = \text{true}, W = \text{false} \): \( V \implies W = \text{false} \), nên \( V \iff W = \text{false} \).',
+                'explanation' => '\( V = \text{false}, W = \text{true} \): \( V \lor W = \text{false} \lor \text{true} = \text{true} \).',
             ],
             // Câu 29: SINGLE_CHOICE
             [
-                'content'       => 'Phủ định của mệnh đề: "Nếu một hàm liên tục thì nó khả vi" là gì?',
+                'content'       => 'Phủ định của mệnh đề: "Nếu một hàm liên tục thì nó có giới hạn" là gì?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Có hàm liên tục nhưng không khả vi", 'is_correct' => true],
-                    ['content' => "Mọi hàm liên tục đều khả vi", 'is_correct' => false],
-                    ['content' => "Có hàm không liên tục nhưng khả vi", 'is_correct' => false],
-                    ['content' => "Nếu hàm không khả vi thì không liên tục", 'is_correct' => false],
+                    ['content' => "Có hàm liên tục nhưng không có giới hạn", 'is_correct' => true],
+                    ['content' => "Mọi hàm liên tục đều có giới hạn", 'is_correct' => false],
+                    ['content' => "Có hàm không liên tục nhưng có giới hạn", 'is_correct' => false],
+                    ['content' => "Nếu hàm không có giới hạn thì không liên tục", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Phủ định của \( P \implies Q \) là \( P \land \neg Q \).',
@@ -381,26 +385,26 @@ class ExamQuestionSeeder extends Seeder
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => '\( x^2 \geq 0 \) đúng với mọi \( x \) thực, nên mệnh đề đúng.',
             ],
             // Câu 32: DRAG_DROP
             [
-                'content'       => 'Cho \( X \): "Mèo kêu", \( Y \): "Chó sủa", \( Z \): "Chim hót". Khi \( X \) đúng, \( Y \) sai, \( Z \) đúng, thì \( X \lor Y \) là <-Drag-> và \( Y \land Z \) là <-Drag->.',
+                'content'       => 'Cho \( X \): "Chó sủa", \( Y \): "Mèo kêu". Khi \( X \) đúng, \( Y \) sai, thì \( X \lor Y \) là <-Drag-> và \( X \land Y \) là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Sai", 'is_correct' => true],
-                    ['content' => "Sai", 'is_correct' => false],
-                    ['content' => "Đúng", 'is_correct' => false],
+                    ['content' => "Không xác định", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( X = \text{true}, Y = \text{false}, Z = \text{true} \): \( X \lor Y = \text{true}, Y \land Z = \text{false} \).',
+                'explanation' => '\( X = \text{true}, Y = \text{false} \): \( X \lor Y = \text{true}, X \land Y = \text{false} \).',
             ],
             // Câu 33: SINGLE_CHOICE
             [
-                'content'       => 'Mệnh đề nào tương đương với \( P \iff Q \), trong đó \( P \): "Tôi nỗ lực", \( Q \): "Tôi thành công"?',
+                'content'       => 'Mệnh đề nào tương đương với \( P \iff Q \), trong đó \( P \): "Tôi cố gắng", \( Q \): "Tôi thành công"?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
                     ['content' => "\( (P \implies Q) \land (Q \implies P) \)", 'is_correct' => true],
@@ -419,20 +423,21 @@ class ExamQuestionSeeder extends Seeder
                     ['content' => "Tổng các góc trong tam giác bằng 180 độ", 'is_correct' => true],
                     ['content' => "Mọi tam giác đều có ba cạnh bằng nhau", 'is_correct' => false],
                     ['content' => "Có tam giác không có góc nhọn", 'is_correct' => true],
-                    ['content' => "Mọi hình bình hành đều là hình thoi", 'is_correct' => false],
+                    ['content' => "Mọi hình chữ nhật đều là hình vuông", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Tổng góc tam giác là 180°. Có tam giác không nhọn (tam giác vuông hoặc tù). Không phải hình bình hành nào cũng là hình thoi.',
+                'explanation' => 'Tổng góc tam giác là 180°. Có tam giác không nhọn (tam giác vuông hoặc tù). Không phải hình chữ nhật nào cũng là hình vuông.',
             ],
             // Câu 35: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu \( n \) là số lẻ thì \( n^2 \) là số lẻ" có đúng không?',
+                'content'       => 'Mệnh đề: "Nếu \( n \) là số chẵn thì \( n^2 \) là số chẵn" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Số lẻ bình phương vẫn là số lẻ (ví dụ: \( 3^2 = 9 \)).',
+                'explanation' => 'Số chẵn bình phương vẫn là số chẵn (ví dụ: \( 2^2 = 4 \)).',
             ],
             // Câu 36: DRAG_DROP
             [
@@ -448,20 +453,20 @@ class ExamQuestionSeeder extends Seeder
             ],
             // Câu 37: SINGLE_CHOICE
             [
-                'content'       => 'Phủ định của mệnh đề: "Mọi số tự nhiên đều lớn hơn 0" là gì?',
+                'content'       => 'Phủ định của mệnh đề: "Mọi số tự nhiên đều lớn hơn 1" là gì?',
                 'type'          => 'SINGLE_CHOICE',
                 'answers'       => [
-                    ['content' => "Có số tự nhiên không lớn hơn 0", 'is_correct' => true],
-                    ['content' => "Mọi số tự nhiên đều nhỏ hơn 0", 'is_correct' => false],
-                    ['content' => "Có số tự nhiên lớn hơn 0", 'is_correct' => false],
-                    ['content' => "Không có số tự nhiên nào lớn hơn 0", 'is_correct' => false],
+                    ['content' => "Có số tự nhiên không lớn hơn 1", 'is_correct' => true],
+                    ['content' => "Mọi số tự nhiên đều nhỏ hơn 1", 'is_correct' => false],
+                    ['content' => "Có số tự nhiên lớn hơn 1", 'is_correct' => false],
+                    ['content' => "Không có số tự nhiên nào lớn hơn 1", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
                 'explanation' => 'Phủ định của \( \forall x P(x) \) là \( \exists x \neg P(x) \).',
             ],
             // Câu 38: MULTIPLE_CHOICE
             [
-                'content'       => 'Chọn các mệnh đề đúng khi \( C \): "Tôi ăn sáng", \( D \): "Tôi no bụng", \( E \): "Tôi năng động", và \( C \) sai, \( D \) đúng, \( E \) sai.',
+                'content'       => 'Chọn các mệnh đề đúng khi \( C \): "Tôi ăn sáng", \( D \): "Tôi uống cà phê", \( E \): "Tôi tỉnh táo", và \( C \) sai, \( D \) đúng, \( E \) sai.',
                 'type'          => 'MULTIPLE_CHOICE',
                 'answers'       => [
                     ['content' => "\( \neg C \)", 'is_correct' => true],
@@ -474,26 +479,26 @@ class ExamQuestionSeeder extends Seeder
             ],
             // Câu 39: TRUE_FALSE
             [
-                'content'       => 'Mệnh đề: "Nếu một số chia hết cho 9 thì nó chia hết cho 3" có đúng không?',
+                'content'       => 'Mệnh đề: "Nếu một số chia hết cho 12 thì nó chia hết cho 4" có đúng không?',
                 'type'          => 'TRUE_FALSE',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
+                    ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => 'Số chia hết cho 9 thì chia hết cho 3 vì 9 chia hết cho 3.',
+                'explanation' => 'Số chia hết cho 12 thì chia hết cho 4 vì 12 chia hết cho 4.',
             ],
             // Câu 40: DRAG_DROP
             [
-                'content'       => 'Cho \( F \): "Tôi đi ngủ sớm", \( G \): "Tôi thức dậy sớm", \( H \): "Tôi khỏe mạnh". Khi \( F \) sai, \( G \) đúng, \( H \) sai, thì \( \neg F \) là <-Drag->, \( G \lor H \) là <-Drag->, và \( F \land G \) là <-Drag->.',
+                'content'       => 'Cho \( F \): "Tôi đi ngủ sớm", \( G \): "Tôi thức dậy sớm", \( H \): "Tôi khỏe mạnh". Khi \( F \) sai, \( G \) đúng, \( H \) sai, thì \( \neg F \) là <-Drag->, \( G \lor H \) là <-Drag->.',
                 'type'          => 'DRAG_DROP',
                 'answers'       => [
                     ['content' => "Đúng", 'is_correct' => true],
                     ['content' => "Đúng", 'is_correct' => true],
-                    ['content' => "Sai", 'is_correct' => true],
                     ['content' => "Sai", 'is_correct' => false],
                 ],
                 'marks'       => 0.25,
-                'explanation' => '\( F = \text{false}, G = \text{true}, H = \text{false} \): \( \neg F = \text{true}, G \lor H = \text{true}, F \land G = \text{false} \).',
+                'explanation' => '\( F = \text{false}, G = \text{true}, H = \text{false} \): \( \neg F = \text{true}, G \lor H = \text{true} \).',
             ],
         ];
         // get số lượng bản ghi bên exam paper

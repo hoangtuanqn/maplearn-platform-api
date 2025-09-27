@@ -48,19 +48,27 @@ class ExamQuestionController extends BaseApiController
             'options'     => 'nullable|array',
             'options.*.content' => 'required_with:options|string',
             'options.*.is_correct' => 'required_with:options|boolean',
-            'correct'     => 'required|array',
             'explanation' => 'nullable|string',
         ]);
 
         // Chuẩn hóa options
         $options = [];
+        $correctAnswers = [];
         if (!empty($data['options'])) {
             foreach ($data['options'] as $option) {
                 $options[] = [
                     'content' => $option['content'],
-                    'is_correct' => $option['is_correct'],
                 ];
+                if (isset($option['is_correct']) && $option['is_correct']) {
+                    $correctAnswers[] = $option['content'];
+                }
             }
+        }
+        // Check nếu điểm vượt quá max_score của đề thi
+        $examPaper = ExamPaper::find($data['exam_paper_id']);
+        $totalMarks = $examPaper->questions()->sum('marks');
+        if ($totalMarks + $data['marks'] > $examPaper->max_score) {
+            return $this->errorResponse(null, 'Tổng điểm câu hỏi vượt quá điểm tối đa của đề thi', 400);
         }
 
         $examQuestion = ExamQuestion::create([
@@ -69,7 +77,7 @@ class ExamQuestionController extends BaseApiController
             'content'     => $data['content'],
             'marks'       => $data['marks'],
             'options'     => $options,
-            'correct'     => $data['correct'],
+            'correct'     => $correctAnswers,
             'explanation' => $data['explanation'] ?? null,
         ]);
 
@@ -105,6 +113,13 @@ class ExamQuestionController extends BaseApiController
                     'content' => $option['content'],
                 ];
             }
+        }
+
+        // Check nếu điểm vượt quá max_score của đề thi
+        $examPaper = $exam_question->examPaper;
+        $totalMarks = $examPaper->questions()->where('id', '!=', $exam_question->id)->sum('marks');
+        if ($totalMarks + $data['marks'] > $examPaper->max_score) {
+            return $this->errorResponse(null, 'Tổng điểm câu hỏi vượt quá điểm tối đa của đề thi', 400);
         }
 
         // Cập nhật câu hỏi
