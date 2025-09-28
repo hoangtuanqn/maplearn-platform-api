@@ -58,16 +58,21 @@ class LessonViewHistoryController extends BaseApiController
             $query->where('course_id', $courseId);
         })->where('is_completed', true)->count();
 
-        $lessonView = LessonViewHistory::updateOrCreate(
-            [
-                'user_id'   => $user->id,
-                'lesson_id' => $data['lesson_id'],
-            ],
-            [
-                'progress'     => $data['progress'],
-                'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress']),
-            ]
-        );
+        // nếu đã xem video xong rồi thì k có update gì nữa
+        if ($existingView && $existingView->is_completed) {
+            $lessonView = $existingView;
+        } else {
+            $lessonView = LessonViewHistory::updateOrCreate(
+                [
+                    'user_id'   => $user->id,
+                    'lesson_id' => $data['lesson_id'],
+                ],
+                [
+                    'progress'     => $data['progress'],
+                    'is_completed' => ($courseLesson->duration - 30 <= $data['progress']),
+                ]
+            );
+        }
         // Check xem người dùng đã có chứng chỉ chưa
         $isCertificateExist = Certificate::where('user_id', $user->id)->where('course_id', $courseId)->exists();
         if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed && !$isCertificateExist) {

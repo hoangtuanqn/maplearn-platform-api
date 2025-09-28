@@ -6,6 +6,7 @@ use App\Http\Controllers\CourseChapterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\LessonViewHistoryController;
+use App\Http\Controllers\StudentStatsController;
 use Illuminate\Support\Facades\Route;
 
 // Lấy chương học theo slug
@@ -41,3 +42,7 @@ Route::apiResource('lesson-history', LessonViewHistoryController::class)->middle
 
 Route::get("/certificates/{certificate}/", [CertificateController::class, 'getInfoCertificate']);
 Route::apiResource('courses-admin', AdminCourseController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
+Route::prefix('courses-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'])->group(function () {
+    Route::get('/{course}/student/{id}/stats', [StudentStatsController::class, 'getInfoStats']);
+    // Route::get('/{course}/enrollments', [AdminCourseController::class, 'getRegistrations']);
+});
