@@ -454,6 +454,7 @@ class CourseController extends BaseApiController
         // Sử dụng QueryBuilder để lấy danh sách học viên với các filter
         $students = QueryBuilder::for($course->students())
             ->allowedFilters([
+                'full_name',
                 AllowedFilter::callback('search', function ($query, $value) {
                     // search sẽ tìm kiếm trong full_name, email
                     $query->where(function ($q) use ($value) {
