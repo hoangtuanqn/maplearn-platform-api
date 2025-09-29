@@ -135,10 +135,14 @@ class ExamPaperController extends BaseApiController
     public function detailResultExam(Request $request, ExamPaper $exam, $id = null)
     {
         $user = $request->user();
-
-        $query = ExamAttempt::where('exam_paper_id', $exam->id)
-            ->where('user_id', $user->id)
-            ->whereIn('status', ['submitted', 'detected']);
+        if ($user->hasRole(['admin', 'teacher'])) {
+            $query = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->whereIn('status', ['submitted', 'detected']);
+        } else {
+            $query = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['submitted', 'detected']);
+        }
         if ($id) {
             $query->where('id', $id);
         }

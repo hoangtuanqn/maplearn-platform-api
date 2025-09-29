@@ -7,9 +7,11 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
+use App\Models\User;
 use App\Notifications\CourseCompletedNotification;
 use App\Notifications\CourseCompletionExamRequiredNotification;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class LessonViewHistoryController extends BaseApiController
 {
@@ -132,5 +134,21 @@ class LessonViewHistoryController extends BaseApiController
     public function destroy(LessonViewHistory $lesson)
     {
         //
+    }
+
+    // get lịch sử học của học sinh bất kỳ
+    public function getHistoriesLearning(Request $request, Course $course,  User $user)
+    {
+
+        $lessonIds = $course->lessons->pluck('id')->toArray();
+        $histories = QueryBuilder::for(LessonViewHistory::class)
+            ->where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->with('lesson')
+            ->orderBy('updated_at', 'DESC')
+            ->paginate();
+
+
+        return $this->successResponse($histories, 'Lấy lịch sử học  thành công!', 200);
     }
 }

@@ -40,11 +40,12 @@ class StudentStatsController extends BaseApiController
         }
         return $this->successResponse([
             'total_lessons' => $totalLessons,
-            'total_duration' => round($totalDuration / 60), // chuyển sang phút
+            'total_duration' => round($totalDuration / 60),
             'total_attempt_exam' => $totalAttemptExam,
             'max_streak' => $maxStreak,
             'last_7_days' => $this->statsEnrollmentsLast7Days($course->id, $user->id),
             'exam_attempts' => $this->examAttemptHistories($course->id, $user->id),
+            'last_learned_at' => $user->lessonViewHistories()->whereIn('lesson_id', $lessonIds)->orderBy('updated_at', 'desc')->value('updated_at'),
         ], "Lấy thông tin thống kê học viên thành công");
     }
 
@@ -60,19 +61,18 @@ class StudentStatsController extends BaseApiController
             ->get();
         $stats = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
+            $date = now()->subDays($i)->format('d-m-Y');
             $stats[$date] = [
                 'date' => $date,
                 'lessons_completed' => 0,
                 'total_duration' => 0,
             ];
             foreach ($attemptHistories as $history) {
-                if ($history->updated_at->format('Y-m-d') === $date) {
+                if ($history->updated_at->format('d-m-Y') === $date) {
                     $stats[$date]['lessons_completed']++;
                     $stats[$date]['total_duration'] += $history->progress;
                 }
             }
-            // chia nguyên 60
             $stats[$date]['total_duration'] = round($stats[$date]['total_duration'] / 60);
         }
         return array_values($stats);
@@ -90,8 +90,9 @@ class StudentStatsController extends BaseApiController
         $result = $examAttempts->map(function ($attempt) {
             return [
                 'date' => $attempt->created_at,
-                'title' => optional($attempt->paper)->title,
-                'score' => $attempt->score,
+                'title' => optional($attempt->paper)->title ?? "Bài kiểm tra",
+                'score' => $attempt->score ?? 0,
+                'max_score' => optional($attempt->paper)->max_score ?? 10,
             ];
         });
 

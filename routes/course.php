@@ -44,5 +44,6 @@ Route::get("/certificates/{certificate}/", [CertificateController::class, 'getIn
 Route::apiResource('courses-admin', AdminCourseController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
 Route::prefix('courses-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'])->group(function () {
     Route::get('/{course}/student/{id}/stats', [StudentStatsController::class, 'getInfoStats']);
-    // Route::get('/{course}/enrollments', [AdminCourseController::class, 'getRegistrations']);
+    /// get lịch sử học của học sinh bất kỳ
+    Route::get('/{course}/student/{user}/histories', [LessonViewHistoryController::class, 'getHistoriesLearning']);
 });
