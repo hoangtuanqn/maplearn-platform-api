@@ -40,7 +40,7 @@ class StudentStatsController extends BaseApiController
         }
         return $this->successResponse([
             'total_lessons' => $totalLessons,
-            'total_duration' => $totalDuration,
+            'total_duration' => round($totalDuration / 60), // chuyển sang phút
             'total_attempt_exam' => $totalAttemptExam,
             'max_streak' => $maxStreak,
             'last_7_days' => $this->statsEnrollmentsLast7Days($course->id, $user->id),
@@ -72,6 +72,8 @@ class StudentStatsController extends BaseApiController
                     $stats[$date]['total_duration'] += $history->progress;
                 }
             }
+            // chia nguyên 60
+            $stats[$date]['total_duration'] = round($stats[$date]['total_duration'] / 60);
         }
         return array_values($stats);
     }
