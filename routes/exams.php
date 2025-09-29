@@ -29,7 +29,7 @@ Route::prefix('exams')->middleware('auth.jwt')->group(function () {
     Route::get("/{exam}/check-ranking", [ExamAttemptController::class, 'checkUserRanking']);
 
     // Get bài làm của người dùng (câu hỏi đề thi + đáp án)
-    Route::get("/{exam}/{id}/my-attempts", [ExamAttemptController::class, 'myAttempts']);
+    Route::get("/{exam}/{id}/my-attempts", [ExamAttemptController::class, '<myAt></myAt>tempts']);
 
     // lấy đáp án bài thi (chỉ demo bảo vệ đồ án)
     Route::get("/{exam}/answers", [ExamPaperController::class, 'getAnswersExam']);

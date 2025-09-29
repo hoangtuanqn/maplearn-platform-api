@@ -131,13 +131,11 @@ class ExamPaperController extends BaseApiController
         }
     }
 
-    // Xem chi tiết thông tin bài thi (bài thi cuối cùng, thi gần nhất)
+    // Xem chi tiết thông tin bài thi
     public function detailResultExam(Request $request, ExamPaper $exam, $id = null)
     {
         $user = $request->user();
-        // Kiểm tra id này có phải của người dùng này hay k
 
-        $this->authorize('admin-teacher-owner', $exam);
         $query = ExamAttempt::where('exam_paper_id', $exam->id)
             ->where('user_id', $user->id)
             ->whereIn('status', ['submitted', 'detected']);
