@@ -536,7 +536,7 @@ class CourseController extends BaseApiController
                 ->first();
 
             $lessonsInWeek = $recentActivity->lessons_count ?? 0;
-            $hoursInWeek = $recentActivity->total_progress ? round($recentActivity->total_progress / 60, 2) : 0;
+            $hoursInWeek = $recentActivity->total_progress ? round($recentActivity->total_progress / 60) : 0;
 
             // Xác định trạng thái
             $status = 'Đang học';

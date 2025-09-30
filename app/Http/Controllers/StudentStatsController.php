@@ -45,8 +45,11 @@ class StudentStatsController extends BaseApiController
         // tỉ lệ hoàn thành khóa học (tổng video đã học xong / tổng số video của khóa học)
         $completionRate = $totalLessons > 0 ? round($totalLessons / $course->lessons->count() * 100) : 0;
 
+        // số bài thi không vi phạm
+        $noViolationCount = $course->exam->examAttempts()->where('user_id', $user->id)->where('violation_count', 0)->count();
         // số lần vi phạm bài thi
         $violationCount = $course->exam->examAttempts()->where('user_id', $user->id)->sum('violation_count');
+
 
         // tiến độ theo chương học (bao nhiêu % hoàn thành)
         $chapterProgress = $course->chapters->map(function ($chapter) use ($user) {
@@ -75,6 +78,7 @@ class StudentStatsController extends BaseApiController
             'last_learned_at' => $user->lessonViewHistories()->whereIn('lesson_id', $lessonIds)->orderBy('updated_at', 'desc')->value('updated_at'),
             'highest_score' => $highestScore,
             'completion_rate' => $completionRate,
+            'no_violation_count' => $noViolationCount,
             'violation_count' => $violationCount,
             'chapter_progress' => $chapterProgress,
             'max_score_exam_paper' => $course->exam->paper->max_score ?? 10,
@@ -120,11 +124,16 @@ class StudentStatsController extends BaseApiController
             ->get();
 
         $result = $examAttempts->map(function ($attempt) {
+            $paper = $attempt->paper;
             return [
+                'id' => $attempt->id,
+                'slug_exam' => $paper->slug ?? null,
                 'date' => $attempt->created_at,
-                'title' => $attempt->paper->title ?? "Bài kiểm tra",
+                'title' => $paper->title ?? "Bài kiểm tra",
                 'score' => $attempt->score ?? 0,
-                'max_score' => $attempt->paper->max_score ?? 10,
+                'pass_score' => $paper->pass_score ?? 5,
+                'max_score' => $paper->max_score ?? 10,
+                'created_at' => $attempt->created_at,
             ];
         });
 

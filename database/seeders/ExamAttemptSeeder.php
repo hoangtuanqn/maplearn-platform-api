@@ -37,7 +37,11 @@ class ExamAttemptSeeder extends Seeder
                         'score' => rand(5, 10), // điểm từ 5-10
                         'submitted_at' => $createAt->addMinutes(rand(10, $exam->duration_minutes)),
                         'violation_count' => rand(0, 2),
-                        'details' => '{"start": 1759211781, "answers": [], "questionActive": 0}',
+                        'details' => [
+                            'start' => time(),
+                            'answers' => [],
+                            'questionActive' => 0,
+                        ],
                         'created_at' => $createAt,
                         'status' => 'submitted',
                     ]);
