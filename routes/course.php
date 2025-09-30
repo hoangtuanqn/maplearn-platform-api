@@ -10,7 +10,7 @@ use App\Http\Controllers\StudentStatsController;
 use Illuminate\Support\Facades\Route;
 
 // Lấy chương học theo slug
-Route::apiResource('chapters', CourseChapterController::class)->middleware('auth.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
+Route::apiResource('chapters', CourseChapterController::class)->middleware('auth.optional.jwt')->middlewareFor(['store', 'update', 'destroy'], 'auth.jwt');
 // Route::get('/chapters/{slug}', [CourseChapterController::class, 'show']);
 // Route::post('/chapters/{slug}', [CourseChapterController::class, 'store'])->middleware('auth.jwt');
 // Data được cắt gọn để gửi cho AI
@@ -46,4 +46,6 @@ Route::prefix('courses-admin')->middleware(['auth.jwt', 'check.role:admin,teache
     Route::get('/{course}/student/{id}/stats', [StudentStatsController::class, 'getInfoStats']);
     /// get lịch sử học của học sinh bất kỳ
     Route::get('/{course}/student/{user}/histories', [LessonViewHistoryController::class, 'getHistoriesLearning']);
+    // get tất cả học sinh của khóa học (ko phân trang)
+    Route::get('/{course}/students', [AdminCourseController::class, 'getAllStudents']);
 });

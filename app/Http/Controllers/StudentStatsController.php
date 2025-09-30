@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -38,7 +39,33 @@ class StudentStatsController extends BaseApiController
             $maxStreak = max($maxStreak, $currentStreak);
             $previousDate = $date;
         }
+        // điểm thi cao nhất
+        $highestScore = $course->exam->examAttempts()->where('user_id', $user->id)->max('score');
+
+        // tỉ lệ hoàn thành khóa học (tổng video đã học xong / tổng số video của khóa học)
+        $completionRate = $totalLessons > 0 ? round($totalLessons / $course->lessons->count() * 100) : 0;
+
+        // số lần vi phạm bài thi
+        $violationCount = $course->exam->examAttempts()->where('user_id', $user->id)->sum('violation_count');
+
+        // tiến độ theo chương học (bao nhiêu % hoàn thành)
+        $chapterProgress = $course->chapters->map(function ($chapter) use ($user) {
+            $lessonIds = $chapter->lessons->pluck('id')->toArray();
+            $completedLessons = $user->lessonViewHistories()->where('is_completed', 1)->whereIn('lesson_id', $lessonIds)->count();
+            $totalLessons = count($lessonIds);
+            return [
+                'chapter_id' => $chapter->id,
+                'chapter_title' => $chapter->title,
+                'completion_rate' => $totalLessons > 0 ? round($completedLessons / $totalLessons * 100) : 0,
+            ];
+        });
+
+        // trả về thông tin
         return $this->successResponse([
+            'full_name' => $user->full_name,
+            'avatar' => $user->avatar,
+            'email' => $user->email,
+            'enrolled_at' => $user->purchasedCourses()->where('course_id', $course->id)->value('created_at'),
             'total_lessons' => $totalLessons,
             'total_duration' => round($totalDuration / 60),
             'total_attempt_exam' => $totalAttemptExam,
@@ -46,6 +73,11 @@ class StudentStatsController extends BaseApiController
             'last_7_days' => $this->statsEnrollmentsLast7Days($course->id, $user->id),
             'exam_attempts' => $this->examAttemptHistories($course->id, $user->id),
             'last_learned_at' => $user->lessonViewHistories()->whereIn('lesson_id', $lessonIds)->orderBy('updated_at', 'desc')->value('updated_at'),
+            'highest_score' => $highestScore,
+            'completion_rate' => $completionRate,
+            'violation_count' => $violationCount,
+            'chapter_progress' => $chapterProgress,
+            'max_score_exam_paper' => $course->exam->paper->max_score ?? 10,
         ], "Lấy thông tin thống kê học viên thành công");
     }
 
@@ -90,9 +122,9 @@ class StudentStatsController extends BaseApiController
         $result = $examAttempts->map(function ($attempt) {
             return [
                 'date' => $attempt->created_at,
-                'title' => optional($attempt->paper)->title ?? "Bài kiểm tra",
+                'title' => $attempt->paper->title ?? "Bài kiểm tra",
                 'score' => $attempt->score ?? 0,
-                'max_score' => optional($attempt->paper)->max_score ?? 10,
+                'max_score' => $attempt->paper->max_score ?? 10,
             ];
         });
 
