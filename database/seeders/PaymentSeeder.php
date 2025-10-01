@@ -15,7 +15,7 @@ class PaymentSeeder extends Seeder
     public function run(): void
     {
 
-        for ($i = 1; $i <= 200; ++$i) {
+        for ($i = 1; $i <= 1000; ++$i) {
             $course = Course::where('start_date', '<=', now())
                 // ->whereNotIn('id', Payment::pluck('course_id'))
                 ->inRandomOrder()

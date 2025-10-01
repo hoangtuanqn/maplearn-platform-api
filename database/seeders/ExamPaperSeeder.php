@@ -84,7 +84,7 @@ class ExamPaperSeeder extends Seeder
         ];
 
         $count = count($examPapers);
-        $maxCount = 200;
+        $maxCount = 1000;
         for ($i = $count + 1; $i <= $maxCount; $i++) {
             $subject = $subjectsForName[array_rand($subjectsForName)];
             $type = $examTypes[array_rand($examTypes)];
@@ -96,7 +96,8 @@ class ExamPaperSeeder extends Seeder
         $gradeLevels = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories  = ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'];
         foreach ($examPapers as $key => $paper) {
-            $status = ($maxCount - $key) > 81;
+            // 81 ở đây là 81 khóa học
+            $status = $key < 81;
             ExamPaper::create([
                 'title'                     => $paper,
                 'user_id'                   => 8,
@@ -113,7 +114,7 @@ class ExamPaperSeeder extends Seeder
                 'max_attempts'              => $status ? null : 3,
                 'start_time'                => now(),
                 'password'                  => $status ? null : GoogleAuthenService::generateSecret2FA($paper)['secret'],
-                'created_at'                => now()->subDays(rand(0, 28)),
+                'created_at'                => now()->subDays(rand(0, 365)),
             ]);
         }
     }

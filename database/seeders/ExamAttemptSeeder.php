@@ -35,8 +35,10 @@ class ExamAttemptSeeder extends Seeder
                         'user_id' => $payment->user_id,
                         'exam_paper_id' => $course->exam->id,
                         'score' => rand(5, 10), // điểm từ 5-10
+                        'started_at' => $createAt,
                         'submitted_at' => $createAt->addMinutes(rand(10, $exam->duration_minutes)),
                         'violation_count' => rand(0, 2),
+                        'time_spent' => rand(10, $exam->duration_minutes) * 60,
                         'details' => [
                             'start' => time(),
                             'answers' => [],

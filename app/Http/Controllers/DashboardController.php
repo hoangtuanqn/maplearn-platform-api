@@ -14,15 +14,21 @@ class DashboardController extends BaseApiController
 
     public function getDashboardData(Request $request)
     {
+        // Validate start_date và end_date nếu có
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
         $data = [
-            'total'               => $this->getTotal(),
-            'total_in_12_months'  => $this->getTotalIn12Months(),
-            'total_last_month'    => $this->getTotalLastMonth(),
-            'total_in_this_year'  => $this->getTotalInThisYear(),
-            'total_courses'       => $this->getTotalCourses(),
-            'total_exams'         => $this->getTotalExams(),
-            'total_users'         => $this->getTotalUsers(),
-            'payment_methods'     => $this->getPaymentMethods(),
+            'total_in_this_year'  => $this->getTotalInThisYear($startDate, $endDate),
+            'total_courses'       => $this->getTotalCourses($startDate, $endDate),
+            'total_exams'         => $this->getTotalExams($startDate, $endDate),
+            'total_users'         => $this->getTotalUsers($startDate, $endDate),
+            'payment_methods'     => $this->getPaymentMethods($startDate, $endDate),
             'courses_by_category' => $this->getCoursesByCategory(),
             'new_users'           => $this->getNewUsers(),
             'new_payments'        => $this->getNewPayments(),
@@ -32,75 +38,115 @@ class DashboardController extends BaseApiController
         ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
     }
-    // tính tổng doanh thu
-    public function getTotal(): int
-    {
-        $total = Payment::where('status', 'paid')->sum('amount');
-        return $total;
-    }
-    // tỉnh tổng doanh thu trong 12 tháng
-    public function getTotalIn12Months(): int
-    {
-        $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)->sum('amount');
-        return $total;
-    }
 
-    // tỉnh doanh thu tháng trước
-    public function getTotalLastMonth(): int
+
+    // tính tổng doanh thu trong năm nay (tính từ tháng 1 năm nay) hoặc theo khoảng thời gian
+    private function getTotalInThisYear($startDate = null, $endDate = null): array
     {
-        $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)
-            ->whereMonth('paid_at', now()->subMonth()->month)
-            ->sum('amount');
-        return $total;
-    }
-    // tỉnh tổng doanh thu tháng này (trong 1 năm) trả về array(mỗi phần tử chứa số tiền từng tháng)
-    public function getTotalInThisYear(): array
-    {
-        $totals = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $total = Payment::where('status', 'paid')->whereYear('paid_at', now()->year)
-                ->whereMonth('paid_at', $month)
-                ->sum('amount');
-            $totals[] = (int)$total;
+        // Nếu không truyền start_date và end_date thì lấy từ đầu năm đến cuối năm hiện tại
+        if (!$startDate || !$endDate) {
+            $startDate = now()->startOfYear()->toDateString();
+            $endDate = now()->endOfYear()->toDateString();
         }
-        return $totals;
+
+        // Tạo danh sách các tháng trong khoảng thời gian
+        $start = \Carbon\Carbon::parse($startDate)->startOfMonth();
+        $end = \Carbon\Carbon::parse($endDate)->endOfMonth();
+        $months = [];
+        $current = $start->copy();
+        while ($current <= $end) {
+            $months[$current->format('Y-m')] = 0;
+            $current->addMonth();
+        }
+
+        // Lấy tổng tiền theo từng tháng trong khoảng thời gian
+        $payments = Payment::where('status', 'paid')
+            ->whereBetween('paid_at', [$startDate, $endDate])
+            ->selectRaw('DATE_FORMAT(paid_at, "%Y-%m") as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        foreach ($payments as $payment) {
+            $months[$payment->month] = (int)$payment->total;
+        }
+
+        return $months;
     }
 
-    // tỉnh tổng khóa học đang có
-    public function getTotalCourses(): int
+
+    private function getTotalCourses($startDate = null, $endDate = null): int
     {
-        $total = Course::whereYear('created_at', now()->year)->count();
-        return $total;
+        // Nếu không truyền start_date và end_date thì filter trong năm nay (từ tháng 1)
+        if (!$startDate || !$endDate) {
+            $startOfYear = now()->startOfYear();
+            $endOfYear = now()->endOfYear();
+            return Course::whereBetween('created_at', [$startOfYear, $endOfYear])->count();
+        }
+
+        // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
+        return Course::whereBetween('created_at', [$startDate, $endDate])->count();
     }
 
-    // tỉnh tổng đề thi đang có
-    public function getTotalExams(): int
+
+    private function getTotalExams($startDate = null, $endDate = null): int
     {
-        $total = ExamPaper::whereYear('created_at', now()->year)->count();
-        return $total;
+        // Nếu không truyền start_date và end_date thì filter trong năm nay (từ tháng 1)
+        if (!$startDate || !$endDate) {
+            $startOfYear = now()->startOfYear();
+            $endOfYear = now()->endOfYear();
+            return ExamPaper::whereBetween('created_at', [$startOfYear, $endOfYear])->count();
+        }
+
+        // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
+        return ExamPaper::whereBetween('created_at', [$startDate, $endDate])->count();
     }
 
-    // tỉnh tổng người dùng đang có
-    public function getTotalUsers(): int
+    // tính tổng người dùng student được tạo trong khoảng thời gian
+    private function getTotalUsers($startDate = null, $endDate = null): int
     {
-        $total = User::where('role', 'student')->whereYear('created_at', now()->year)->count();
-        return $total;
+        // Nếu không truyền start_date và end_date thì filter trong năm nay (từ tháng 1)
+        if (!$startDate || !$endDate) {
+            $startOfYear = now()->startOfYear();
+            $endOfYear = now()->endOfYear();
+            return User::where('role', 'student')
+                ->whereBetween('created_at', [$startOfYear, $endOfYear])
+                ->count();
+        }
+
+        // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
+        return User::where('role', 'student')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
     }
 
-    // tính số lần thanh toán (theo phương thức thanh toán). VD: VNPAY: 10, MOMO: 5
-    public function getPaymentMethods(): array
+    // tính số lần thanh toán theo phương thức trong khoảng thời gian. VD: VNPAY: 10, MOMO: 5
+    private function getPaymentMethods($startDate = null, $endDate = null): array
     {
-        $methods = Payment::whereYear('paid_at', now()->year)->where('status', 'paid')->select('payment_method')
+        $query = Payment::where('status', 'paid');
+
+        // Nếu không truyền start_date và end_date thì filter trong năm nay (từ tháng 1)
+        if (!$startDate || !$endDate) {
+            $startOfYear = now()->startOfYear();
+            $endOfYear = now()->endOfYear();
+            $query->whereBetween('paid_at', [$startOfYear, $endOfYear]);
+        } else {
+            // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
+            $query->whereBetween('paid_at', [$startDate, $endDate]);
+        }
+
+        $methods = $query->select('payment_method')
             ->selectRaw('COUNT(*) as count')
             ->groupBy('payment_method')
             ->get()
             ->pluck('count', 'payment_method')
             ->toArray();
+
         return $methods;
     }
 
     // phân bổ khóa học theo danh mục (trả về tên danh mục + số khóa học trong đó)
-    public function getCoursesByCategory(): array
+    private function getCoursesByCategory(): array
     {
         $categories = Course::select('category')
             ->selectRaw('COUNT(*) as count')
@@ -112,7 +158,7 @@ class DashboardController extends BaseApiController
     }
 
     // get thông tin 4 người dùng mới (full_name, email)
-    public function getNewUsers(): array
+    private function getNewUsers(): array
     {
         $users = User::select('id', 'full_name', 'avatar', 'email', 'role', 'created_at')
             ->orderBy('created_at', 'desc')
@@ -125,7 +171,7 @@ class DashboardController extends BaseApiController
     }
 
     // get 4 hóa đơn được thanh toán mới nhất
-    public function getNewPayments(): array
+    private function getNewPayments(): array
     {
         $payments = Payment::where('status', 'paid')
             ->with(['user:id,full_name', 'course:id,name,slug']) // Thêm slug vào select
@@ -146,7 +192,7 @@ class DashboardController extends BaseApiController
     }
 
     // get 4 khóa học có số học viên cao nhất ( chỉ return về name, số học viên, doanh thu bán được)
-    public function getTopCourses(): array
+    private function getTopCourses(): array
     {
         $courses = Course::withCount('students')
             ->withSum('payments', 'amount')
@@ -167,7 +213,7 @@ class DashboardController extends BaseApiController
     }
 
     // lịch sử hoạt động trong 12 tháng (tính từ tháng 1 năm nay đến tháng 12) (Khóa học mới, người dùng mới, đề thi mới - chỉ tính số lượng)
-    public function getActivityIn12Months(): array
+    private function getActivityIn12Months(): array
     {
         $activities = [];
         $year = now()->year;
@@ -190,7 +236,7 @@ class DashboardController extends BaseApiController
     }
 
     // get thông tin người dùng mới, khóa học mới, đề thi mới trong 1 tháng vừa qua
-    public function getRecentActivity(): array
+    private function getRecentActivity(): array
     {
         $startOfMonth = now()->startOfMonth();
         $endOfMonth   = now()->endOfMonth();

@@ -77,7 +77,7 @@ class UserFactory extends Factory
             'banned'            => 0,
             'email_verified_at' => now(),
             'remember_token'    => Str::random(10),
-            'created_at'        => now()->subDays(rand(0, 60)),
+            'created_at'        => now()->subDays(rand(0, 365)),
         ];
     }
 

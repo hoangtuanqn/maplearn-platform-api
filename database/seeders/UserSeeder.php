@@ -148,6 +148,6 @@ class UserSeeder extends Seeder
 
         User::insert($insertData);
 
-        User::factory(100)->create();
+        User::factory(600)->create();
     }
 }
