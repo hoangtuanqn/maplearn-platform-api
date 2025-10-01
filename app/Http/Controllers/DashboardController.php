@@ -27,7 +27,7 @@ class DashboardController extends BaseApiController
             'new_users'           => $this->getNewUsers(),
             'new_payments'        => $this->getNewPayments(),
             'top_courses'         => $this->getTopCourses(),
-            'activity_in_4_weeks' => $this->getActivityIn4Weeks(),
+            'activity_in_12_months' => $this->getActivityIn12Months(),
             'recent_activity'     => $this->getRecentActivity(),
         ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
@@ -69,28 +69,28 @@ class DashboardController extends BaseApiController
     // tỉnh tổng khóa học đang có
     public function getTotalCourses(): int
     {
-        $total = Course::count();
+        $total = Course::whereYear('created_at', now()->year)->count();
         return $total;
     }
 
     // tỉnh tổng đề thi đang có
     public function getTotalExams(): int
     {
-        $total = ExamPaper::count();
+        $total = ExamPaper::whereYear('created_at', now()->year)->count();
         return $total;
     }
 
     // tỉnh tổng người dùng đang có
     public function getTotalUsers(): int
     {
-        $total = User::count();
+        $total = User::where('role', 'student')->whereYear('created_at', now()->year)->count();
         return $total;
     }
 
     // tính số lần thanh toán (theo phương thức thanh toán). VD: VNPAY: 10, MOMO: 5
     public function getPaymentMethods(): array
     {
-        $methods = Payment::where('status', 'paid')->select('payment_method')
+        $methods = Payment::whereYear('paid_at', now()->year)->where('status', 'paid')->select('payment_method')
             ->selectRaw('COUNT(*) as count')
             ->groupBy('payment_method')
             ->get()
@@ -166,27 +166,27 @@ class DashboardController extends BaseApiController
         return $courses;
     }
 
-    // lịch sử hoạt động trong 4 tuần gần đây (Khóa học mới, người dùng mới, đề thi mới - chỉ tính số lượng)
-    public function getActivityIn4Weeks(): array
+    // lịch sử hoạt động trong 12 tháng (tính từ tháng 1 năm nay đến tháng 12) (Khóa học mới, người dùng mới, đề thi mới - chỉ tính số lượng)
+    public function getActivityIn12Months(): array
     {
         $activities = [];
-        for ($week = 0; $week < 4; $week++) {
-            $startOfWeek = now()->subWeeks($week)->startOfWeek();
-            $endOfWeek   = now()->subWeeks($week)->endOfWeek();
+        $year = now()->year;
+        for ($month = 1; $month <= 12; $month++) {
+            $startOfMonth = now()->setDate($year, $month, 1)->startOfMonth();
+            $endOfMonth = now()->setDate($year, $month, 1)->endOfMonth();
 
-
-            $newCourses = Course::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
-            $newUsers   = User::whereBetween('created_at', [$startOfWeek, $endOfWeek])->where('role', 'student')->count();
-            $newExams   = ExamPaper::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
+            $newCourses = Course::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+            $newUsers   = User::whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('role', 'student')->count();
+            $newExams   = ExamPaper::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
 
             $activities[] = [
-                'week'        => "Tuần " . (4 - $week),
-                'new_courses' => $newCourses,
-                'new_users'   => $newUsers,
-                'new_exams'   => $newExams,
+                'month'        => $startOfMonth->format('m-Y'),
+                'new_courses'  => $newCourses,
+                'new_users'    => $newUsers,
+                'new_exams'    => $newExams,
             ];
         }
-        return array_reverse($activities);
+        return $activities;
     }
 
     // get thông tin người dùng mới, khóa học mới, đề thi mới trong 1 tháng vừa qua
