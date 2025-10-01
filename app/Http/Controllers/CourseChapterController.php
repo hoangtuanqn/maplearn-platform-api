@@ -50,7 +50,7 @@ class CourseChapterController extends BaseApiController
         // Lấy slug của chương học từ route
         // Eager load lessons qua quan hệ
         $course = Course::with(['chapters' => function ($query) {
-            $query->orderBy('position', 'desc')->orderBy('created_at', 'desc');
+            $query->orderBy('position', 'desc')->orderBy('updated_at', 'desc');
         }, 'chapters.lessons'])->where('slug', $slug)->firstOrFail();
 
         $course->chapters->each(function ($chapter) {
@@ -69,9 +69,16 @@ class CourseChapterController extends BaseApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CourseChapter $courseChapter)
+    public function update(Request $request, CourseChapter $chapter)
     {
-        //
+        // dữ liệu truyền lên gồm title, position
+        Gate::authorize('admin-teacher');
+        $data = $request->validate([
+            'title'    => 'required|string|max:255',
+            'position' => 'required|integer|min:1',
+        ]);
+        $chapter->update($data);
+        return $this->successResponse($chapter, 'Cập nhật chương học thành công');
     }
 
     /**
