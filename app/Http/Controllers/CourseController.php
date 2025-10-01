@@ -397,7 +397,7 @@ class CourseController extends BaseApiController
         $data = $course->payments()
             ->where('status', 'paid')
             ->where('paid_at', '>=', Carbon::now()->subDays(7))
-            ->selectRaw('DATE(paid_at) as date, COUNT(*) as student_count')
+            ->selectRaw('DATE(paid_at) as date, COUNT(*) as student_count, sum(amount) as revenue')
             ->groupBy('date')
             ->orderBy('date', 'ASC')
             ->get();
@@ -405,6 +405,7 @@ class CourseController extends BaseApiController
         // Format date
         $data->transform(function ($item) {
             $item->date = Carbon::parse($item->date)->format('d-m');
+            $item->revenue = (int)$item->revenue;
             return $item;
         });
 

@@ -98,6 +98,7 @@ class ExamPaperSeeder extends Seeder
         foreach ($examPapers as $key => $paper) {
             // 81 ở đây là 81 khóa học
             $status = $key < 81;
+            $rand = rand(0, 365);
             ExamPaper::create([
                 'title'                     => $paper,
                 'user_id'                   => 8,
@@ -112,9 +113,9 @@ class ExamPaperSeeder extends Seeder
                 'status'                    => $status,
                 'anti_cheat_enabled'        => !$status,
                 'max_attempts'              => $status ? null : 3,
-                'start_time'                => now(),
+                'start_time'                => now()->subDays(max(0, $rand - 40)),
                 'password'                  => $status ? null : GoogleAuthenService::generateSecret2FA($paper)['secret'],
-                'created_at'                => now()->subDays(rand(0, 365)),
+                'created_at'                => now()->subDays($rand),
             ]);
         }
     }
