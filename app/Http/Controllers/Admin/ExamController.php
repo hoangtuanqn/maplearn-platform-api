@@ -60,7 +60,7 @@ class ExamController extends BaseApiController
             $item->registered_count = $item->examAttempts()->count();
             return $item;
         });
-       
+
 
         return $this->successResponse($exams, 'Lấy danh sách đề thi thành công!');
     }
@@ -98,6 +98,7 @@ class ExamController extends BaseApiController
             'max_violation_attempts' => 'nullable|integer|min:0',
             'questions'              => 'required|array|min:1',
             'is_password_protected'  => 'nullable|boolean',
+            'status'                 => 'required|boolean',
         ]);
 
         // Validate từng câu hỏi
@@ -143,6 +144,7 @@ class ExamController extends BaseApiController
                 'max_violation_attempts' => $examData['max_violation_attempts'] ?? 3,
                 'user_id'                => $user->id,
                 'password'               => ($examData['is_password_protected'] ?? false) ? GoogleAuthenService::generateSecret2FA($examData['title'])['secret'] : null,
+                'status'                 => $examData['status'] ?? true,
             ];
 
 
