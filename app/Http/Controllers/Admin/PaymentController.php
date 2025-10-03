@@ -145,7 +145,7 @@ class PaymentController extends BaseApiController
             'total_payments' => $totalPayments,
             'total_revenue' => (int)$totalRevenue,
             'total_students' => $uniqueStudents,
-            'average_order_value' => round($averageOrderValue, 2),
+            'average_order_value' => round($averageOrderValue / 1000) * 1000,
             'total_courses_sold' => $uniqueCourses,
             'date_from' => $dateFrom,
             'date_to' => $dateTo,
