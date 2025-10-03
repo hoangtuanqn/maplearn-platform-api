@@ -225,6 +225,7 @@ class ExamController extends BaseApiController
             'is_password_protected'  => 'nullable|boolean',
             'start_time'             => 'nullable|date',
             'end_time'               => 'nullable|date|after:start_time',
+            'status'                 => 'required|boolean',
         ]);
         if ($data['is_password_protected']) {
             if (!$exams_admin->password) {
