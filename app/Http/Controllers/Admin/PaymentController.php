@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Invoice\SearchFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\Payment;
@@ -21,12 +22,9 @@ class PaymentController extends BaseApiController
 
         $paymentsQuery = QueryBuilder::for(Payment::class)
             ->allowedFilters([
-                "search",
                 "payment_method",
                 "status",
-                // "date_from",
-                // "date_to",
-                AllowedFilter::partial('search', 'username.full_name'),
+                AllowedFilter::custom('search', new SearchFilter),
                 AllowedFilter::callback('amount_min', function ($query, $value) {
                     if ($value !== null && $value !== '') {
                         $query->where('amount', '>=', (float) $value);
