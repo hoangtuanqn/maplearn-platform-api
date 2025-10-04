@@ -575,4 +575,23 @@ class CourseController extends BaseApiController
 
         return $this->successResponse($students, 'Lấy danh sách học viên đăng ký khóa học thành công!');
     }
+
+
+    // function này chỉ demo lúc bảo vệ đồ án (completeDemoCourse)
+    public function completeDemoCourse(Request $request, Course $course)
+    {
+        $lessons = $course->lessons;
+        $user = $request->user();
+        foreach ($lessons as $key => $lesson) {
+            // video cuối cùng sẽ không hoàn thành (để tự làm tự hoàn thành)
+            if ($key === $lessons->count() - 1) {
+                break;
+            }
+            LessonViewHistory::updateOrCreate(
+                ['user_id' => $user->id, 'lesson_id' => $lesson->id],
+                ['progress' => $lesson->duration, 'is_completed' => true]
+            );
+        }
+        return $this->successResponse(null, 'Đã hoàn thành demo khóa học!');
+    }
 }

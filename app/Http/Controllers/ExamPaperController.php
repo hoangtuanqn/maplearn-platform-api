@@ -7,6 +7,7 @@ use App\Filters\PaperExam\DifficultiesSlugFilter;
 use App\Filters\PaperExam\ProvincesSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Certificate;
+use App\Models\Course;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Notifications\CourseCompletedNotification;
@@ -72,9 +73,11 @@ class ExamPaperController extends BaseApiController
             return $this->errorResponse(null, 'Đề thi đã kết thúc!', 400);
         }
         if ($exam->status == false) {
-            // check người dùng đã mua khóa học có đề thi này chưa
-            if (!$user || !$user->purchasedCourses()->where('exam_paper_id', $exam->id)->exists()) {
-                return $this->errorResponse(null, 'Đề thi không tồn tại!', 404);
+            // kiểm tra đề thi này có thuộc khóa học nào không và nếu có thì check người dùng đã mua khóa học có đề thi này chưa
+            if (Course::where('exam_paper_id', $exam->id)->exists()) {
+                if (!$user || !$user->purchasedCourses()->where('exam_paper_id', $exam->id)->exists()) {
+                    return $this->errorResponse(null, 'Đề thi không tồn tại!', 404);
+                }
             }
         }
 

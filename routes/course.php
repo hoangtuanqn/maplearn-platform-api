@@ -33,6 +33,9 @@ Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
 
     // gửi email khi hoàn thành khóa học
     Route::post('/{course}/send-completion-email', [LessonViewHistoryController::class, 'sendCourseCompletionEmail']);
+
+    // demo tính năng hoàn thành khóa học
+    Route::post('/{course}/complete-demo', [CourseController::class, 'completeDemoCourse']);
 });
 Route::prefix('courses')->group(function () {
     Route::post('/recommended', [CourseController::class, 'recommended']);

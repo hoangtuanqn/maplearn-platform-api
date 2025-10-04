@@ -22,4 +22,14 @@ class LessonViewHistory extends Model
     {
         return $this->belongsTo(CourseLesson::class, 'lesson_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function chapter()
+    {
+        return $this->belongsTo(CourseChapter::class, 'chapter_id');
+    }
 }

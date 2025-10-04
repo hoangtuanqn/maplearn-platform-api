@@ -18,9 +18,15 @@ class LessonViewHistoryController extends BaseApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $limit = $request->query('limit', 10);
+        $histories = QueryBuilder::for(LessonViewHistory::class)
+            ->with('user:id,full_name,avatar,email')
+            ->with('lesson.chapter:id,title')
+            ->orderBy('updated_at', 'DESC')
+            ->paginate($limit);
+        return $this->successResponse($histories, 'Lấy lịch sử học  thành công!', 200);
     }
 
     /**
