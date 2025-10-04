@@ -22,6 +22,10 @@ class PaymentController extends BaseApiController
     public function store(Request $request)
     {
         $user = $request->user();
+        // cần xác thực email
+        if (!$user->hasVerifiedEmail()) {
+            return $this->errorResponse(null, 'Vui lòng xác thực email của bạn để tiếp tục!', 400);
+        }
         $data = $request->validate([
             'course_id'      => 'required|exists:courses,id',
             'payment_method' => 'required|in:transfer,vnpay,momo,zalopay',
