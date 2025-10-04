@@ -26,7 +26,7 @@ class LessonViewHistoryController extends BaseApiController
             ->with('lesson.chapter:id,title')
             ->orderBy('updated_at', 'DESC')
             ->paginate($limit);
-        return $this->successResponse($histories, 'Lấy lịch sử học  thành công!', 200);
+        return $this->successResponse($histories, 'Lấy lịch sử học thành công!', 200);
     }
 
     /**
