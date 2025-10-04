@@ -45,7 +45,7 @@ class CourseCompletionExamRequiredNotification extends Notification implements S
             ->line('- Điểm cần đạt: **' . $this->exam->pass_score . '/' . $this->exam->max_score . '**')
             ->line('- Số câu hỏi: **' . $this->exam->question_count . '**')
             ->line('- Thời gian làm bài: **' . $this->exam->duration_minutes . ' phút**')
-            ->line('- Kiểm tra gian lận: **' . $this->exam->anti_cheat_enabled ? 'Có' : 'Không' . '**')
+            ->line('- Kiểm tra gian lận: **' . (($this->exam->anti_cheat_enabled ? 'Có' : 'Không') . '**'))
             ->action('Bắt đầu bài kiểm tra', env('APP_URL_FRONT_END') . '/exams/' . $this->exam->slug . '/start')
             ->line('Hãy coi đây là bước kiểm chứng cho những gì bạn đã học được. Chúc bạn thật tự tin và đạt kết quả xuất sắc!');
     }
