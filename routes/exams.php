@@ -43,11 +43,9 @@ Route::prefix('exams')->group(function () {
 
 // Route exam cho admin, teacher
 Route::prefix('exams-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'])->group(function () {
-    // Lấy tất cả lịch sử làm bài thi
-    Route::get('/all-history', [ExamController::class, 'allHistory']);
 
     // Lấy lịch sử làm bài thi
-    Route::get('/{exam}/history', [ExamController::class, 'history']);
+    Route::get('/{exams_admin}/history', [ExamController::class, 'history']);
 });
 Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
 Route::apiResource('exam-questions', ExamQuestionController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

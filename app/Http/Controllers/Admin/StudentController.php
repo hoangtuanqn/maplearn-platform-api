@@ -17,11 +17,7 @@ class StudentController extends BaseApiController
     public function index(Request $request)
     {
         // Kiểm tra nếu giá trị limit là hợp lệ (số dương)
-        $limit = (int)($request->limit ?? 10);
-        if ($limit <= 0) {
-            $limit = 10; // giá trị mặc định
-        }
-
+        $limit = min((int)($request->limit ?? 10), 100);
         $students = QueryBuilder::for(User::class)
             ->allowedFilters([
                 'id',
@@ -29,13 +25,12 @@ class StudentController extends BaseApiController
                 'full_name',
                 'email',
                 'phone_number',
-
                 'birth_year',
                 'city',
                 'school',
                 'banned',
                 'email_verified_at',
-                AllowedFilter::exact('gender'), // tìm chính xác giá trị. Tránh tìm male mà vẫn ra fe"male"
+                AllowedFilter::exact('gender'), // tìm chính xác giá trị. Tránh tìm male mà vẫn ra => fe"male", "male" ở đâ dùng trong từ female
                 AllowedFilter::callback('email_verified', function ($query, $value) {
                     if ($value === 'verified') {
                         $query->whereNotNull('email_verified_at');
@@ -45,7 +40,7 @@ class StudentController extends BaseApiController
                 }),
             ])
             ->allowedSorts(['created_at'])
-            // ->where('role', 'student')
+            ->where('role', 'student')
             ->orderBy('id', 'desc')
             ->paginate($limit);
 

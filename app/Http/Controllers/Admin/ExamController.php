@@ -253,11 +253,12 @@ class ExamController extends BaseApiController
         return $this->successResponse(null, 'Xóa đề thi thành công!');
     }
     // get tất cả lịch sử làm bài thi
-    public function allHistory(Request $request)
+
+
+    // get lịch sử làm bài thi
+    public function history(Request $request, ExamPaper $exams_admin)
     {
         Gate::authorize('admin-teacher');
-
-        $user = $request->user();
         $limit = (int)($request->limit ?? 20);
 
         $histories = QueryBuilder::for(ExamAttempt::class)
@@ -280,32 +281,13 @@ class ExamController extends BaseApiController
                     }
                 }),
             ])
+            ->where('exam_paper_id', $exams_admin->id)
             ->allowedSorts(['score', 'started_at', 'time_spent'])
             ->with(['paper', 'user:id,full_name,username']);
-
-        // Nếu là teacher thì chỉ được xem lịch sử làm bài thi của các đề thi do mình tạo
-        if ($user->role === 'teacher') {
-            $teacherExamIds = ExamPaper::where('user_id', $user->id)->pluck('id');
-            $histories->whereIn('exam_paper_id', $teacherExamIds);
-        }
-        // Nếu là admin thì xem được tất cả lịch sử
 
         $histories = $histories->orderByDesc('id')->paginate($limit);
 
         $histories->makeHidden(['details']);
         return $this->successResponse($histories, 'Lấy tất cả lịch sử làm bài thi thành công!');
-    }
-
-    // get lịch sử làm bài thi
-    public function history(Request $request, ExamPaper $exams_admin)
-    {
-        Gate::authorize('admin-teacher-owner', $exams_admin);
-        $limit   = (int)($request->limit ?? 20);
-        $history = $exams_admin->examAttempts()
-            ->with('user:id,full_name,username')
-            ->orderByDesc('id')
-            ->paginate($limit);
-
-        return $this->successResponse($history, 'Lấy lịch sử làm bài thi thành công!');
     }
 }
