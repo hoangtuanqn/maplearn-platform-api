@@ -162,10 +162,18 @@ class CourseController extends BaseApiController
             'user_id'                => 'sometimes|required|string|min:1', // giáo viên dạy
             'price'                  => 'sometimes|required|numeric|min:0',
             'prerequisite_course_id' => 'nullable|integer|exists:courses,id',
-            'thumbnail'              => 'sometimes|required|url',
-            'intro_video'            => 'sometimes|required|url',
+            'coverImageUrl'         => 'nullable|string',
+            'introVideoUrl'         => 'nullable|string',
             'description'            => 'sometimes|required|string|min:10',
         ]);
+        if (isset($data['coverImageUrl']) && $data['coverImageUrl']) {
+            $data['thumbnail'] = $data['coverImageUrl'];
+            unset($data['coverImageUrl']);
+        }
+        if (isset($data['introVideoUrl']) && $data['introVideoUrl']) {
+            $data['intro_video'] = $data['introVideoUrl'];
+            unset($data['introVideoUrl']);
+        }
 
         $course->update($data);
 
