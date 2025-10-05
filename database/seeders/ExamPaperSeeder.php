@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ExamPaper;
+use App\Models\User;
 use App\Services\GoogleAuthenService;
 use Illuminate\Database\Seeder;
 
@@ -13,66 +14,32 @@ class ExamPaperSeeder extends Seeder
      */
     public function run(): void
     {
-        // Tạo danh sách tên đề thi mẫu
-        $examPapers = [
-            'KHẢO SÁT CHẤT LƯỢNG THÁNG 8 - KỲ THI TSA - MÔN TOÁN',
-            'Đề khảo sát năng lực khóa hè - Nguyễn Khuyến',
-            'Đề khảo sát năng lực tư duy khóa hè - Nguyễn Khuyến',
-            'Đề khảo sát năng lực hè lần 3 - Nguyễn Khuyến',
-            'ĐỀ KHẢO SÁT CHẤT LƯỢNG THÁNG 7 - KỲ THI ĐGNL HSA & V-ACT',
-            'Đề kiểm tra chất lượng đầu năm - THPT Nguyễn Khuyến - Bình Dương',
-            'Đề khảo sát năng lực tư duy khóa hè - Lê Thành Tông - HCM',
-            'Đề khảo sát năng lực tư duy - Lê Thánh Tông - HCM',
-            'ĐỀ KHẢO SÁT CHẤT LƯỢNG ĐẦU NĂM KỲ THI ĐGNL HSA & V-ACT',
-            'ĐỀ THI THỬ 01 - CÀN QUÉT KIẾN THỨC TOÁN 10&11 - 2K8 XPS',
-            'Thi thử - Kì thi Đánh Giá Tư Duy TSA',
-            'Đề minh họa môn Hóa - Đề số 3 (Trích trong Sách 30 đề minh họa Hóa 2025)',
-            'Đề minh họa môn Hóa - Đề số 2 (Trích trong Sách 30 đề minh họa Hóa 2025)',
-            'Đề minh hoạ môn Hóa - Đề số 1 (Trích trong Sách 30 đề minh hoạ Hóa 2025)',
-            'Đề minh hoạ môn Toán - Đề số 3 (Trích trong Sách 30 đề minh hoạ Toán 2025)',
-            'Đề minh hoạ môn Toán - Đề số 2 (Trích trong Sách 30 đề minh hoạ Toán 2025)',
-            'Đề minh hoạ môn Toán - Đề số 1 (Trích trong Sách 30 đề minh hoạ Toán 2025)',
-            'Đề minh hoạ môn Vật Lý - Đề số 3 (Trích trong Sách 30 đề minh hoạ Vật Lý 2025)',
-            'Đề minh hoạ môn Vật Lý - Đề số 2 (Trích trong Sách 30 đề minh hoạ Vật Lý 2025)',
-            'Đề minh hoạ môn Vật Lý - Đề số 1 (Trích trong Sách 30 đề minh hoạ Vật Lý 2025)',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 10',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 10',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 9',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 9',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 8',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 8',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 7',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 6',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 5',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 7',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 6',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực V-ACT - Lần 5',
-            'Đề thi khảo sát chất lượng - Kì thi Đánh Giá Năng Lực HSA - Lần 4',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Sinh học',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Hóa học',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Vật lí',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Tiếng Anh',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Ngữ văn',
-            'Đề minh họa thi tốt nghiệp THPT 2025 môn Toán',
+        $subjectsForName = [
+            'Toán' => 'toan',
+            'Vật Lý' => 'ly',
+            'Hóa Học' => 'hoa',
+            'Sinh Học' => 'sinh',
+            'Tiếng Anh' => 'tieng-anh',
+            'Ngữ Văn' => 'van'
         ];
 
-        // Sinh thêm đề thi ngẫu nhiên cho đủ 81 đề
-        $subjectsForName = [
-            'Toán',
-            'Vật Lý',
-            'Hóa Học',
-            'Sinh Học',
-            'Tiếng Anh',
-            'Ngữ Văn'
-        ];
+        // Định nghĩa loại đề thi và category tương ứng
         $examTypes = [
-            'Thi thử',
-            'Đề kiểm tra',
-            'Đề khảo sát',
-            'Đề minh họa',
-            'Đề ôn tập',
-            'Đề luyện tập'
+            // 'HSA','V-ACT','TSA','THPT','OTHER'
+            'minh_hoa' => ['exam_type' => 'THPT', 'exam_category' => 'tot-nghiep-thpt', 'name' => 'Đề minh hoạ'],
+            'khao_sat' => ['exam_type' => 'V-ACT', 'exam_category' => 'dgnl-v-act', 'name' => 'Đề khảo sát'],
+            'thi_thu' => ['exam_type' => 'THPT', 'exam_category' => 'tot-nghiep-thpt', 'name' => 'Đề thi thử'],
+            'on_tap' => ['exam_type' => 'OTHER', 'exam_category' => 'thi-cuoi-ki-1', 'name' => 'Đề ôn tập'],
+            'dgnl_hsa' => ['exam_type' => 'HSA', 'exam_category' => 'dgnl-hsa', 'name' => 'Đề ĐGNL HSA'],
+            'dgnl_vact' => ['exam_type' => 'V-ACT', 'exam_category' => 'dgnl-v-act', 'name' => 'Đề ĐGNL V-ACT'],
+            'dgtd_tsa' => ['exam_type' => 'TSA', 'exam_category' => 'dgtd-tsa', 'name' => 'Đề ĐGTD TSA'],
+            'tot_nghiep_thpt' => ['exam_type' => 'THPT', 'exam_category' => 'tot-nghiep-thpt', 'name' => 'Đề tốt nghiệp THPT'],
+            'thi_cuoi_ki_1' => ['exam_type' => 'THPT', 'exam_category' => 'thi-cuoi-ki-1', 'name' => 'Đề cuối kì 1'],
+            'thi_cuoi_ki_2' => ['exam_type' => 'THPT', 'exam_category' => 'thi-cuoi-ki-2', 'name' => 'Đề cuối kì 2'],
+            'thi_giua_ki_1' => ['exam_type' => 'THPT', 'exam_category' => 'thi-giua-ki-1', 'name' => 'Đề giữa kì 1'],
+            'thi_giua_ki_2' => ['exam_type' => 'THPT', 'exam_category' => 'thi-giua-ki-2', 'name' => 'Đề giữa kì 2'],
         ];
+
         $years = [2023, 2024, 2025];
         $schools = [
             'THPT Nguyễn Khuyến',
@@ -80,43 +47,75 @@ class ExamPaperSeeder extends Seeder
             'THPT Trần Phú',
             'THPT Chuyên Hà Nội',
             'THPT Quốc Học Huế',
-            'THPT Bùi Thị Xuân'
+            'THPT Bùi Thị Xuân',
+            'THPT Phan Đình Phùng',
+            'THPT Gia Định',
+            'THPT Lương Thế Vinh',
+            'THPT Nguyễn Thị Minh Khai',
+            'THPT Trần Quang Diệu',
         ];
 
-        $count = count($examPapers);
-        $maxCount = 1000;
-        for ($i = $count + 1; $i <= $maxCount; $i++) {
-            $subject = $subjectsForName[array_rand($subjectsForName)];
-            $type = $examTypes[array_rand($examTypes)];
+        // Sinh thêm đề thi ngẫu nhiên cho đủ 81 đề
+        for ($i = 1; $i <= 1000; $i++) {
+            // Random dữ liệu cho đề thi mới
+            $subjectName = array_rand($subjectsForName);
+            $subject = $subjectsForName[$subjectName];
+            $examTypeKey = array_rand($examTypes);
+            $examType = $examTypes[$examTypeKey];
+
+            $type = $examTypeKey; // Kiểu đề thi (minh_hoa, khao_sat, thi_thu...)
             $year = $years[array_rand($years)];
             $school = $schools[array_rand($schools)];
-            $examPapers[] = "{$type} {$subject} {$school} năm {$year} - Đề số " . ($i - $count);
-        }
-        $subjects    = ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'];
-        $gradeLevels = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
-        $categories  = ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'];
-        foreach ($examPapers as $key => $paper) {
-            // 81 ở đây là 81 khóa học
-            $status = $key < 81;
-            $rand = rand(0, 365);
+
+            // Tạo tên đề thi dựa trên kiểu đề và môn học
+            $examTitle = $this->generateExamTitle($type, $examType['name'], $subjectName, $year, $i, $school);
+
+            $teacherId = User::where('role', 'teacher')->pluck('id')->random();
+
+            // Tạo exam paper với thông tin đầy đủ và đúng category
             ExamPaper::create([
-                'title'                     => $paper,
-                'user_id'                   => 8,
+                'title'                     => $examTitle,
+                'user_id'                   => $teacherId,
                 'max_score'                 => 10,
                 'duration_minutes'          => 120,
-                'exam_category'             => $categories[array_rand($categories)],
-                'subject'                   => $subjects[array_rand($subjects)],
-                'grade_level'               => $gradeLevels[array_rand($gradeLevels)],
+                'exam_category'             => $examType['exam_category'],
+                'subject'                   => $subject,
+                'grade_level'               => collect(['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'])->random(), // Giả sử lớp 12
                 'difficulty'                => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
                 'province'                  => collect(['Quảng Ngãi', 'Phú Thọ', 'Thành phố Hà Nội', 'Thành phố Hồ Chí Minh'])->random(),
-                'exam_type'                 => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
-                'status'                    => $status,
-                'anti_cheat_enabled'        => !$status,
-                'max_attempts'              => $status ? null : 3,
-                'start_time'                => now()->subDays(max(0, $rand - 40)),
-                'password'                  => $status ? null : GoogleAuthenService::generateSecret2FA($paper)['secret'],
-                'created_at'                => now()->subDays($rand),
+                'exam_type'                 => $examType['exam_type'],
+                'status'                    => true,
+                'anti_cheat_enabled'        => true,
+                'max_attempts'              => 3,
+                'start_time'                => now()->subDays(rand(0, 365)),
+                'password'                  => null,
+                'created_at'                => now()->subDays(rand(0, 365)),
             ]);
         }
+    }
+
+    /**
+     * Generate exam title based on type, subject, number, and school
+     */
+    private function generateExamTitle($type, $title, $subjectName, $year, $examNumber, $school)
+    {
+        // Định nghĩa các template tên đề thi dựa trên loại đề thi
+        $templates = [
+            'minh_hoa' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Trích trong Sách 30 đề minh hoạ môn {$subjectName} {$year})",
+            'khao_sat' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Kỳ thi {$subjectName} {$year})",
+            'thi_thu' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Trường {$school} - Kỳ thi thử {$year})",
+            'on_tap' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Ôn tập {$subjectName} {$year})",
+            'dgnl_hsa' => "Đề ĐGNL HSA môn {$subjectName} - Đề số {$examNumber} (Kỳ thi ĐGNL HSA {$year})",
+            'dgnl_vact' => "Đề ĐGNL V-ACT môn {$subjectName} - Đề số {$examNumber} (Kỳ thi ĐGNL V-ACT {$year})",
+            'dgtd_tsa' => "Đề ĐGTD TSA môn {$subjectName} - Đề số {$examNumber} (Kỳ thi ĐGTD TSA {$year})",
+            'tot_nghiep_thpt' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Kỳ thi tốt nghiệp THPT {$year})",
+            'thi_cuoi_ki_1' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Thi cuối kì 1 năm {$year})",
+            'thi_cuoi_ki_2' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Thi cuối kì 2 năm {$year})",
+            'thi_giua_ki_1' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Thi giữa kì 1 năm {$year})",
+            'thi_giua_ki_2' => "{$title} môn {$subjectName} - Đề số {$examNumber} (Thi giữa kì 2 năm {$year})",
+        ];
+
+        // Chọn template dựa trên loại đề thi
+        return $templates[$type] ?? "{$type} môn {$subjectName} - Đề số {$examNumber}";
     }
 }

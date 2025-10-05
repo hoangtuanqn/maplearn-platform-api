@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-
 class CourseCompletionExamRequiredNotification extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -55,7 +54,7 @@ class CourseCompletionExamRequiredNotification extends Notification implements S
         return [
             'course_id' => $this->course->id,
             'exam_id'   => $this->exam->id,
-            'exam_url'  => route('exams.start', $this->exam->slug),
+            'exam_url'  => env('APP_URL_FRONT_END') . '/exams/' . $this->exam->slug . '/start',
         ];
     }
 }
