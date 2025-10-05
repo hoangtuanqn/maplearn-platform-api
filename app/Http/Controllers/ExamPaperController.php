@@ -107,6 +107,10 @@ class ExamPaperController extends BaseApiController
         if ($exam->max_attempts && $exam->attempt_count >= $exam->max_attempts) {
             return $this->errorResponse(null, 'Bạn đã vượt quá số lần làm bài thi cho phép!');
         }
+        // Check người dùng có đang làm đề thi nào khác không
+        if (ExamAttempt::where('user_id', $user->id)->where('status', 'in_progress')->exists()) {
+            return $this->errorResponse(null, 'Bạn đang trong quá trình làm bài thi khác! Không thể bắt đầu bài thi mới.');
+        }
 
         if ($exam->getIsPasswordProtectedAttribute()) {
             // Validate input

@@ -210,4 +210,22 @@ class ProfileController extends BaseApiController
         // Trả về thông báo thành công
         return $this->successResponse(null, 'Đã gửi lại email xác minh!', 200);
     }
+
+    // get lịch sử làm bài thi hiện tại
+    public function getExamsMe(Request $request)
+    {
+        $user  = $request->user();
+        $limit = min($request->input('limit', 10), 100); // số item mỗi trang, mặc định 10
+
+        $exams = QueryBuilder::for($user->examAttempts()->orderBy('exam_attempts.id', 'desc'))
+            ->allowedFilters(['name'])
+            ->with('paper:id,slug,title') // Eager load exam
+            ->paginate($limit);
+        $exams->getCollection()->transform(function ($exam) {
+            unset($exam->details);
+            return $exam;
+        });
+
+        return $this->successResponse($exams, "Đã lấy danh sách bài thi của bạn thành công!");
+    }
 }
