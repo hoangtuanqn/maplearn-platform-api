@@ -208,6 +208,7 @@ class CourseController extends BaseApiController
                 ->limit(8)
                 ->get();
 
+
             return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
         }
 
@@ -226,6 +227,17 @@ class CourseController extends BaseApiController
             ->inRandomOrder()
             ->limit(8)
             ->get();
+        if (count($courses) < 8) {
+            // Nếu không đủ 8 khóa học có giá > 0, lấy thêm các khóa học miễn phí
+            $additionalCourses = Course::where('status', true)
+
+                ->where('start_date', '<=', Carbon::now())
+                ->whereNotIn('id', $courses->pluck('id'))
+                ->inRandomOrder()
+                ->limit(8 - count($courses))
+                ->get();
+            $courses = $courses->concat($additionalCourses);
+        }
 
         return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
     }
