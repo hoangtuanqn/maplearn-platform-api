@@ -28,6 +28,8 @@ class DashboardController extends BaseApiController
         $endDate = $request->end_date;
 
         $data = [
+            'total_in_this_year'  => $this->getTotalInThisYear($request, $startDate, $endDate),
+
             // số khóa học đang giảng dạy
             'total_courses'       => $this->getTotalCourses($user),
             // số học viên đang theo học
@@ -59,6 +61,45 @@ class DashboardController extends BaseApiController
 
         ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
+    }
+
+    // tính tổng doanh thu trong năm nay (tính từ tháng 1 năm nay) hoặc theo khoảng thời gian
+    private function getTotalInThisYear(Request $request, $startDate = null, $endDate = null): array
+    {
+        // Nếu không truyền start_date và end_date thì lấy từ đầu năm đến cuối năm hiện tại
+        if (!$startDate || !$endDate) {
+            $startDate = now()->startOfYear()->toDateString();
+            $endDate = now()->endOfYear()->toDateString();
+        }
+        $user = $request->user();
+
+        // Tạo danh sách các tháng trong khoảng thời gian
+        $start = Carbon::parse($startDate)->startOfMonth();
+        $end = Carbon::parse($endDate)->endOfMonth();
+        $months = [];
+        $current = $start->copy();
+        while ($current <= $end) {
+            $months[$current->format('Y-m')] = 0;
+            $current->addMonth();
+        }
+
+        // lọc các khóa học của giáo viên này
+        $courseIds = Course::where('user_id', $user->id)->pluck('id');
+
+        // Lấy tổng tiền theo từng tháng trong khoảng thời gian
+        $payments = Payment::where('status', 'paid')
+            ->whereIn('course_id', $courseIds)
+            ->whereBetween('paid_at', [$startDate, $endDate])
+            ->selectRaw('DATE_FORMAT(paid_at, "%Y-%m") as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        foreach ($payments as $payment) {
+            $months[$payment->month] = (int)$payment->total;
+        }
+
+        return $months;
     }
 
 

@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
                 'image'  => "/assets/images/teachers/thay-vu-ngoc-anh.jpg",
                 'bio'    => "Giáo viên dạy Toán với 10 năm kinh nghiệm.",
                 "degree" => "Thạc sĩ Toán học",
+                "email" => "vungocanhmaplearn@gmail.com"
             ],
             [
                 'name'   => "Thầy Nguyễn Anh Phong",
@@ -63,6 +64,7 @@ class UserSeeder extends Seeder
                 'bio'    => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
                 "degree" => "Thạc sĩ Hóa học",
                 "role"   => "admin",
+                "email" => "thanhthuymaplearn@gmail.com"
             ],
             [
                 'name'   => "Thầy Vũ Trọng Đạt",
@@ -132,8 +134,8 @@ class UserSeeder extends Seeder
 
             return [
                 'username'      => $teacher['username'] ?? $username,
-                'email'         => $username . '@example.com',
-                'password'      => bcrypt('password'),
+                'email'         => $teacher['email'] ?? $username . '@example.com',
+                'password'      => bcrypt('Aptech@123'),
                 'facebook_link' => 'https://www.facebook.com/thayhintavungocanh',
                 'full_name'     => $fullName,
                 'gender'        => $gender,
