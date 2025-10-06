@@ -57,6 +57,10 @@ class ExamPaperSeeder extends Seeder
 
         // Sinh thêm đề thi ngẫu nhiên cho đủ 81 đề
         for ($i = 1; $i <= 1000; $i++) {
+            $status = 1;
+            if ($i + 81 >= 1000) {
+                $status = 0;
+            }
             // Random dữ liệu cho đề thi mới
             $subjectName = array_rand($subjectsForName);
             $subject = $subjectsForName[$subjectName];
@@ -84,7 +88,7 @@ class ExamPaperSeeder extends Seeder
                 'difficulty'                => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
                 'province'                  => collect(['Quảng Ngãi', 'Phú Thọ', 'Thành phố Hà Nội', 'Thành phố Hồ Chí Minh'])->random(),
                 'exam_type'                 => $examType['exam_type'],
-                'status'                    => true,
+                'status'                    => $status,
                 'anti_cheat_enabled'        => true,
                 'max_attempts'              => 3,
                 'start_time'                => now()->subDays(rand(0, 365)),

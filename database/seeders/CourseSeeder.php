@@ -755,7 +755,7 @@ class CourseSeeder extends Seeder
                 'created_at'  => $start_date,
 
                 // ran dom ngẫu nhiên paper status = 0 và ko dc trùng với các khóa đã tạo
-                'exam_paper_id' =>  ExamPaper::where('status', 0)->whereNotIn('id', Course::pluck('exam_paper_id'))->inRandomOrder()->first()->id,
+                'exam_paper_id' =>  ExamPaper::where('status', 0)->whereNotIn('id', Course::pluck('exam_paper_id'))->inRandomOrder()->first()?->id ?? null,
             ]);
         }
     }
