@@ -19,27 +19,27 @@ class PostFactory extends Factory
         $realPosts = [
             [
                 'title'     => 'Gợi ý đáp án môn Toán tốt nghiệp THPT ',
-                'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/blog/7a057s902und/7hatq8803p2l-1750848712712.png',
+                'thumbnail' => '/assets/images/posts/7hatq8803p2l-1750848712712.png',
                 'subject'   => 'toan',
             ],
             [
                 'title'     => 'Gợi ý đáp án môn Hoá Học tốt nghiệp THPT ',
-                'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/blog/7a0d62t02mdp/7hat6xi0419y-1750848687702.png',
+                'thumbnail' => '/assets/images/posts/7hat6xi0419y-1750848687702.png',
                 'subject'   => 'hoa',
             ],
             [
                 'title'     => 'Gợi ý đáp án môn Vật Lý tốt nghiệp THPT ',
-                'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/blog/7a0e2zr02ujf/7hasxl303w2q-1750848675591.png',
+                'thumbnail' => '/assets/images/posts/7hasxl303w2q-1750848675591.png',
                 'subject'   => 'ly',
             ],
             [
                 'title'     => 'Gợi ý đáp án môn Tiếng Anh tốt nghiệp THPT ',
-                'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/blog/7a0f2ev02hmv/7hasmqx03xfi-1750848661545.png',
+                'thumbnail' => '/assets/images/posts/7hasmqx03xfi-1750848661545.png',
                 'subject'   => 'tieng-anh',
             ],
             [
                 'title'     => 'Gợi ý đáp án môn Toán tốt nghiệp THPT ',
-                'thumbnail' => 'https://mapstudy.sgp1.digitaloceanspaces.com/blog/sn4cz9w00ew1/sse7ts8006kv-1718867802248.jpg',
+                'thumbnail' => '/assets/images/posts/sse7ts8006kv-1718867802248.jpg',
                 'subject'   => 'toan',
             ],
         ];

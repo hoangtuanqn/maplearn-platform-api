@@ -1,116 +1,158 @@
-<?php
-
-return  [
-  'laravel-lang/actions' => [
-    'providers' => [
+<?php return array (
+  'laravel-lang/actions' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Actions\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/attributes' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/attributes' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Attributes\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/config' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/config' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Config\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/http-statuses' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/http-statuses' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/lang' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/lang' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Lang\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/locales' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/locales' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Locales\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/models' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/models' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Models\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/moonshine' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/moonshine' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\MoonShine\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/publisher' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/publisher' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Publisher\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/routes' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/routes' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\Routes\\ServiceProvider',
-    ],
-  ],
-  'laravel-lang/starter-kits' => [
-    'providers' => [
+    ),
+  ),
+  'laravel-lang/starter-kits' => 
+  array (
+    'providers' => 
+    array (
       0 => 'LaravelLang\\StarterKits\\ServiceProvider',
-    ],
-  ],
-  'laravel/pail' => [
-    'providers' => [
+    ),
+  ),
+  'laravel/pail' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Laravel\\Pail\\PailServiceProvider',
-    ],
-  ],
-  'laravel/sail' => [
-    'providers' => [
+    ),
+  ),
+  'laravel/sail' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Laravel\\Sail\\SailServiceProvider',
-    ],
-  ],
-  'laravel/socialite' => [
-    'aliases' => [
+    ),
+  ),
+  'laravel/socialite' => 
+  array (
+    'aliases' => 
+    array (
       'Socialite' => 'Laravel\\Socialite\\Facades\\Socialite',
-    ],
-    'providers' => [
+    ),
+    'providers' => 
+    array (
       0 => 'Laravel\\Socialite\\SocialiteServiceProvider',
-    ],
-  ],
-  'laravel/tinker' => [
-    'providers' => [
+    ),
+  ),
+  'laravel/tinker' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    ],
-  ],
-  'nesbot/carbon' => [
-    'providers' => [
+    ),
+  ),
+  'nesbot/carbon' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
-    ],
-  ],
-  'nunomaduro/collision' => [
-    'providers' => [
+    ),
+  ),
+  'nunomaduro/collision' => 
+  array (
+    'providers' => 
+    array (
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    ],
-  ],
-  'nunomaduro/termwind' => [
-    'providers' => [
+    ),
+  ),
+  'nunomaduro/termwind' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    ],
-  ],
-  'socialiteproviders/manager' => [
-    'providers' => [
+    ),
+  ),
+  'socialiteproviders/manager' => 
+  array (
+    'providers' => 
+    array (
       0 => 'SocialiteProviders\\Manager\\ServiceProvider',
-    ],
-  ],
-  'spatie/laravel-query-builder' => [
-    'providers' => [
+    ),
+  ),
+  'spatie/laravel-query-builder' => 
+  array (
+    'providers' => 
+    array (
       0 => 'Spatie\\QueryBuilder\\QueryBuilderServiceProvider',
-    ],
-  ],
-  'tymon/jwt-auth' => [
-    'aliases' => [
-      'JWTAuth'    => 'Tymon\\JWTAuth\\Facades\\JWTAuth',
+    ),
+  ),
+  'tymon/jwt-auth' => 
+  array (
+    'aliases' => 
+    array (
+      'JWTAuth' => 'Tymon\\JWTAuth\\Facades\\JWTAuth',
       'JWTFactory' => 'Tymon\\JWTAuth\\Facades\\JWTFactory',
-    ],
-    'providers' => [
+    ),
+    'providers' => 
+    array (
       0 => 'Tymon\\JWTAuth\\Providers\\LaravelServiceProvider',
-    ],
-  ],
-];
+    ),
+  ),
+);
