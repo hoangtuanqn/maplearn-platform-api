@@ -7,3 +7,6 @@ use Illuminate\Support\Facades\Route;
 //     Route::get('/facebook', [FacebookController::class, 'redirectToFacebook']);
 //     Route::get('/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 // });
+Route::get('/', function () {
+    return "Successfully!";
+});
