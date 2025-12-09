@@ -55,7 +55,7 @@ class CourseChapterController extends BaseApiController
 
         $course->chapters->each(function ($chapter) use ($user) {
             $chapter->lessons->each(function ($lesson) use ($user) {
-                if ($user->hasRole(['admin', 'teacher'])) {
+                if (!empty($user) && $user->hasRole(['admin', 'teacher'])) {
                     // admin và teacher xem được tất cả nội dung
                     return;
                 }

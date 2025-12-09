@@ -56,9 +56,9 @@ class ExamPaperSeeder extends Seeder
         ];
 
         // Sinh thêm đề thi ngẫu nhiên cho đủ 81 đề
-        for ($i = 1; $i <= 1000; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             $status = 1;
-            if ($i + 81 >= 1000) {
+            if ($i + 81 >= 100) {
                 $status = 0;
             }
             // Random dữ liệu cho đề thi mới

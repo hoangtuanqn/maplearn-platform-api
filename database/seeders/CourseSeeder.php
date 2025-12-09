@@ -338,7 +338,7 @@ class CourseSeeder extends Seeder
             // Hóa | Lớp 12 | 2K8
             [
                 'name'        => 'CÀY LÍ THUYẾT 360 ĐỘ - HÓA HỌC 12',
-                'thumbnail'   => '/assets/images/courses/`cay-li-thuyet-360-do-hoa-hoc-lop-12-1744535529719.png',
+                'thumbnail'   => '/assets/images/courses/cay-li-thuyet-360-do-hoa-hoc-lop-12-1744535529719.png',
                 'grade_level' => 3,
                 'subject'     => 5, // Hóa
                 'category_id' => 1,
@@ -346,7 +346,7 @@ class CourseSeeder extends Seeder
             ],
             [
                 'name'        => 'SÁCH 30 ĐỀ MINH HOẠ MÔN HOÁ - 2025',
-                'thumbnail'   => '/assets/images/courses/khoa-m---van-dung-va-van-dung-cao-ngu-van-nam-2026-1750770309384.jpg',
+                'thumbnail'   => '/assets/images/courses/khoa-o---thuc-chien-luyen-de-mon-ngu-van-nam-2026-1750770260160.jpg',
                 'grade_level' => 3,
                 'subject'     => 5,
                 'category_id' => 1,
@@ -356,7 +356,7 @@ class CourseSeeder extends Seeder
             // Văn | Lớp 12 | 2K8
             [
                 'name'        => 'KHOÁ I - CHUYÊN ĐỀ CƠ BẢN NGỮ VĂN NĂM 2026',
-                'thumbnail'   => '/assets/images/courses/khoa-m---van-dung-va-van-dung-cao-ngu-van-nam-2026-1750770309384.jpg',
+                'thumbnail'   => '/assets/images/courses/khoa-o---thuc-chien-luyen-de-mon-ngu-van-nam-2026-1750770260160.jpg',
                 'grade_level' => 3,
                 'subject'     => 6, // Văn
                 'category_id' => 1,
@@ -364,7 +364,7 @@ class CourseSeeder extends Seeder
             ],
             [
                 'name'        => 'KHOÁ M - VẬN DỤNG VÀ VẬN DỤNG CAO NGỮ VĂN NĂM 2026',
-                'thumbnail'   => '/assets/images/courses/khoa-m---van-dung-va-van-dung-cao-ngu-van-nam-2026-1750770309384.jpg',
+                'thumbnail'   => '/assets/images/courses/khoa-o---thuc-chien-luyen-de-mon-ngu-van-nam-2026-1750770260160.jpg',
                 'grade_level' => 3,
                 'subject'     => 6,
                 'category_id' => 1,
